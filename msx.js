@@ -123,21 +123,32 @@ function MSX(window,canvas,logbuf)
 		canvasbiosrom.height=biosrom.length/256;
 		//alert(biosrom.length+','+canvasbiosrom.width+','+canvasbiosrom.height);
 		var ctxbiosrom = canvasbiosrom.getContext("2d");
-		ctxbiosrom.fillStyle="rgba(0,0,0,255)";
+		ctxbiosrom.fillStyle="rgb(0,0,0)";
 		ctxbiosrom.fillRect(0,0,canvasbiosrom.width,canvasbiosrom.height);
-		var imgdatabiosrom = ctxbiosrom.getImageData(0,0,canvasbiosrom.width,canvasbiosrom.height);
-		var dbr = imgdatabiosrom.data;
+		var imgdatabiosrom = undefined;
+		var dbr = undefined;
+		if (ctxbiosrom.getImageData) {
+		  imgdatabiosrom = ctxbiosrom.getImageData(0,0,canvasbiosrom.width,canvasbiosrom.height);
+		  dbr = imgdatabiosrom.data;
+		}
 		var biosromlength = biosrom.length;
 		// MimeType('application/octet-stream; charset=x-user-defined')
 		var charcode=0;	
 		for (var i=0; i < biosromlength ; i++) {
 			charcode = biosrom.charCodeAt(i) & 0xff;
 			this.memoria[slot][i]=charcode;
-			dbr[i*4]=charcode;
-			dbr[i*4+1]=charcode;
-			dbr[i*4+2]=charcode;
+			if (dbr) {
+			  dbr[i*4]=charcode;
+			  dbr[i*4+1]=charcode;
+			  dbr[i*4+2]=charcode;
+			} else {
+			  ctxbiosrom.fillStyle="rgb("+charcode+","+charcode+","+charcode+")";
+			  ctxbiosrom.fillRect(i%canvasbiosrom.width,Math.floor(i/canvasbiosrom.width),1,1);
+			}
 		}
-		ctxbiosrom.putImageData(imgdatabiosrom,0,0);
+		if (ctxbiosrom.putImageData) {
+		  ctxbiosrom.putImageData(imgdatabiosrom,0,0);
+		}
 	}
 	return biosrom;
     }
@@ -153,10 +164,16 @@ function MSX(window,canvas,logbuf)
 		canvascartrom.height=cartrom.length/256;
 		//alert(cartrom.length+','+canvascartrom.width+','+canvascartrom.height);
 		var ctxcartrom = canvascartrom.getContext("2d");
-		ctxcartrom.fillStyle="rgba(0,0,0,255)";
+		ctxcartrom.fillStyle="rgb(0,0,0)";
 		ctxcartrom.fillRect(0,0,canvascartrom.width,canvascartrom.height);
-		var imgdatacartrom = ctxcartrom.getImageData(0,0,canvascartrom.width,canvascartrom.height);
-		var dbr = imgdatacartrom.data;
+		var imgdatacartrom = undefined;
+		var dbr = undefined;
+		if (ctxcartrom.getImageData) {
+		  imgdatacartrom = ctxcartrom.getImageData(0,0,canvascartrom.width,canvascartrom.height);
+		  dbr = imgdatacartrom.data;
+		} else {
+		  dbr = new Array(canvascartrom.width * canvascartrom.height * 4);
+		}
 		var cartromlength = cartrom.length;
 		// MimeType('application/octet-stream; charset=x-user-defined')
 		var charcode=0;	
@@ -166,15 +183,20 @@ function MSX(window,canvas,logbuf)
 			dbr[i*4]=charcode;
 			dbr[i*4+1]=charcode;
 			dbr[i*4+2]=charcode;
+			if (!ctxcartrom.getImageData) {
+			  ctxcartrom.fillStyle="rgb("+charcode+","+charcode+","+charcode+")";
+			  ctxcartrom.fillRect(i%canvascartrom.width,Math.floor(i/canvascartrom.width),1,1);
+			}
 		}
-		ctxcartrom.putImageData(imgdatacartrom,0,0);
+		if (ctxcartrom.putImageData) {
+		  ctxcartrom.putImageData(imgdatacartrom,0,0);
+		}
 	}
 
 	var i_9_ = 0;
 	bool = false;
 	i = cartslot;
 	var is = dbr;
-	//try 
 	{
 		var i_12_ = cartrom.length; 
 
@@ -202,9 +224,7 @@ function MSX(window,canvas,logbuf)
 		}
 		for (var i_15_ = 0; i_15_ < i_12_; i_15_++)
 		    this.memoria[i][i_15_ + i_9_] = is[i_15_*4] + 256 & 0xff;
-	    } //catch (exception) {
-		//this.println("Error loading MSX CART rom" + exception.toString());
-	    //}
+	} 
 	return cartrom;
     }
 
@@ -864,23 +884,14 @@ function MSX(window,canvas,logbuf)
 
 msx_interrupt = function()
 {
-	if (msx.pauseAtNextInterrupt) {
-	    msx.pausedThread = Thread.currentThread();
-	    while (self.pauseAtNextInterrupt) {
-		try {
-		    Thread.sleep(500);
-		} catch (exception) {
-		    /* empty */
-		}
-	    }
-	}
-	msx.pausedThread = null;
+
 	if (msx.resetAtNextInterrupt) {
 	    msx.resetAtNextInterrupt = false;
 	    msx.reset();
 	}
-
-	msx.vdp.imagedata.data[msx.interruptCounter*4+1]=255;//green
+	if (msx.vdp.imagedata)
+	  msx.vdp.imagedata.data[msx.interruptCounter*4+1]=255;//green line
+	
 	document.getElementById('interrupts').value=msx.interruptCounter;
 	//if (msx.interruptCounter%600==0) 
 	//msx.println('interrupt='+msx.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
@@ -888,7 +899,7 @@ msx_interrupt = function()
 
 	msx.DipSwitchSYNC = 1;
 	if (msx.pinta) {
-	    msx.vdp.atualizaTela();
+	    msx.vdp.updateScreen();
 	    msx.pinta = false;
 	}
 	if (msx.interruptCounter % msx.frameSkip == 0)
