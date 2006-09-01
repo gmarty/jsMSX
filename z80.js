@@ -388,7 +388,7 @@ function Z80(d)
 	    this.REFRESH(1);
 	    var i_22_ = this.nxtpcb();
 	    //if (this.showpc) 
-		this.vdp.imagedata.data[this._PC*4]+=247;
+	    //this.vdp.imagedata.data[this._PC*4]+=247;
 
 	    switch (i_22_) {
 	    default:
