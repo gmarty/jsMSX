@@ -40,10 +40,14 @@ function Z80(d)
     this.p_ = 0;
     this.parity = new Array(256);
     this._A = 0;
-    this._HL = 0;
     this._B = 0;
     this._C = 0;
+    this._D = 0;
+    this._E = 0;
+    this._H = 0;
+    this._L = 0;
     this._DE = 0;
+    this._HL = 0;
     this.fS = false;
     this.fZ = false;
     this.f5 = false;
@@ -93,7 +97,7 @@ function Z80(d)
     }
     
     this.AF = function() {
-	return this.A() << 8 | this.F();
+	return this._A << 8 | this.F();
     }
     
     this.B = function() {
@@ -101,7 +105,7 @@ function Z80(d)
     }
     
     this.BC = function() {
-	return this.B() << 8 | this.C();
+	return this._B << 8 | this._C;
     }
     
     this.C = function() {
@@ -113,29 +117,29 @@ function Z80(d)
     }
     
     this.D = function() {
-	return this._DE >> 8;
+	return this._D;
     }
     
     this.DE = function() {
-	return this._DE;
+	return this._D << 8 | this._E;
     }
     
     this.E = function() {
-	return this._DE & 0xff;
+	return this._E;
     }
     
     this.F = function() {
-	return ((this.Sset() ? 128 : 0) | (this.Zset() ? 64 : 0) | (this.f5 ? 32 : 0)
-		| (this.Hset() ? 16 : 0) | (this.f3 ? 8 : 0) | (this.PVset() ? 4 : 0)
-		| (this.Nset() ? 2 : 0) | (this.Cset() ? 1 : 0));
+	return ((this.fS ? 128 : 0) | (this.fZ ? 64 : 0) | (this.f5 ? 32 : 0)
+		| (this.fH ? 16 : 0) | (this.f3 ? 8 : 0) | (this.fPV ? 4 : 0)
+		| (this.fN ? 2 : 0) | (this.fC ? 1 : 0));
     }
     
     this.H = function() {
-	return this._HL >> 8;
+	return this._H;
     }
     
     this.HL = function() {
-	return this._HL;
+	return this._H << 8 | this._L;
     }
     
     this.Hset = function() {
@@ -159,7 +163,7 @@ function Z80(d)
     }
     
     this.ID_d = function() {
-	return this.ID() + this.byte(this.nxtpcb()) & 0xffff;
+	return this._ID + this.byte(this.nxtpcb()) & 0xffff;
     }
     
     this.IFF1 = function() {
@@ -183,7 +187,7 @@ function Z80(d)
     }
     
     this.L = function() {
-	return this._HL & 0xff;
+	return this._L;
     }
     
     this.Nset = function() {
@@ -223,134 +227,134 @@ function Z80(d)
     }
     
     this.adc16 = function(i, i_1_) {
-	var i_2_ = this.Cset() ? 1 : 0;
+	var i_2_ = this.fC ? 1 : 0;
 	var i_3_ = i + i_1_ + i_2_;
 	var i_4_ = i_3_ & 0xffff;
-	this.setS((i_4_ & 0x8000) != 0);
-	this.set3((i_4_ & 0x800) != 0);
-	this.set5((i_4_ & 0x2000) != 0);
-	this.setZ(i_4_ == 0);
-	this.setC((i_3_ & 0x10000) != 0);
-	this.setPV(((i ^ (i_1_ ^ 0xffffffff)) & (i ^ i_4_) & 0x8000) != 0);
-	this.setH(((i & 0xfff) + (i_1_ & 0xfff) + i_2_ & 0x1000) != 0);
-	this.setN(false);
+	this.fS = ((i_4_ & 0x8000) != 0);
+	this.f3 = ((i_4_ & 0x800) != 0);
+	this.f5 = ((i_4_ & 0x2000) != 0);
+	this.fZ = (i_4_ == 0);
+	this.fC = ((i_3_ & 0x10000) != 0);
+	this.fPV = (((i ^ (i_1_ ^ 0xffffffff)) & (i ^ i_4_) & 0x8000) != 0);
+	this.fH = (((i & 0xfff) + (i_1_ & 0xfff) + i_2_ & 0x1000) != 0);
+	this.fN = (false);
 	return i_4_;
     }
     
     this.adc_a = function(i) {
-	var i_5_ = this.A();
-	var i_6_ = this.Cset() ? 1 : 0;
+	var i_5_ = this._A;
+	var i_6_ = this.fC ? 1 : 0;
 	var i_7_ = i_5_ + i + i_6_;
 	var i_8_ = i_7_ & 0xff;
-	this.setS((i_8_ & 0x80) != 0);
-	this.set3((i_8_ & 0x8) != 0);
-	this.set5((i_8_ & 0x20) != 0);
-	this.setZ(i_8_ == 0);
-	this.setC((i_7_ & 0x100) != 0);
-	this.setPV(((i_5_ ^ (i ^ 0xffffffff)) & (i_5_ ^ i_8_) & 0x80) != 0);
-	this.setH(((i_5_ & 0xf) + (i & 0xf) + i_6_ & 0x10) != 0);
-	this.setN(false);
-	this.mudaA(i_8_);
+	this.fS = ((i_8_ & 0x80) != 0);
+	this.f3 = ((i_8_ & 0x8) != 0);
+	this.f5 = ((i_8_ & 0x20) != 0);
+	this.fZ = (i_8_ == 0);
+	this.fC = ((i_7_ & 0x100) != 0);
+	this.fPV = (((i_5_ ^ (i ^ 0xffffffff)) & (i_5_ ^ i_8_) & 0x80) != 0);
+	this.fH = (((i_5_ & 0xf) + (i & 0xf) + i_6_ & 0x10) != 0);
+	this.fN = (false);
+	this._A = (i_8_);
     }
     
     this.add16 = function(i, i_9_) {
 	var i_10_ = i + i_9_;
 	var i_11_ = i_10_ & 0xffff;
-	this.set3((i_11_ & 0x800) != 0);
-	this.set5((i_11_ & 0x2000) != 0);
-	this.setC((i_10_ & 0x10000) != 0);
-	this.setH(((i & 0xfff) + (i_9_ & 0xfff) & 0x1000) != 0);
-	this.setN(false);
+	this.f3 = ((i_11_ & 0x800) != 0);
+	this.f5 = ((i_11_ & 0x2000) != 0);
+	this.fC = ((i_10_ & 0x10000) != 0);
+	this.fH = (((i & 0xfff) + (i_9_ & 0xfff) & 0x1000) != 0);
+	this.fN = (false);
 	return i_11_;
     }
     
     this.add_a = function(i) {
-	var i_12_ = this.A();
+	var i_12_ = this._A;
 	var i_13_ = i_12_ + i;
 	var i_14_ = i_13_ & 0xff;
-	this.setS((i_14_ & 0x80) != 0);
-	this.set3((i_14_ & 0x8) != 0);
-	this.set5((i_14_ & 0x20) != 0);
-	this.setZ(i_14_ == 0);
-	this.setC((i_13_ & 0x100) != 0);
-	this.setPV(((i_12_ ^ (i ^ 0xffffffff)) & (i_12_ ^ i_14_) & 0x80) != 0);
-	this.setH(((i_12_ & 0xf) + (i & 0xf) & 0x10) != 0);
-	this.setN(false);
-	this.mudaA(i_14_);
+	this.fS = ((i_14_ & 0x80) != 0);
+	this.f3 = ((i_14_ & 0x8) != 0);
+	this.f5 = ((i_14_ & 0x20) != 0);
+	this.fZ = (i_14_ == 0);
+	this.fC = ((i_13_ & 0x100) != 0);
+	this.fPV = (((i_12_ ^ (i ^ 0xffffffff)) & (i_12_ ^ i_14_) & 0x80) != 0);
+	this.fH = (((i_12_ & 0xf) + (i & 0xf) & 0x10) != 0);
+	this.fN = (false);
+	this._A = (i_14_);
     }
     
     this.and_a = function(i) {
-	var i_15_ = this.A() & i;
-	this.setS((i_15_ & 0x80) != 0);
-	this.set3((i_15_ & 0x8) != 0);
-	this.set5((i_15_ & 0x20) != 0);
-	this.setH(true);
-	this.setPV(this.parity[i_15_ & 0xff]);
-	this.setZ(i_15_ == 0);
-	this.setN(false);
-	this.setC(false);
-	this.mudaA(i_15_);
+	var i_15_ = this._A & i;
+	this.fS = ((i_15_ & 0x80) != 0);
+	this.f3 = ((i_15_ & 0x8) != 0);
+	this.f5 = ((i_15_ & 0x20) != 0);
+	this.fH = (true);
+	this.fPV = (this.parity[i_15_ & 0xff]);
+	this.fZ = (i_15_ == 0);
+	this.fN = (false);
+	this.fC = (false);
+	this._A = (i_15_);
     }
     
     this.bit = function(i, i_16_) {
 	var bool = (i_16_ & i) != 0;
-	this.setN(false);
-	this.setH(true);
-	this.set3((i_16_ & 0x8) != 0);
-	this.set5((i_16_ & 0x20) != 0);
-	this.setS(i == 128 ? bool : false);
-	this.setZ(bool ^ true);
-	this.setPV(bool ^ true);
+	this.fN = (false);
+	this.fH = (true);
+	this.f3 = ((i_16_ & 0x8) != 0);
+	this.f5 = ((i_16_ & 0x20) != 0);
+	this.fS = (i == 128 ? bool : false);
+	this.fZ = (bool ^ true);
+	this.fPV = (bool ^ true);
     }
     
     this.ccf = function() {
-	var i = this.A();
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setN(false);
-	this.setC(!this.Cset());
+	var i = this._A;
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fN = (false);
+	this.fC = (!this.fC);
     }
     
     this.cp_a = function(i) {
-	var i_17_ = this.A();
+	var i_17_ = this._A;
 	var i_18_ = i_17_ - i;
 	var i_19_ = i_18_ & 0xff;
-	this.setS((i_19_ & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setN(true);
-	this.setZ(i_19_ == 0);
-	this.setC((i_18_ & 0x100) != 0);
-	this.setH(((i_17_ & 0xf) - (i & 0xf) & 0x10) != 0);
-	this.setPV(((i_17_ ^ i) & (i_17_ ^ i_19_) & 0x80) != 0);
+	this.fS = ((i_19_ & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fN = (true);
+	this.fZ = (i_19_ == 0);
+	this.fC = ((i_18_ & 0x100) != 0);
+	this.fH = (((i_17_ & 0xf) - (i & 0xf) & 0x10) != 0);
+	this.fPV = (((i_17_ ^ i) & (i_17_ ^ i_19_) & 0x80) != 0);
     }
     
     this.cpl_a = function() {
-	var i = this.A() ^ 0xff;
-	this.set3((this.A() & 0x8) != 0);
-	this.set5((this.A() & 0x20) != 0);
-	this.setH(true);
-	this.setN(true);
-	this.mudaA(i);
+	var i = this._A ^ 0xff;
+	this.f3 = ((this._A & 0x8) != 0);
+	this.f5 = ((this._A & 0x20) != 0);
+	this.fH = (true);
+	this.fN = (true);
+	this._A = (i);
     }
     
     this.daa_a = function() {
-	var i = this.A();
+	var i = this._A;
 	var i_20_ = 0;
-	bool = this.Cset();
-	if (this.Hset() || (i & 0xf) > 9)
+	bool = this.fC;
+	if (this.fH || (i & 0xf) > 9)
 	    i_20_ |= 0x6;
 	if (bool || i > 159 || i > 143 && (i & 0xf) > 9)
 	    i_20_ |= 0x60;
 	if (i > 153)
 	    bool = true;
-	if (this.Nset())
+	if (this.fN)
 	    this.sub_a(i_20_);
 	else
 	    this.add_a(i_20_);
-	i = this.A();
-	this.setC(bool);
-	this.setPV(this.parity[i]);
+	i = this._A;
+	this.fC = (bool);
+	this.fPV = (this.parity[i]);
     }
     
     this.dec16 = function(i) {
@@ -361,19 +365,19 @@ function Z80(d)
 	var bool = i == 128;
 	var bool_21_ = ((i & 0xf) - 1 & 0x10) != 0;
 	i = i - 1 & 0xff;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(bool);
-	this.setH(bool_21_);
-	this.setN(true);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (bool);
+	this.fH = (bool_21_);
+	this.fN = (true);
 	return i;
     }
     
     this.ex_af_af = function() {
 	var i = this.AF();
-	this.mudaAF(this._AF_);
+	this.setAF(this._AF_);
 	this._AF_ = i;
     }
     
@@ -402,111 +406,111 @@ function Z80(d)
 		break;
 	    case 16: {
 		var i_23_ = 0;
-		this.mudaB(i_23_ = this.qdec8(this.B()));
+		this._B = (i_23_ = this.qdec8(this._B));
 		if (i_23_ != 0) {
 		    var i_24_ = this.byte(this.nxtpcb());
-		    this.mudaPC(this.PC() + i_24_ & 0xffff);
+		    this._PC = (this._PC + i_24_ & 0xffff);
 		    i += 13;
 		} else {
-		    this.mudaPC(this.inc16(this.PC()));
+		    this._PC = (this.inc16(this._PC));
 		    i += 8;
 		}
 		break;
 	    }
 	    case 24: {
 		var i_25_ = this.byte(this.nxtpcb());
-		this.mudaPC(this.PC() + i_25_ & 0xffff);
+		this._PC = (this._PC + i_25_ & 0xffff);
 		i += 12;
 		break;
 	    }
 	    case 32:
-		if (!this.Zset()) {
+		if (!this.fZ) {
 		    var i_26_ = this.byte(this.nxtpcb());
-		    this.mudaPC(this.PC() + i_26_ & 0xffff);
+		    this._PC = (this._PC + i_26_ & 0xffff);
 		    i += 12;
 		} else {
-		    this.mudaPC(this.inc16(this.PC()));
+		    this._PC = (this.inc16(this._PC));
 		    i += 7;
 		}
 		break;
 	    case 40:
-		if (this.Zset()) {
+		if (this.fZ) {
 		    var i_27_ = this.byte(this.nxtpcb());
-		    this.mudaPC(this.PC() + i_27_ & 0xffff);
+		    this._PC = (this._PC + i_27_ & 0xffff);
 		    i += 12;
 		} else {
-		    this.mudaPC(this.inc16(this.PC()));
+		    this._PC = (this.inc16(this._PC));
 		    i += 7;
 		}
 		break;
 	    case 48:
-		if (!this.Cset()) {
+		if (!this.fC) {
 		    var i_28_ = this.byte(this.nxtpcb());
-		    this.mudaPC(this.PC() + i_28_ & 0xffff);
+		    this._PC = (this._PC + i_28_ & 0xffff);
 		    i += 12;
 		} else {
-		    this.mudaPC(this.inc16(this.PC()));
+		    this._PC = (this.inc16(this._PC));
 		    i += 7;
 		}
 		break;
 	    case 56:
-		if (this.Cset()) {
+		if (this.fC) {
 		    var i_29_ = this.byte(this.nxtpcb());
-		    this.mudaPC(this.PC() + i_29_ & 0xffff);
+		    this._PC = (this._PC + i_29_ & 0xffff);
 		    i += 12;
 		} else {
-		    this.mudaPC(this.inc16(this.PC()));
+		    this._PC = (this.inc16(this._PC));
 		    i += 7;
 		}
 		break;
 	    case 1:
-		this.mudaBC(this.nxtpcw());
+		this.setBC(this.nxtpcw());
 		i += 10;
 		break;
 	    case 9:
-		this.mudaHL(this.add16(this.HL(), this.BC()));
+		this.setHL(this.add16(this.HL(), this.BC()));
 		i += 11;
 		break;
 	    case 17:
-		this.mudaDE(this.nxtpcw());
+		this.setDE(this.nxtpcw());
 		i += 10;
 		break;
 	    case 25:
-		this.mudaHL(this.add16(this.HL(), this.DE()));
+		this.setHL(this.add16(this.HL(), this.DE()));
 		i += 11;
 		break;
 	    case 33:
-		this.mudaHL(this.nxtpcw());
+		this.setHL(this.nxtpcw());
 		i += 10;
 		break;
 	    case 41: {
 		var i_30_ = this.HL();
-		this.mudaHL(this.add16(i_30_, i_30_));
+		this.setHL(this.add16(i_30_, i_30_));
 		i += 11;
 		break;
 	    }
 	    case 49:
-		this.mudaSP(this.nxtpcw());
+		this._SP = (this.nxtpcw());
 		i += 10;
 		break;
 	    case 57:
-		this.mudaHL(this.add16(this.HL(), this.SP()));
+		this.setHL(this.add16(this.HL(), this._SP));
 		i += 11;
 		break;
 	    case 2:
-		this.pokeb(this.BC(), this.A());
+		this.pokeb(this.BC(), this._A);
 		i += 7;
 		break;
 	    case 10:
-		this.mudaA(this.peekb(this.BC()));
+		this._A = (this.peekb(this.BC()));
 		i += 7;
 		break;
 	    case 18:
-		this.pokeb(this.DE(), this.A());
+		this.pokeb(this.DE(), this._A);
 		i += 7;
 		break;
 	    case 26:
-		this.mudaA(this.peekb(this.DE()));
+		this._A = (this.peekb(this.DE()));
 		i += 7;
 		break;
 	    case 34:
@@ -514,71 +518,71 @@ function Z80(d)
 		i += 16;
 		break;
 	    case 42:
-		this.mudaHL(this.peekw(this.nxtpcw()));
+		this.setHL(this.peekw(this.nxtpcw()));
 		i += 16;
 		break;
 	    case 50:
-		this.pokeb(this.nxtpcw(), this.A());
+		this.pokeb(this.nxtpcw(), this._A);
 		i += 13;
 		break;
 	    case 58:
-		this.mudaA(this.peekb(this.nxtpcw()));
+		this._A = (this.peekb(this.nxtpcw()));
 		i += 13;
 		break;
 	    case 3:
-		this.mudaBC(this.inc16(this.BC()));
+		this.setBC(this.inc16(this.BC()));
 		i += 6;
 		break;
 	    case 11:
-		this.mudaBC(this.dec16(this.BC()));
+		this.setBC(this.dec16(this.BC()));
 		i += 6;
 		break;
 	    case 19:
-		this.mudaDE(this.inc16(this.DE()));
+		this.setDE(this.inc16(this.DE()));
 		i += 6;
 		break;
 	    case 27:
-		this.mudaDE(this.dec16(this.DE()));
+		this.setDE(this.dec16(this.DE()));
 		i += 6;
 		break;
 	    case 35:
-		this.mudaHL(this.inc16(this.HL()));
+		this.setHL(this.inc16(this.HL()));
 		i += 6;
 		break;
 	    case 43:
-		this.mudaHL(this.dec16(this.HL()));
+		this.setHL(this.dec16(this.HL()));
 		i += 6;
 		break;
 	    case 51:
-		this.mudaSP(this.inc16(this.SP()));
+		this._SP = (this.inc16(this._SP));
 		i += 6;
 		break;
 	    case 59:
-		this.mudaSP(this.dec16(this.SP()));
+		this._SP = (this.dec16(this._SP));
 		i += 6;
 		break;
 	    case 4:
-		this.mudaB(this.inc8(this.B()));
+		this._B = (this.inc8(this._B));
 		i += 4;
 		break;
 	    case 12:
-		this.mudaC(this.inc8(this.C()));
+		this._C = (this.inc8(this._C));
 		i += 4;
 		break;
 	    case 20:
-		this.mudaD(this.inc8(this.D()));
+		this._D = (this.inc8(this._D));
 		i += 4;
 		break;
 	    case 28:
-		this.mudaE(this.inc8(this.E()));
+		this._E = (this.inc8(this._E));
 		i += 4;
 		break;
 	    case 36:
-		this.mudaH(this.inc8(this.H()));
+		this._H = (this.inc8(this._H));
 		i += 4;
 		break;
 	    case 44:
-		this.mudaL(this.inc8(this.L()));
+		this._L = (this.inc8(this._L));
 		i += 4;
 		break;
 	    case 52: {
@@ -588,31 +592,31 @@ function Z80(d)
 		break;
 	    }
 	    case 60:
-		this.mudaA(this.inc8(this.A()));
+		this._A = (this.inc8(this._A));
 		i += 4;
 		break;
 	    case 5:
-		this.mudaB(this.dec8(this.B()));
+		this._B = (this.dec8(this._B));
 		i += 4;
 		break;
 	    case 13:
-		this.mudaC(this.dec8(this.C()));
+		this._C = (this.dec8(this._C));
 		i += 4;
 		break;
 	    case 21:
-		this.mudaD(this.dec8(this.D()));
+		this._D = (this.dec8(this._D));
 		i += 4;
 		break;
 	    case 29:
-		this.mudaE(this.dec8(this.E()));
+		this._E = (this.dec8(this._E));
 		i += 4;
 		break;
 	    case 37:
-		this.mudaH(this.dec8(this.H()));
+		this._H = (this.dec8(this._H));
 		i += 4;
 		break;
 	    case 45:
-		this.mudaL(this.dec8(this.L()));
+		this._L = (this.dec8(this._L));
 		i += 4;
 		break;
 	    case 53: {
@@ -622,31 +626,31 @@ function Z80(d)
 		break;
 	    }
 	    case 61:
-		this.mudaA(this.dec8(this.A()));
+		this._A = (this.dec8(this._A));
 		i += 4;
 		break;
 	    case 6:
-		this.mudaB(this.nxtpcb());
+		this._B = (this.nxtpcb());
 		i += 7;
 		break;
 	    case 14:
-		this.mudaC(this.nxtpcb());
+		this._C = (this.nxtpcb());
 		i += 7;
 		break;
 	    case 22:
-		this.mudaD(this.nxtpcb());
+		this._D = (this.nxtpcb());
 		i += 7;
 		break;
 	    case 30:
-		this.mudaE(this.nxtpcb());
+		this._E = (this.nxtpcb());
 		i += 7;
 		break;
 	    case 38:
-		this.mudaH(this.nxtpcb());
+		this._H = (this.nxtpcb());
 		i += 7;
 		break;
 	    case 46:
-		this.mudaL(this.nxtpcb());
+		this._L = (this.nxtpcb());
 		i += 7;
 		break;
 	    case 54:
@@ -654,7 +658,7 @@ function Z80(d)
 		i += 10;
 		break;
 	    case 62:
-		this.mudaA(this.nxtpcb());
+		this._A = (this.nxtpcb());
 		i += 7;
 		break;
 	    case 7:
@@ -693,210 +697,210 @@ function Z80(d)
 		i += 4;
 		break;
 	    case 65:
-		this.mudaB(this.C());
+		this._B = (this._C);
 		i += 4;
 		break;
 	    case 66:
-		this.mudaB(this.D());
+		this._B = (this._D);
 		i += 4;
 		break;
 	    case 67:
-		this.mudaB(this.E());
+		this._B = (this._E);
 		i += 4;
 		break;
 	    case 68:
-		this.mudaB(this.H());
+		this._B = (this._H);
 		i += 4;
 		break;
 	    case 69:
-		this.mudaB(this.L());
+		this._B = (this._L);
 		i += 4;
 		break;
 	    case 70:
-		this.mudaB(this.peekb(this.HL()));
+		this._B = (this.peekb(this.HL()));
 		i += 7;
 		break;
 	    case 71:
-		this.mudaB(this.A());
+		this._B = (this._A);
 		i += 4;
 		break;
 	    case 72:
-		this.mudaC(this.B());
+		this._C = (this._B);
 		i += 4;
 		break;
 	    case 73:
 		i += 4;
 		break;
 	    case 74:
-		this.mudaC(this.D());
+		this._C = (this._D);
 		i += 4;
 		break;
 	    case 75:
-		this.mudaC(this.E());
+		this._C = (this._E);
 		i += 4;
 		break;
 	    case 76:
-		this.mudaC(this.H());
+		this._C = (this._H);
 		i += 4;
 		break;
 	    case 77:
-		this.mudaC(this.L());
+		this._C = (this._L);
 		i += 4;
 		break;
 	    case 78:
-		this.mudaC(this.peekb(this.HL()));
+		this._C = (this.peekb(this.HL()));
 		i += 7;
 		break;
 	    case 79:
-		this.mudaC(this.A());
+		this._C = (this._A);
 		i += 4;
 		break;
 	    case 80:
-		this.mudaD(this.B());
+		this._D = (this._B);
 		i += 4;
 		break;
 	    case 81:
-		this.mudaD(this.C());
+		this._D = (this._C);
 		i += 4;
 		break;
 	    case 82:
 		i += 4;
 		break;
 	    case 83:
-		this.mudaD(this.E());
+		this._D = (this._E);
 		i += 4;
 		break;
 	    case 84:
-		this.mudaD(this.H());
+		this._D = (this._H);
 		i += 4;
 		break;
 	    case 85:
-		this.mudaD(this.L());
+		this._D = (this._L);
 		i += 4;
 		break;
 	    case 86:
-		this.mudaD(this.peekb(this.HL()));
+		this._D = (this.peekb(this.HL()));
 		i += 7;
 		break;
 	    case 87:
-		this.mudaD(this.A());
+		this._D = (this._A);
 		i += 4;
 		break;
 	    case 88:
-		this.mudaE(this.B());
+		this._E = (this._B);
 		i += 4;
 		break;
 	    case 89:
-		this.mudaE(this.C());
+		this._E = (this._C);
 		i += 4;
 		break;
 	    case 90:
-		this.mudaE(this.D());
+		this._E = (this._D);
 		i += 4;
 		break;
 	    case 91:
 		i += 4;
 		break;
 	    case 92:
-		this.mudaE(this.H());
+		this._E = (this._H);
 		i += 4;
 		break;
 	    case 93:
-		this.mudaE(this.L());
+		this._E = (this._L);
 		i += 4;
 		break;
 	    case 94:
-		this.mudaE(this.peekb(this.HL()));
+		this._E = (this.peekb(this.HL()));
 		i += 7;
 		break;
 	    case 95:
-		this.mudaE(this.A());
+		this._E = (this._A);
 		i += 4;
 		break;
 	    case 96:
-		this.mudaH(this.B());
+		this._H = (this._B);
 		i += 4;
 		break;
 	    case 97:
-		this.mudaH(this.C());
+		this._H = (this._C);
 		i += 4;
 		break;
 	    case 98:
-		this.mudaH(this.D());
+		this._H = (this._D);
 		i += 4;
 		break;
 	    case 99:
-		this.mudaH(this.E());
+		this._H = (this._E);
 		i += 4;
 		break;
 	    case 100:
 		i += 4;
 		break;
 	    case 101:
-		this.mudaH(this.L());
+		this._H = (this._L);
 		i += 4;
 		break;
 	    case 102:
-		this.mudaH(this.peekb(this.HL()));
+		this._H = (this.peekb(this.HL()));
 		i += 7;
 		break;
 	    case 103:
-		this.mudaH(this.A());
+		this._H = (this._A);
 		i += 4;
 		break;
 	    case 104:
-		this.mudaL(this.B());
+		this._L = (this._B);
 		i += 4;
 		break;
 	    case 105:
-		this.mudaL(this.C());
+		this._L = (this._C);
 		i += 4;
 		break;
 	    case 106:
-		this.mudaL(this.D());
+		this._L = (this._D);
 		i += 4;
 		break;
 	    case 107:
-		this.mudaL(this.E());
+		this._L = (this._E);
 		i += 4;
 		break;
 	    case 108:
-		this.mudaL(this.H());
+		this._L = (this._H);
 		i += 4;
 		break;
 	    case 109:
 		i += 4;
 		break;
 	    case 110:
-		this.mudaL(this.peekb(this.HL()));
+		this._L = (this.peekb(this.HL()));
 		i += 7;
 		break;
 	    case 111:
-		this.mudaL(this.A());
+		this._L = (this._A);
 		i += 4;
 		break;
 	    case 112:
-		this.pokeb(this.HL(), this.B());
+		this.pokeb(this.HL(), this._B);
 		i += 7;
 		break;
 	    case 113:
-		this.pokeb(this.HL(), this.C());
+		this.pokeb(this.HL(), this._C);
 		i += 7;
 		break;
 	    case 114:
-		this.pokeb(this.HL(), this.D());
+		this.pokeb(this.HL(), this._D);
 		i += 7;
 		break;
 	    case 115:
-		this.pokeb(this.HL(), this.E());
+		this.pokeb(this.HL(), this._E);
 		i += 7;
 		break;
 	    case 116:
-		this.pokeb(this.HL(), this.H());
+		this.pokeb(this.HL(), this._H);
 		i += 7;
 		break;
 	    case 117:
-		this.pokeb(this.HL(), this.L());
+		this.pokeb(this.HL(), this._L);
 		i += 7;
 		break;
 	    case 118: {
@@ -906,62 +910,62 @@ function Z80(d)
 		break;
 	    }
 	    case 119:
-		this.pokeb(this.HL(), this.A());
+		this.pokeb(this.HL(), this._A);
 		i += 7;
 		break;
 	    case 120:
-		this.mudaA(this.B());
+		this._A = (this._B);
 		i += 4;
 		break;
 	    case 121:
-		this.mudaA(this.C());
+		this._A = (this._C);
 		i += 4;
 		break;
 	    case 122:
-		this.mudaA(this.D());
+		this._A = (this._D);
 		i += 4;
 		break;
 	    case 123:
-		this.mudaA(this.E());
+		this._A = (this._E);
 		i += 4;
 		break;
 	    case 124:
-		this.mudaA(this.H());
+		this._A = (this._H);
 		i += 4;
 		break;
 	    case 125:
-		this.mudaA(this.L());
+		this._A = (this._L);
 		i += 4;
 		break;
 	    case 126:
-		this.mudaA(this.peekb(this.HL()));
+		this._A = (this.peekb(this.HL()));
 		i += 7;
 		break;
 	    case 127:
 		i += 4;
 		break;
 	    case 128:
-		this.add_a(this.B());
+		this.add_a(this._B);
 		i += 4;
 		break;
 	    case 129:
-		this.add_a(this.C());
+		this.add_a(this._C);
 		i += 4;
 		break;
 	    case 130:
-		this.add_a(this.D());
+		this.add_a(this._D);
 		i += 4;
 		break;
 	    case 131:
-		this.add_a(this.E());
+		this.add_a(this._E);
 		i += 4;
 		break;
 	    case 132:
-		this.add_a(this.H());
+		this.add_a(this._H);
 		i += 4;
 		break;
 	    case 133:
-		this.add_a(this.L());
+		this.add_a(this._L);
 		i += 4;
 		break;
 	    case 134:
@@ -969,31 +973,31 @@ function Z80(d)
 		i += 7;
 		break;
 	    case 135:
-		this.add_a(this.A());
+		this.add_a(this._A);
 		i += 4;
 		break;
 	    case 136:
-		this.adc_a(this.B());
+		this.adc_a(this._B);
 		i += 4;
 		break;
 	    case 137:
-		this.adc_a(this.C());
+		this.adc_a(this._C);
 		i += 4;
 		break;
 	    case 138:
-		this.adc_a(this.D());
+		this.adc_a(this._D);
 		i += 4;
 		break;
 	    case 139:
-		this.adc_a(this.E());
+		this.adc_a(this._E);
 		i += 4;
 		break;
 	    case 140:
-		this.adc_a(this.H());
+		this.adc_a(this._H);
 		i += 4;
 		break;
 	    case 141:
-		this.adc_a(this.L());
+		this.adc_a(this._L);
 		i += 4;
 		break;
 	    case 142:
@@ -1001,31 +1005,31 @@ function Z80(d)
 		i += 7;
 		break;
 	    case 143:
-		this.adc_a(this.A());
+		this.adc_a(this._A);
 		i += 4;
 		break;
 	    case 144:
-		this.sub_a(this.B());
+		this.sub_a(this._B);
 		i += 4;
 		break;
 	    case 145:
-		this.sub_a(this.C());
+		this.sub_a(this._C);
 		i += 4;
 		break;
 	    case 146:
-		this.sub_a(this.D());
+		this.sub_a(this._D);
 		i += 4;
 		break;
 	    case 147:
-		this.sub_a(this.E());
+		this.sub_a(this._E);
 		i += 4;
 		break;
 	    case 148:
-		this.sub_a(this.H());
+		this.sub_a(this._H);
 		i += 4;
 		break;
 	    case 149:
-		this.sub_a(this.L());
+		this.sub_a(this._L);
 		i += 4;
 		break;
 	    case 150:
@@ -1033,31 +1037,31 @@ function Z80(d)
 		i += 7;
 		break;
 	    case 151:
-		this.sub_a(this.A());
+		this.sub_a(this._A);
 		i += 4;
 		break;
 	    case 152:
-		this.sbc_a(this.B());
+		this.sbc_a(this._B);
 		i += 4;
 		break;
 	    case 153:
-		this.sbc_a(this.C());
+		this.sbc_a(this._C);
 		i += 4;
 		break;
 	    case 154:
-		this.sbc_a(this.D());
+		this.sbc_a(this._D);
 		i += 4;
 		break;
 	    case 155:
-		this.sbc_a(this.E());
+		this.sbc_a(this._E);
 		i += 4;
 		break;
 	    case 156:
-		this.sbc_a(this.H());
+		this.sbc_a(this._H);
 		i += 4;
 		break;
 	    case 157:
-		this.sbc_a(this.L());
+		this.sbc_a(this._L);
 		i += 4;
 		break;
 	    case 158:
@@ -1065,31 +1069,31 @@ function Z80(d)
 		i += 7;
 		break;
 	    case 159:
-		this.sbc_a(this.A());
+		this.sbc_a(this._A);
 		i += 4;
 		break;
 	    case 160:
-		this.and_a(this.B());
+		this.and_a(this._B);
 		i += 4;
 		break;
 	    case 161:
-		this.and_a(this.C());
+		this.and_a(this._C);
 		i += 4;
 		break;
 	    case 162:
-		this.and_a(this.D());
+		this.and_a(this._D);
 		i += 4;
 		break;
 	    case 163:
-		this.and_a(this.E());
+		this.and_a(this._E);
 		i += 4;
 		break;
 	    case 164:
-		this.and_a(this.H());
+		this.and_a(this._H);
 		i += 4;
 		break;
 	    case 165:
-		this.and_a(this.L());
+		this.and_a(this._L);
 		i += 4;
 		break;
 	    case 166:
@@ -1097,31 +1101,31 @@ function Z80(d)
 		i += 7;
 		break;
 	    case 167:
-		this.and_a(this.A());
+		this.and_a(this._A);
 		i += 4;
 		break;
 	    case 168:
-		this.xor_a(this.B());
+		this.xor_a(this._B);
 		i += 4;
 		break;
 	    case 169:
-		this.xor_a(this.C());
+		this.xor_a(this._C);
 		i += 4;
 		break;
 	    case 170:
-		this.xor_a(this.D());
+		this.xor_a(this._D);
 		i += 4;
 		break;
 	    case 171:
-		this.xor_a(this.E());
+		this.xor_a(this._E);
 		i += 4;
 		break;
 	    case 172:
-		this.xor_a(this.H());
+		this.xor_a(this._H);
 		i += 4;
 		break;
 	    case 173:
-		this.xor_a(this.L());
+		this.xor_a(this._L);
 		i += 4;
 		break;
 	    case 174:
@@ -1129,31 +1133,31 @@ function Z80(d)
 		i += 7;
 		break;
 	    case 175:
-		this.xor_a(this.A());
+		this.xor_a(this._A);
 		i += 4;
 		break;
 	    case 176:
-		this.or_a(this.B());
+		this.or_a(this._B);
 		i += 4;
 		break;
 	    case 177:
-		this.or_a(this.C());
+		this.or_a(this._C);
 		i += 4;
 		break;
 	    case 178:
-		this.or_a(this.D());
+		this.or_a(this._D);
 		i += 4;
 		break;
 	    case 179:
-		this.or_a(this.E());
+		this.or_a(this._E);
 		i += 4;
 		break;
 	    case 180:
-		this.or_a(this.H());
+		this.or_a(this._H);
 		i += 4;
 		break;
 	    case 181:
-		this.or_a(this.L());
+		this.or_a(this._L);
 		i += 4;
 		break;
 	    case 182:
@@ -1161,31 +1165,31 @@ function Z80(d)
 		i += 7;
 		break;
 	    case 183:
-		this.or_a(this.A());
+		this.or_a(this._A);
 		i += 4;
 		break;
 	    case 184:
-		this.cp_a(this.B());
+		this.cp_a(this._B);
 		i += 4;
 		break;
 	    case 185:
-		this.cp_a(this.C());
+		this.cp_a(this._C);
 		i += 4;
 		break;
 	    case 186:
-		this.cp_a(this.D());
+		this.cp_a(this._D);
 		i += 4;
 		break;
 	    case 187:
-		this.cp_a(this.E());
+		this.cp_a(this._E);
 		i += 4;
 		break;
 	    case 188:
-		this.cp_a(this.H());
+		this.cp_a(this._H);
 		i += 4;
 		break;
 	    case 189:
-		this.cp_a(this.L());
+		this.cp_a(this._L);
 		i += 4;
 		break;
 	    case 190:
@@ -1193,67 +1197,67 @@ function Z80(d)
 		i += 7;
 		break;
 	    case 191:
-		this.cp_a(this.A());
+		this.cp_a(this._A);
 		i += 4;
 		break;
 	    case 192:
-		if (!this.Zset()) {
+		if (!this.fZ) {
 		    this.poppc();
 		    i += 11;
 		} else
 		    i += 5;
 		break;
 	    case 200:
-		if (this.Zset()) {
+		if (this.fZ) {
 		    this.poppc();
 		    i += 11;
 		} else
 		    i += 5;
 		break;
 	    case 208:
-		if (!this.Cset()) {
+		if (!this.fC) {
 		    this.poppc();
 		    i += 11;
 		} else
 		    i += 5;
 		break;
 	    case 216:
-		if (this.Cset()) {
+		if (this.fC) {
 		    this.poppc();
 		    i += 11;
 		} else
 		    i += 5;
 		break;
 	    case 224:
-		if (!this.PVset()) {
+		if (!this.fPV) {
 		    this.poppc();
 		    i += 11;
 		} else
 		    i += 5;
 		break;
 	    case 232:
-		if (this.PVset()) {
+		if (this.fPV) {
 		    this.poppc();
 		    i += 11;
 		} else
 		    i += 5;
 		break;
 	    case 240:
-		if (!this.Sset()) {
+		if (!this.fS) {
 		    this.poppc();
 		    i += 11;
 		} else
 		    i += 5;
 		break;
 	    case 248:
-		if (this.Sset()) {
+		if (this.fS) {
 		    this.poppc();
 		    i += 11;
 		} else
 		    i += 5;
 		break;
 	    case 193:
-		this.mudaBC(this.popw());
+		this.setBC(this.popw());
 		i += 10;
 		break;
 	    case 201:
@@ -1261,7 +1265,7 @@ function Z80(d)
 		i += 10;
 		break;
 	    case 209:
-		this.mudaDE(this.popw());
+		this.setDE(this.popw());
 		i += 10;
 		break;
 	    case 217:
@@ -1269,202 +1273,202 @@ function Z80(d)
 		i += 4;
 		break;
 	    case 225:
-		this.mudaHL(this.popw());
+		this.setHL(this.popw());
 		i += 10;
 		break;
 	    case 233:
-		this.mudaPC(this.HL());
+		this._PC = (this.HL());
 		i += 4;
 		break;
 	    case 241:
-		this.mudaAF(this.popw());
+		this.setAF(this.popw());
 		i += 10;
 		break;
 	    case 249:
-		this.mudaSP(this.HL());
+		this._SP = (this.HL());
 		i += 6;
 		break;
 	    case 194:
-		if (!this.Zset())
-		    this.mudaPC(this.nxtpcw());
+		if (!this.fZ)
+		    this._PC = (this.nxtpcw());
 		else
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 202:
-		if (this.Zset())
-		    this.mudaPC(this.nxtpcw());
+		if (this.fZ)
+		    this._PC = (this.nxtpcw());
 		else
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 210:
-		if (!this.Cset())
-		    this.mudaPC(this.nxtpcw());
+		if (!this.fC)
+		    this._PC = (this.nxtpcw());
 		else
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 218:
-		if (this.Cset())
-		    this.mudaPC(this.nxtpcw());
+		if (this.fC)
+		    this._PC = (this.nxtpcw());
 		else
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 226:
-		if (!this.PVset())
-		    this.mudaPC(this.nxtpcw());
+		if (!this.fPV)
+		    this._PC = (this.nxtpcw());
 		else
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 234:
-		if (this.PVset())
-		    this.mudaPC(this.nxtpcw());
+		if (this.fPV)
+		    this._PC = (this.nxtpcw());
 		else
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 242:
-		if (!this.Sset())
-		    this.mudaPC(this.nxtpcw());
+		if (!this.fS)
+		    this._PC = (this.nxtpcw());
 		else
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 250:
-		if (this.Sset())
-		    this.mudaPC(this.nxtpcw());
+		if (this.fS)
+		    this._PC = (this.nxtpcw());
 		else
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 195:
-		this.mudaPC(this.peekw(this.PC()));
+		this._PC = (this.peekw(this._PC));
 		i += 10;
 		break;
 	    case 203:
 		i += this.execute_cb();
 		break;
 	    case 211:
-		this.outb(this.nxtpcb(), this.A(), i);
+		this.outb(this.nxtpcb(), this._A, i);
 		i += 11;
 		break;
 	    case 219:
-		this.mudaA(this.inb(this.nxtpcb()));
+		this._A = (this.inb(this.nxtpcb()));
 		i += 11;
 		break;
 	    case 227: {
 		var i_34_ = this.HL();
-		var i_35_ = this.SP();
-		this.mudaHL(this.peekw(i_35_));
+		var i_35_ = this._SP;
+		this.setHL(this.peekw(i_35_));
 		this.pokew(i_35_, i_34_);
 		i += 19;
 		break;
 	    }
 	    case 235: {
 		var i_36_ = this.HL();
-		this.mudaHL(this.DE());
-		this.mudaDE(i_36_);
+		this.setHL(this.DE());
+		this.setDE(i_36_);
 		i += 4;
 		break;
 	    }
 	    case 243:
-		this.mudaIFF1(false);
-		this.mudaIFF2(false);
+		this.setIFF1(false);
+		this.setIFF2(false);
 		i += 4;
 		break;
 	    case 251:
-		this.mudaIFF1(true);
-		this.mudaIFF2(true);
+		this.setIFF1(true);
+		this.setIFF2(true);
 		i += 4;
 		break;
 	    case 196:
-		if (!this.Zset()) {
+		if (!this.fZ) {
 		    var i_37_ = this.nxtpcw();
 		    this.pushpc();
-		    this.mudaPC(i_37_);
+		    this._PC = (i_37_);
 		    i += 17;
 		} else {
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		    i += 10;
 		}
 		break;
 	    case 204:
-		if (this.Zset()) {
+		if (this.fZ) {
 		    var i_38_ = this.nxtpcw();
 		    this.pushpc();
-		    this.mudaPC(i_38_);
+		    this._PC = (i_38_);
 		    i += 17;
 		} else {
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		    i += 10;
 		}
 		break;
 	    case 212:
-		if (!this.Cset()) {
+		if (!this.fC) {
 		    var i_39_ = this.nxtpcw();
 		    this.pushpc();
-		    this.mudaPC(i_39_);
+		    this._PC = (i_39_);
 		    i += 17;
 		} else {
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		    i += 10;
 		}
 		break;
 	    case 220:
-		if (this.Cset()) {
+		if (this.fC) {
 		    var i_40_ = this.nxtpcw();
 		    this.pushpc();
-		    this.mudaPC(i_40_);
+		    this._PC = (i_40_);
 		    i += 17;
 		} else {
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		    i += 10;
 		}
 		break;
 	    case 228:
-		if (!this.PVset()) {
+		if (!this.fPV) {
 		    var i_41_ = this.nxtpcw();
 		    this.pushpc();
-		    this.mudaPC(i_41_);
+		    this._PC = (i_41_);
 		    i += 17;
 		} else {
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		    i += 10;
 		}
 		break;
 	    case 236:
-		if (this.PVset()) {
+		if (this.fPV) {
 		    var i_42_ = this.nxtpcw();
 		    this.pushpc();
-		    this.mudaPC(i_42_);
+		    this._PC = (i_42_);
 		    i += 17;
 		} else {
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		    i += 10;
 		}
 		break;
 	    case 244:
-		if (!this.Sset()) {
+		if (!this.fS) {
 		    var i_43_ = this.nxtpcw();
 		    this.pushpc();
-		    this.mudaPC(i_43_);
+		    this._PC = (i_43_);
 		    i += 17;
 		} else {
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		    i += 10;
 		}
 		break;
 	    case 252:
-		if (this.Sset()) {
+		if (this.fS) {
 		    var i_44_ = this.nxtpcw();
 		    this.pushpc();
-		    this.mudaPC(i_44_);
+		    this._PC = (i_44_);
 		    i += 17;
 		} else {
-		    this.mudaPC(this.PC() + 2 & 0xffff);
+		    this._PC = (this._PC + 2 & 0xffff);
 		    i += 10;
 		}
 		break;
@@ -1475,7 +1479,7 @@ function Z80(d)
 	    case 205: {
 		var i_45_ = this.nxtpcw();
 		this.pushpc();
-		this.mudaPC(i_45_);
+		this._PC = (i_45_);
 		i += 17;
 		break;
 	    }
@@ -1484,9 +1488,9 @@ function Z80(d)
 		i += 11;
 		break;
 	    case 221:
-		this.mudaID(this.IX());
+		this.setID(this.IX());
 		i += this.execute_id();
-		this.mudaIX(this.ID());
+		this.setIX(this._ID);
 		break;
 	    case 229:
 		this.pushw(this.HL());
@@ -1500,9 +1504,9 @@ function Z80(d)
 		i += 11;
 		break;
 	    case 253:
-		this.mudaID(this.IY());
+		this.setID(this.IY());
 		i += this.execute_id();
-		this.mudaIY(this.ID());
+		this.setIY(this._ID);
 		break;
 	    case 198:
 		this.add_a(this.nxtpcb());
@@ -1538,42 +1542,42 @@ function Z80(d)
 		break;
 	    case 199:
 		this.pushpc();
-		this.mudaPC(0);
+		this._PC = (0);
 		i += 11;
 		break;
 	    case 207:
 		this.pushpc();
-		this.mudaPC(8);
+		this._PC = (8);
 		i += 11;
 		break;
 	    case 215:
 		this.pushpc();
-		this.mudaPC(16);
+		this._PC = (16);
 		i += 11;
 		break;
 	    case 223:
 		this.pushpc();
-		this.mudaPC(24);
+		this._PC = (24);
 		i += 11;
 		break;
 	    case 231:
 		this.pushpc();
-		this.mudaPC(32);
+		this._PC = (32);
 		i += 11;
 		break;
 	    case 239:
 		this.pushpc();
-		this.mudaPC(40);
+		this._PC = (40);
 		i += 11;
 		break;
 	    case 247:
 		this.pushpc();
-		this.mudaPC(48);
+		this._PC = (48);
 		i += 11;
 		break;
 	    case 255:
 		this.pushpc();
-		this.mudaPC(56);
+		this._PC = (56);
 		i += 11;
 	    }
 	}
@@ -1583,22 +1587,22 @@ function Z80(d)
 	this.REFRESH(1);
 	switch (this.nxtpcb()) {
 	case 0:
-	    this.mudaB(this.rlc(this.B()));
+	    this._B = (this.rlc(this._B));
 	    return 8;
 	case 1:
-	    this.mudaC(this.rlc(this.C()));
+	    this._C = (this.rlc(this._C));
 	    return 8;
 	case 2:
-	    this.mudaD(this.rlc(this.D()));
+	    this._D = (this.rlc(this._D));
 	    return 8;
 	case 3:
-	    this.mudaE(this.rlc(this.E()));
+	    this._E = (this.rlc(this._E));
 	    return 8;
 	case 4:
-	    this.mudaH(this.rlc(this.H()));
+	    this._H = (this.rlc(this._H));
 	    return 8;
 	case 5:
-	    this.mudaL(this.rlc(this.L()));
+	    this._L = (this.rlc(this._L));
 	    return 8;
 	case 6: {
 	    var i = this.HL();
@@ -1606,25 +1610,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 7:
-	    this.mudaA(this.rlc(this.A()));
+	    this._A = (this.rlc(this._A));
 	    return 8;
 	case 8:
-	    this.mudaB(this.rrc(this.B()));
+	    this._B = (this.rrc(this._B));
 	    return 8;
 	case 9:
-	    this.mudaC(this.rrc(this.C()));
+	    this._C = (this.rrc(this._C));
 	    return 8;
 	case 10:
-	    this.mudaD(this.rrc(this.D()));
+	    this._D = (this.rrc(this._D));
 	    return 8;
 	case 11:
-	    this.mudaE(this.rrc(this.E()));
+	    this._E = (this.rrc(this._E));
 	    return 8;
 	case 12:
-	    this.mudaH(this.rrc(this.H()));
+	    this._H = (this.rrc(this._H));
 	    return 8;
 	case 13:
-	    this.mudaL(this.rrc(this.L()));
+	    this._L = (this.rrc(this._L));
 	    return 8;
 	case 14: {
 	    var i = this.HL();
@@ -1632,25 +1636,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 15:
-	    this.mudaA(this.rrc(this.A()));
+	    this._A = (this.rrc(this._A));
 	    return 8;
 	case 16:
-	    this.mudaB(this.rl(this.B()));
+	    this._B = (this.rl(this._B));
 	    return 8;
 	case 17:
-	    this.mudaC(this.rl(this.C()));
+	    this._C = (this.rl(this._C));
 	    return 8;
 	case 18:
-	    this.mudaD(this.rl(this.D()));
+	    this._D = (this.rl(this._D));
 	    return 8;
 	case 19:
-	    this.mudaE(this.rl(this.E()));
+	    this._E = (this.rl(this._E));
 	    return 8;
 	case 20:
-	    this.mudaH(this.rl(this.H()));
+	    this._H = (this.rl(this._H));
 	    return 8;
 	case 21:
-	    this.mudaL(this.rl(this.L()));
+	    this._L = (this.rl(this._L));
 	    return 8;
 	case 22: {
 	    var i = this.HL();
@@ -1658,25 +1662,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 23:
-	    this.mudaA(this.rl(this.A()));
+	    this._A = (this.rl(this._A));
 	    return 8;
 	case 24:
-	    this.mudaB(this.rr(this.B()));
+	    this._B = (this.rr(this._B));
 	    return 8;
 	case 25:
-	    this.mudaC(this.rr(this.C()));
+	    this._C = (this.rr(this._C));
 	    return 8;
 	case 26:
-	    this.mudaD(this.rr(this.D()));
+	    this._D = (this.rr(this._D));
 	    return 8;
 	case 27:
-	    this.mudaE(this.rr(this.E()));
+	    this._E = (this.rr(this._E));
 	    return 8;
 	case 28:
-	    this.mudaH(this.rr(this.H()));
+	    this._H = (this.rr(this._H));
 	    return 8;
 	case 29:
-	    this.mudaL(this.rr(this.L()));
+	    this._L = (this.rr(this._L));
 	    return 8;
 	case 30: {
 	    var i = this.HL();
@@ -1684,25 +1688,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 31:
-	    this.mudaA(this.rr(this.A()));
+	    this._A = (this.rr(this._A));
 	    return 8;
 	case 32:
-	    this.mudaB(this.sla(this.B()));
+	    this._B = (this.sla(this._B));
 	    return 8;
 	case 33:
-	    this.mudaC(this.sla(this.C()));
+	    this._C = (this.sla(this._C));
 	    return 8;
 	case 34:
-	    this.mudaD(this.sla(this.D()));
+	    this._D = (this.sla(this._D));
 	    return 8;
 	case 35:
-	    this.mudaE(this.sla(this.E()));
+	    this._E = (this.sla(this._E));
 	    return 8;
 	case 36:
-	    this.mudaH(this.sla(this.H()));
+	    this._H = (this.sla(this._H));
 	    return 8;
 	case 37:
-	    this.mudaL(this.sla(this.L()));
+	    this._L = (this.sla(this._L));
 	    return 8;
 	case 38: {
 	    var i = this.HL();
@@ -1710,25 +1714,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 39:
-	    this.mudaA(this.sla(this.A()));
+	    this._A = (this.sla(this._A));
 	    return 8;
 	case 40:
-	    this.mudaB(this.sra(this.B()));
+	    this._B = (this.sra(this._B));
 	    return 8;
 	case 41:
-	    this.mudaC(this.sra(this.C()));
+	    this._C = (this.sra(this._C));
 	    return 8;
 	case 42:
-	    this.mudaD(this.sra(this.D()));
+	    this._D = (this.sra(this._D));
 	    return 8;
 	case 43:
-	    this.mudaE(this.sra(this.E()));
+	    this._E = (this.sra(this._E));
 	    return 8;
 	case 44:
-	    this.mudaH(this.sra(this.H()));
+	    this._H = (this.sra(this._H));
 	    return 8;
 	case 45:
-	    this.mudaL(this.sra(this.L()));
+	    this._L = (this.sra(this._L));
 	    return 8;
 	case 46: {
 	    var i = this.HL();
@@ -1736,25 +1740,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 47:
-	    this.mudaA(this.sra(this.A()));
+	    this._A = (this.sra(this._A));
 	    return 8;
 	case 48:
-	    this.mudaB(this.sls(this.B()));
+	    this._B = (this.sls(this._B));
 	    return 8;
 	case 49:
-	    this.mudaC(this.sls(this.C()));
+	    this._C = (this.sls(this._C));
 	    return 8;
 	case 50:
-	    this.mudaD(this.sls(this.D()));
+	    this._D = (this.sls(this._D));
 	    return 8;
 	case 51:
-	    this.mudaE(this.sls(this.E()));
+	    this._E = (this.sls(this._E));
 	    return 8;
 	case 52:
-	    this.mudaH(this.sls(this.H()));
+	    this._H = (this.sls(this._H));
 	    return 8;
 	case 53:
-	    this.mudaL(this.sls(this.L()));
+	    this._L = (this.sls(this._L));
 	    return 8;
 	case 54: {
 	    var i = this.HL();
@@ -1762,25 +1766,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 55:
-	    this.mudaA(this.sls(this.A()));
+	    this._A = (this.sls(this._A));
 	    return 8;
 	case 56:
-	    this.mudaB(this.srl(this.B()));
+	    this._B = (this.srl(this._B));
 	    return 8;
 	case 57:
-	    this.mudaC(this.srl(this.C()));
+	    this._C = (this.srl(this._C));
 	    return 8;
 	case 58:
-	    this.mudaD(this.srl(this.D()));
+	    this._D = (this.srl(this._D));
 	    return 8;
 	case 59:
-	    this.mudaE(this.srl(this.E()));
+	    this._E = (this.srl(this._E));
 	    return 8;
 	case 60:
-	    this.mudaH(this.srl(this.H()));
+	    this._H = (this.srl(this._H));
 	    return 8;
 	case 61:
-	    this.mudaL(this.srl(this.L()));
+	    this._L = (this.srl(this._L));
 	    return 8;
 	case 62: {
 	    var i = this.HL();
@@ -1788,217 +1792,217 @@ function Z80(d)
 	    return 15;
 	}
 	case 63:
-	    this.mudaA(this.srl(this.A()));
+	    this._A = (this.srl(this._A));
 	    return 8;
 	case 64:
-	    this.bit(1, this.B());
+	    this.bit(1, this._B);
 	    return 8;
 	case 65:
-	    this.bit(1, this.C());
+	    this.bit(1, this._C);
 	    return 8;
 	case 66:
-	    this.bit(1, this.D());
+	    this.bit(1, this._D);
 	    return 8;
 	case 67:
-	    this.bit(1, this.E());
+	    this.bit(1, this._E);
 	    return 8;
 	case 68:
-	    this.bit(1, this.H());
+	    this.bit(1, this._H);
 	    return 8;
 	case 69:
-	    this.bit(1, this.L());
+	    this.bit(1, this._L);
 	    return 8;
 	case 70:
 	    this.bit(1, this.peekb(this.HL()));
 	    return 12;
 	case 71:
-	    this.bit(1, this.A());
+	    this.bit(1, this._A);
 	    return 8;
 	case 72:
-	    this.bit(2, this.B());
+	    this.bit(2, this._B);
 	    return 8;
 	case 73:
-	    this.bit(2, this.C());
+	    this.bit(2, this._C);
 	    return 8;
 	case 74:
-	    this.bit(2, this.D());
+	    this.bit(2, this._D);
 	    return 8;
 	case 75:
-	    this.bit(2, this.E());
+	    this.bit(2, this._E);
 	    return 8;
 	case 76:
-	    this.bit(2, this.H());
+	    this.bit(2, this._H);
 	    return 8;
 	case 77:
-	    this.bit(2, this.L());
+	    this.bit(2, this._L);
 	    return 8;
 	case 78:
 	    this.bit(2, this.peekb(this.HL()));
 	    return 12;
 	case 79:
-	    this.bit(2, this.A());
+	    this.bit(2, this._A);
 	    return 8;
 	case 80:
-	    this.bit(4, this.B());
+	    this.bit(4, this._B);
 	    return 8;
 	case 81:
-	    this.bit(4, this.C());
+	    this.bit(4, this._C);
 	    return 8;
 	case 82:
-	    this.bit(4, this.D());
+	    this.bit(4, this._D);
 	    return 8;
 	case 83:
-	    this.bit(4, this.E());
+	    this.bit(4, this._E);
 	    return 8;
 	case 84:
-	    this.bit(4, this.H());
+	    this.bit(4, this._H);
 	    return 8;
 	case 85:
-	    this.bit(4, this.L());
+	    this.bit(4, this._L);
 	    return 8;
 	case 86:
 	    this.bit(4, this.peekb(this.HL()));
 	    return 12;
 	case 87:
-	    this.bit(4, this.A());
+	    this.bit(4, this._A);
 	    return 8;
 	case 88:
-	    this.bit(8, this.B());
+	    this.bit(8, this._B);
 	    return 8;
 	case 89:
-	    this.bit(8, this.C());
+	    this.bit(8, this._C);
 	    return 8;
 	case 90:
-	    this.bit(8, this.D());
+	    this.bit(8, this._D);
 	    return 8;
 	case 91:
-	    this.bit(8, this.E());
+	    this.bit(8, this._E);
 	    return 8;
 	case 92:
-	    this.bit(8, this.H());
+	    this.bit(8, this._H);
 	    return 8;
 	case 93:
-	    this.bit(8, this.L());
+	    this.bit(8, this._L);
 	    return 8;
 	case 94:
 	    this.bit(8, this.peekb(this.HL()));
 	    return 12;
 	case 95:
-	    this.bit(8, this.A());
+	    this.bit(8, this._A);
 	    return 8;
 	case 96:
-	    this.bit(16, this.B());
+	    this.bit(16, this._B);
 	    return 8;
 	case 97:
-	    this.bit(16, this.C());
+	    this.bit(16, this._C);
 	    return 8;
 	case 98:
-	    this.bit(16, this.D());
+	    this.bit(16, this._D);
 	    return 8;
 	case 99:
-	    this.bit(16, this.E());
+	    this.bit(16, this._E);
 	    return 8;
 	case 100:
-	    this.bit(16, this.H());
+	    this.bit(16, this._H);
 	    return 8;
 	case 101:
-	    this.bit(16, this.L());
+	    this.bit(16, this._L);
 	    return 8;
 	case 102:
 	    this.bit(16, this.peekb(this.HL()));
 	    return 12;
 	case 103:
-	    this.bit(16, this.A());
+	    this.bit(16, this._A);
 	    return 8;
 	case 104:
-	    this.bit(32, this.B());
+	    this.bit(32, this._B);
 	    return 8;
 	case 105:
-	    this.bit(32, this.C());
+	    this.bit(32, this._C);
 	    return 8;
 	case 106:
-	    this.bit(32, this.D());
+	    this.bit(32, this._D);
 	    return 8;
 	case 107:
-	    this.bit(32, this.E());
+	    this.bit(32, this._E);
 	    return 8;
 	case 108:
-	    this.bit(32, this.H());
+	    this.bit(32, this._H);
 	    return 8;
 	case 109:
-	    this.bit(32, this.L());
+	    this.bit(32, this._L);
 	    return 8;
 	case 110:
 	    this.bit(32, this.peekb(this.HL()));
 	    return 12;
 	case 111:
-	    this.bit(32, this.A());
+	    this.bit(32, this._A);
 	    return 8;
 	case 112:
-	    this.bit(64, this.B());
+	    this.bit(64, this._B);
 	    return 8;
 	case 113:
-	    this.bit(64, this.C());
+	    this.bit(64, this._C);
 	    return 8;
 	case 114:
-	    this.bit(64, this.D());
+	    this.bit(64, this._D);
 	    return 8;
 	case 115:
-	    this.bit(64, this.E());
+	    this.bit(64, this._E);
 	    return 8;
 	case 116:
-	    this.bit(64, this.H());
+	    this.bit(64, this._H);
 	    return 8;
 	case 117:
-	    this.bit(64, this.L());
+	    this.bit(64, this._L);
 	    return 8;
 	case 118:
 	    this.bit(64, this.peekb(this.HL()));
 	    return 12;
 	case 119:
-	    this.bit(64, this.A());
+	    this.bit(64, this._A);
 	    return 8;
 	case 120:
-	    this.bit(128, this.B());
+	    this.bit(128, this._B);
 	    return 8;
 	case 121:
-	    this.bit(128, this.C());
+	    this.bit(128, this._C);
 	    return 8;
 	case 122:
-	    this.bit(128, this.D());
+	    this.bit(128, this._D);
 	    return 8;
 	case 123:
-	    this.bit(128, this.E());
+	    this.bit(128, this._E);
 	    return 8;
 	case 124:
-	    this.bit(128, this.H());
+	    this.bit(128, this._H);
 	    return 8;
 	case 125:
-	    this.bit(128, this.L());
+	    this.bit(128, this._L);
 	    return 8;
 	case 126:
 	    this.bit(128, this.peekb(this.HL()));
 	    return 12;
 	case 127:
-	    this.bit(128, this.A());
+	    this.bit(128, this._A);
 	    return 8;
 	case 128:
-	    this.mudaB(this.res(1, this.B()));
+	    this._B = (this.res(1, this._B));
 	    return 8;
 	case 129:
-	    this.mudaC(this.res(1, this.C()));
+	    this._C = (this.res(1, this._C));
 	    return 8;
 	case 130:
-	    this.mudaD(this.res(1, this.D()));
+	    this._D = (this.res(1, this._D));
 	    return 8;
 	case 131:
-	    this.mudaE(this.res(1, this.E()));
+	    this._E = (this.res(1, this._E));
 	    return 8;
 	case 132:
-	    this.mudaH(this.res(1, this.H()));
+	    this._H = (this.res(1, this._H));
 	    return 8;
 	case 133:
-	    this.mudaL(this.res(1, this.L()));
+	    this._L = (this.res(1, this._L));
 	    return 8;
 	case 134: {
 	    var i = this.HL();
@@ -2006,25 +2010,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 135:
-	    this.mudaA(this.res(1, this.A()));
+	    this._A = (this.res(1, this._A));
 	    return 8;
 	case 136:
-	    this.mudaB(this.res(2, this.B()));
+	    this._B = (this.res(2, this._B));
 	    return 8;
 	case 137:
-	    this.mudaC(this.res(2, this.C()));
+	    this._C = (this.res(2, this._C));
 	    return 8;
 	case 138:
-	    this.mudaD(this.res(2, this.D()));
+	    this._D = (this.res(2, this._D));
 	    return 8;
 	case 139:
-	    this.mudaE(this.res(2, this.E()));
+	    this._E = (this.res(2, this._E));
 	    return 8;
 	case 140:
-	    this.mudaH(this.res(2, this.H()));
+	    this._H = (this.res(2, this._H));
 	    return 8;
 	case 141:
-	    this.mudaL(this.res(2, this.L()));
+	    this._L = (this.res(2, this._L));
 	    return 8;
 	case 142: {
 	    var i = this.HL();
@@ -2032,25 +2036,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 143:
-	    this.mudaA(this.res(2, this.A()));
+	    this._A = (this.res(2, this._A));
 	    return 8;
 	case 144:
-	    this.mudaB(this.res(4, this.B()));
+	    this._B = (this.res(4, this._B));
 	    return 8;
 	case 145:
-	    this.mudaC(this.res(4, this.C()));
+	    this._C = (this.res(4, this._C));
 	    return 8;
 	case 146:
-	    this.mudaD(this.res(4, this.D()));
+	    this._D = (this.res(4, this._D));
 	    return 8;
 	case 147:
-	    this.mudaE(this.res(4, this.E()));
+	    this._E = (this.res(4, this._E));
 	    return 8;
 	case 148:
-	    this.mudaH(this.res(4, this.H()));
+	    this._H = (this.res(4, this._H));
 	    return 8;
 	case 149:
-	    this.mudaL(this.res(4, this.L()));
+	    this._L = (this.res(4, this._L));
 	    return 8;
 	case 150: {
 	    var i = this.HL();
@@ -2058,25 +2062,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 151:
-	    this.mudaA(this.res(4, this.A()));
+	    this._A = (this.res(4, this._A));
 	    return 8;
 	case 152:
-	    this.mudaB(this.res(8, this.B()));
+	    this._B = (this.res(8, this._B));
 	    return 8;
 	case 153:
-	    this.mudaC(this.res(8, this.C()));
+	    this._C = (this.res(8, this._C));
 	    return 8;
 	case 154:
-	    this.mudaD(this.res(8, this.D()));
+	    this._D = (this.res(8, this._D));
 	    return 8;
 	case 155:
-	    this.mudaE(this.res(8, this.E()));
+	    this._E = (this.res(8, this._E));
 	    return 8;
 	case 156:
-	    this.mudaH(this.res(8, this.H()));
+	    this._H = (this.res(8, this._H));
 	    return 8;
 	case 157:
-	    this.mudaL(this.res(8, this.L()));
+	    this._L = (this.res(8, this._L));
 	    return 8;
 	case 158: {
 	    var i = this.HL();
@@ -2084,25 +2088,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 159:
-	    this.mudaA(this.res(8, this.A()));
+	    this._A = (this.res(8, this._A));
 	    return 8;
 	case 160:
-	    this.mudaB(this.res(16, this.B()));
+	    this._B = (this.res(16, this._B));
 	    return 8;
 	case 161:
-	    this.mudaC(this.res(16, this.C()));
+	    this._C = (this.res(16, this._C));
 	    return 8;
 	case 162:
-	    this.mudaD(this.res(16, this.D()));
+	    this._D = (this.res(16, this._D));
 	    return 8;
 	case 163:
-	    this.mudaE(this.res(16, this.E()));
+	    this._E = (this.res(16, this._E));
 	    return 8;
 	case 164:
-	    this.mudaH(this.res(16, this.H()));
+	    this._H = (this.res(16, this._H));
 	    return 8;
 	case 165:
-	    this.mudaL(this.res(16, this.L()));
+	    this._L = (this.res(16, this._L));
 	    return 8;
 	case 166: {
 	    var i = this.HL();
@@ -2110,25 +2114,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 167:
-	    this.mudaA(this.res(16, this.A()));
+	    this._A = (this.res(16, this._A));
 	    return 8;
 	case 168:
-	    this.mudaB(this.res(32, this.B()));
+	    this._B = (this.res(32, this._B));
 	    return 8;
 	case 169:
-	    this.mudaC(this.res(32, this.C()));
+	    this._C = (this.res(32, this._C));
 	    return 8;
 	case 170:
-	    this.mudaD(this.res(32, this.D()));
+	    this._D = (this.res(32, this._D));
 	    return 8;
 	case 171:
-	    this.mudaE(this.res(32, this.E()));
+	    this._E = (this.res(32, this._E));
 	    return 8;
 	case 172:
-	    this.mudaH(this.res(32, this.H()));
+	    this._H = (this.res(32, this._H));
 	    return 8;
 	case 173:
-	    this.mudaL(this.res(32, this.L()));
+	    this._L = (this.res(32, this._L));
 	    return 8;
 	case 174: {
 	    var i = this.HL();
@@ -2136,25 +2140,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 175:
-	    this.mudaA(this.res(32, this.A()));
+	    this._A = (this.res(32, this._A));
 	    return 8;
 	case 176:
-	    this.mudaB(this.res(64, this.B()));
+	    this._B = (this.res(64, this._B));
 	    return 8;
 	case 177:
-	    this.mudaC(this.res(64, this.C()));
+	    this._C = (this.res(64, this._C));
 	    return 8;
 	case 178:
-	    this.mudaD(this.res(64, this.D()));
+	    this._D = (this.res(64, this._D));
 	    return 8;
 	case 179:
-	    this.mudaE(this.res(64, this.E()));
+	    this._E = (this.res(64, this._E));
 	    return 8;
 	case 180:
-	    this.mudaH(this.res(64, this.H()));
+	    this._H = (this.res(64, this._H));
 	    return 8;
 	case 181:
-	    this.mudaL(this.res(64, this.L()));
+	    this._L = (this.res(64, this._L));
 	    return 8;
 	case 182: {
 	    var i = this.HL();
@@ -2162,25 +2166,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 183:
-	    this.mudaA(this.res(64, this.A()));
+	    this._A = (this.res(64, this._A));
 	    return 8;
 	case 184:
-	    this.mudaB(this.res(128, this.B()));
+	    this._B = (this.res(128, this._B));
 	    return 8;
 	case 185:
-	    this.mudaC(this.res(128, this.C()));
+	    this._C = (this.res(128, this._C));
 	    return 8;
 	case 186:
-	    this.mudaD(this.res(128, this.D()));
+	    this._D = (this.res(128, this._D));
 	    return 8;
 	case 187:
-	    this.mudaE(this.res(128, this.E()));
+	    this._E = (this.res(128, this._E));
 	    return 8;
 	case 188:
-	    this.mudaH(this.res(128, this.H()));
+	    this._H = (this.res(128, this._H));
 	    return 8;
 	case 189:
-	    this.mudaL(this.res(128, this.L()));
+	    this._L = (this.res(128, this._L));
 	    return 8;
 	case 190: {
 	    var i = this.HL();
@@ -2188,25 +2192,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 191:
-	    this.mudaA(this.res(128, this.A()));
+	    this._A = (this.res(128, this._A));
 	    return 8;
 	case 192:
-	    this.mudaB(this.set(1, this.B()));
+	    this._B = (this.set(1, this._B));
 	    return 8;
 	case 193:
-	    this.mudaC(this.set(1, this.C()));
+	    this._C = (this.set(1, this._C));
 	    return 8;
 	case 194:
-	    this.mudaD(this.set(1, this.D()));
+	    this._D = (this.set(1, this._D));
 	    return 8;
 	case 195:
-	    this.mudaE(this.set(1, this.E()));
+	    this._E = (this.set(1, this._E));
 	    return 8;
 	case 196:
-	    this.mudaH(this.set(1, this.H()));
+	    this._H = (this.set(1, this._H));
 	    return 8;
 	case 197:
-	    this.mudaL(this.set(1, this.L()));
+	    this._L = (this.set(1, this._L));
 	    return 8;
 	case 198: {
 	    var i = this.HL();
@@ -2214,25 +2218,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 199:
-	    this.mudaA(this.set(1, this.A()));
+	    this._A = (this.set(1, this._A));
 	    return 8;
 	case 200:
-	    this.mudaB(this.set(2, this.B()));
+	    this._B = (this.set(2, this._B));
 	    return 8;
 	case 201:
-	    this.mudaC(this.set(2, this.C()));
+	    this._C = (this.set(2, this._C));
 	    return 8;
 	case 202:
-	    this.mudaD(this.set(2, this.D()));
+	    this._D = (this.set(2, this._D));
 	    return 8;
 	case 203:
-	    this.mudaE(this.set(2, this.E()));
+	    this._E = (this.set(2, this._E));
 	    return 8;
 	case 204:
-	    this.mudaH(this.set(2, this.H()));
+	    this._H = (this.set(2, this._H));
 	    return 8;
 	case 205:
-	    this.mudaL(this.set(2, this.L()));
+	    this._L = (this.set(2, this._L));
 	    return 8;
 	case 206: {
 	    var i = this.HL();
@@ -2240,25 +2244,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 207:
-	    this.mudaA(this.set(2, this.A()));
+	    this._A = (this.set(2, this._A));
 	    return 8;
 	case 208:
-	    this.mudaB(this.set(4, this.B()));
+	    this._B = (this.set(4, this._B));
 	    return 8;
 	case 209:
-	    this.mudaC(this.set(4, this.C()));
+	    this._C = (this.set(4, this._C));
 	    return 8;
 	case 210:
-	    this.mudaD(this.set(4, this.D()));
+	    this._D = (this.set(4, this._D));
 	    return 8;
 	case 211:
-	    this.mudaE(this.set(4, this.E()));
+	    this._E = (this.set(4, this._E));
 	    return 8;
 	case 212:
-	    this.mudaH(this.set(4, this.H()));
+	    this._H = (this.set(4, this._H));
 	    return 8;
 	case 213:
-	    this.mudaL(this.set(4, this.L()));
+	    this._L = (this.set(4, this._L));
 	    return 8;
 	case 214: {
 	    var i = this.HL();
@@ -2266,25 +2270,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 215:
-	    this.mudaA(this.set(4, this.A()));
+	    this._A = (this.set(4, this._A));
 	    return 8;
 	case 216:
-	    this.mudaB(this.set(8, this.B()));
+	    this._B = (this.set(8, this._B));
 	    return 8;
 	case 217:
-	    this.mudaC(this.set(8, this.C()));
+	    this._C = (this.set(8, this._C));
 	    return 8;
 	case 218:
-	    this.mudaD(this.set(8, this.D()));
+	    this._D = (this.set(8, this._D));
 	    return 8;
 	case 219:
-	    this.mudaE(this.set(8, this.E()));
+	    this._E = (this.set(8, this._E));
 	    return 8;
 	case 220:
-	    this.mudaH(this.set(8, this.H()));
+	    this._H = (this.set(8, this._H));
 	    return 8;
 	case 221:
-	    this.mudaL(this.set(8, this.L()));
+	    this._L = (this.set(8, this._L));
 	    return 8;
 	case 222: {
 	    var i = this.HL();
@@ -2292,25 +2296,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 223:
-	    this.mudaA(this.set(8, this.A()));
+	    this._A = (this.set(8, this._A));
 	    return 8;
 	case 224:
-	    this.mudaB(this.set(16, this.B()));
+	    this._B = (this.set(16, this._B));
 	    return 8;
 	case 225:
-	    this.mudaC(this.set(16, this.C()));
+	    this._C = (this.set(16, this._C));
 	    return 8;
 	case 226:
-	    this.mudaD(this.set(16, this.D()));
+	    this._D = (this.set(16, this._D));
 	    return 8;
 	case 227:
-	    this.mudaE(this.set(16, this.E()));
+	    this._E = (this.set(16, this._E));
 	    return 8;
 	case 228:
-	    this.mudaH(this.set(16, this.H()));
+	    this._H = (this.set(16, this._H));
 	    return 8;
 	case 229:
-	    this.mudaL(this.set(16, this.L()));
+	    this._L = (this.set(16, this._L));
 	    return 8;
 	case 230: {
 	    var i = this.HL();
@@ -2318,25 +2322,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 231:
-	    this.mudaA(this.set(16, this.A()));
+	    this._A = (this.set(16, this._A));
 	    return 8;
 	case 232:
-	    this.mudaB(this.set(32, this.B()));
+	    this._B = (this.set(32, this._B));
 	    return 8;
 	case 233:
-	    this.mudaC(this.set(32, this.C()));
+	    this._C = (this.set(32, this._C));
 	    return 8;
 	case 234:
-	    this.mudaD(this.set(32, this.D()));
+	    this._D = (this.set(32, this._D));
 	    return 8;
 	case 235:
-	    this.mudaE(this.set(32, this.E()));
+	    this._E = (this.set(32, this._E));
 	    return 8;
 	case 236:
-	    this.mudaH(this.set(32, this.H()));
+	    this._H = (this.set(32, this._H));
 	    return 8;
 	case 237:
-	    this.mudaL(this.set(32, this.L()));
+	    this._L = (this.set(32, this._L));
 	    return 8;
 	case 238: {
 	    var i = this.HL();
@@ -2344,25 +2348,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 239:
-	    this.mudaA(this.set(32, this.A()));
+	    this._A = (this.set(32, this._A));
 	    return 8;
 	case 240:
-	    this.mudaB(this.set(64, this.B()));
+	    this._B = (this.set(64, this._B));
 	    return 8;
 	case 241:
-	    this.mudaC(this.set(64, this.C()));
+	    this._C = (this.set(64, this._C));
 	    return 8;
 	case 242:
-	    this.mudaD(this.set(64, this.D()));
+	    this._D = (this.set(64, this._D));
 	    return 8;
 	case 243:
-	    this.mudaE(this.set(64, this.E()));
+	    this._E = (this.set(64, this._E));
 	    return 8;
 	case 244:
-	    this.mudaH(this.set(64, this.H()));
+	    this._H = (this.set(64, this._H));
 	    return 8;
 	case 245:
-	    this.mudaL(this.set(64, this.L()));
+	    this._L = (this.set(64, this._L));
 	    return 8;
 	case 246: {
 	    var i = this.HL();
@@ -2370,25 +2374,25 @@ function Z80(d)
 	    return 15;
 	}
 	case 247:
-	    this.mudaA(this.set(64, this.A()));
+	    this._A = (this.set(64, this._A));
 	    return 8;
 	case 248:
-	    this.mudaB(this.set(128, this.B()));
+	    this._B = (this.set(128, this._B));
 	    return 8;
 	case 249:
-	    this.mudaC(this.set(128, this.C()));
+	    this._C = (this.set(128, this._C));
 	    return 8;
 	case 250:
-	    this.mudaD(this.set(128, this.D()));
+	    this._D = (this.set(128, this._D));
 	    return 8;
 	case 251:
-	    this.mudaE(this.set(128, this.E()));
+	    this._E = (this.set(128, this._E));
 	    return 8;
 	case 252:
-	    this.mudaH(this.set(128, this.H()));
+	    this._H = (this.set(128, this._H));
 	    return 8;
 	case 253:
-	    this.mudaL(this.set(128, this.L()));
+	    this._L = (this.set(128, this._L));
 	    return 8;
 	case 254: {
 	    var i = this.HL();
@@ -2396,7 +2400,7 @@ function Z80(d)
 	    return 15;
 	}
 	case 255:
-	    this.mudaA(this.set(128, this.A()));
+	    this._A = (this.set(128, this._A));
 	    return 8;
 	default:
 	    return 0;
@@ -2517,104 +2521,104 @@ function Z80(d)
 	case 183:
 	    return 8;
 	case 64:
-	    this.mudaB(this.in_bc());
+	    this._B = (this.in_bc());
 	    return 12;
 	case 72:
-	    this.mudaC(this.in_bc());
+	    this._C = (this.in_bc());
 	    return 12;
 	case 80:
-	    this.mudaD(this.in_bc());
+	    this._D = (this.in_bc());
 	    return 12;
 	case 88:
-	    this.mudaE(this.in_bc());
+	    this._E = (this.in_bc());
 	    return 12;
 	case 96:
-	    this.mudaH(this.in_bc());
+	    this._H = (this.in_bc());
 	    return 12;
 	case 104:
-	    this.mudaL(this.in_bc());
+	    this._L = (this.in_bc());
 	    return 12;
 	case 112:
 	    this.in_bc();
 	    return 12;
 	case 120:
-	    this.mudaA(this.in_bc());
+	    this._A = (this.in_bc());
 	    return 12;
 	case 65:
-	    this.outb(this.C(), this.B(), i);
+	    this.outb(this._C, this._B, i);
 	    return 12;
 	case 73:
-	    this.outb(this.C(), this.C(), i);
+	    this.outb(this._C, this._C, i);
 	    return 12;
 	case 81:
-	    this.outb(this.C(), this.D(), i);
+	    this.outb(this._C, this._D, i);
 	    return 12;
 	case 89:
-	    this.outb(this.C(), this.E(), i);
+	    this.outb(this._C, this._E, i);
 	    return 12;
 	case 97:
-	    this.outb(this.C(), this.H(), i);
+	    this.outb(this._C, this._H, i);
 	    return 12;
 	case 105:
-	    this.outb(this.C(), this.L(), i);
+	    this.outb(this._C, this._L, i);
 	    return 12;
 	case 113:
-	    this.outb(this.C(), 0, i);
+	    this.outb(this._C, 0, i);
 	    return 12;
 	case 121:
-	    this.outb(this.C(), this.A(), i);
+	    this.outb(this._C, this._A, i);
 	    return 12;
 	case 66:
-	    this.mudaHL(this.sbc16(this.HL(), this.BC()));
+	    this.setHL(this.sbc16(this.HL(), this.BC()));
 	    return 15;
 	case 74:
-	    this.mudaHL(this.adc16(this.HL(), this.BC()));
+	    this.setHL(this.adc16(this.HL(), this.BC()));
 	    return 15;
 	case 82:
-	    this.mudaHL(this.sbc16(this.HL(), this.DE()));
+	    this.setHL(this.sbc16(this.HL(), this.DE()));
 	    return 15;
 	case 90:
-	    this.mudaHL(this.adc16(this.HL(), this.DE()));
+	    this.setHL(this.adc16(this.HL(), this.DE()));
 	    return 15;
 	case 98: {
 	    var i_46_ = this.HL();
-	    this.mudaHL(this.sbc16(i_46_, i_46_));
+	    this.setHL(this.sbc16(i_46_, i_46_));
 	    return 15;
 	}
 	case 106: {
 	    var i_47_ = this.HL();
-	    this.mudaHL(this.adc16(i_47_, i_47_));
+	    this.setHL(this.adc16(i_47_, i_47_));
 	    return 15;
 	}
 	case 114:
-	    this.mudaHL(this.sbc16(this.HL(), this.SP()));
+	    this.setHL(this.sbc16(this.HL(), this._SP));
 	    return 15;
 	case 122:
-	    this.mudaHL(this.adc16(this.HL(), this.SP()));
+	    this.setHL(this.adc16(this.HL(), this._SP));
 	    return 15;
 	case 67:
 	    this.pokew(this.nxtpcw(), this.BC());
 	    return 20;
 	case 75:
-	    this.mudaBC(this.peekw(this.nxtpcw()));
+	    this.setBC(this.peekw(this.nxtpcw()));
 	    return 20;
 	case 83:
 	    this.pokew(this.nxtpcw(), this.DE());
 	    return 20;
 	case 91:
-	    this.mudaDE(this.peekw(this.nxtpcw()));
+	    this.setDE(this.peekw(this.nxtpcw()));
 	    return 20;
 	case 99:
 	    this.pokew(this.nxtpcw(), this.HL());
 	    return 20;
 	case 107:
-	    this.mudaHL(this.peekw(this.nxtpcw()));
+	    this.setHL(this.peekw(this.nxtpcw()));
 	    return 20;
 	case 115:
-	    this.pokew(this.nxtpcw(), this.SP());
+	    this.pokew(this.nxtpcw(), this._SP);
 	    return 20;
 	case 123:
-	    this.mudaSP(this.peekw(this.nxtpcw()));
+	    this._SP = (this.peekw(this.nxtpcw()));
 	    return 20;
 	case 68:
 	case 76:
@@ -2630,7 +2634,7 @@ function Z80(d)
 	case 85:
 	case 101:
 	case 117:
-	    this.mudaIFF1(this.IFF2());
+	    this.setIFF1(this.IFF2());
 	    this.poppc();
 	    return 14;
 	case 77:
@@ -2643,21 +2647,21 @@ function Z80(d)
 	case 78:
 	case 102:
 	case 110:
-	    this.mudaIM(0);
+	    this.setIM(0);
 	    return 8;
 	case 86:
 	case 118:
-	    this.mudaIM(1);
+	    this.setIM(1);
 	    return 8;
 	case 94:
 	case 126:
-	    this.mudaIM(2);
+	    this.setIM(2);
 	    return 8;
 	case 71:
-	    this.mudaI(this.A());
+	    this.setI(this._A);
 	    return 9;
 	case 79:
-	    this.mudaR(this.A());
+	    this.setR(this._A);
 	    return 9;
 	case 87:
 	    this.ld_a_i();
@@ -2673,102 +2677,102 @@ function Z80(d)
 	    return 18;
 	case 160:
 	    this.pokeb(this.DE(), this.peekb(this.HL()));
-	    this.mudaDE(this.inc16(this.DE()));
-	    this.mudaHL(this.inc16(this.HL()));
-	    this.mudaBC(this.dec16(this.BC()));
-	    this.setPV(this.BC() != 0);
-	    this.setH(false);
-	    this.setN(false);
+	    this.setDE(this.inc16(this.DE()));
+	    this.setHL(this.inc16(this.HL()));
+	    this.setBC(this.dec16(this.BC()));
+	    this.fPV = (this.BC() != 0);
+	    this.fH = (false);
+	    this.fN = (false);
 	    return 16;
 	case 161: {
-	    var bool = this.Cset();
+	    var bool = this.fC;
 	    this.cp_a(this.peekb(this.HL()));
-	    this.mudaHL(this.inc16(this.HL()));
-	    this.mudaBC(this.dec16(this.BC()));
-	    this.setPV(this.BC() != 0);
-	    this.setC(bool);
+	    this.setHL(this.inc16(this.HL()));
+	    this.setBC(this.dec16(this.BC()));
+	    this.fPV = (this.BC() != 0);
+	    this.fC = (bool);
 	    return 16;
 	}
 	case 162:
-	    this.pokeb(this.HL(), this.inb(this.C()));
-	    this.mudaB(this.dec8(this.B()));
-	    this.mudaHL(this.inc16(this.HL()));
+	    this.pokeb(this.HL(), this.inb(this._C));
+	    this._B = (this.dec8(this._B));
+	    this.setHL(this.inc16(this.HL()));
 	    return 16;
 	case 163:
-	    this.mudaB(this.dec8(this.B()));
-	    this.outb(this.C(), this.peekb(this.HL()), i);
-	    this.mudaHL(this.inc16(this.HL()));
+	    this._B = (this.dec8(this._B));
+	    this.outb(this._C, this.peekb(this.HL()), i);
+	    this.setHL(this.inc16(this.HL()));
 	    return 16;
 	case 168:
 	    this.pokeb(this.DE(), this.peekb(this.HL()));
-	    this.mudaDE(this.dec16(this.DE()));
-	    this.mudaHL(this.dec16(this.HL()));
-	    this.mudaBC(this.dec16(this.BC()));
-	    this.setPV(this.BC() != 0);
-	    this.setH(false);
-	    this.setN(false);
+	    this.setDE(this.dec16(this.DE()));
+	    this.setHL(this.dec16(this.HL()));
+	    this.setBC(this.dec16(this.BC()));
+	    this.fPV = (this.BC() != 0);
+	    this.fH = (false);
+	    this.fN = (false);
 	    return 16;
 	case 169: {
-	    var bool = this.Cset();
+	    var bool = this.fC;
 	    this.cp_a(this.peekb(this.HL()));
-	    this.mudaHL(this.dec16(this.HL()));
-	    this.mudaBC(this.dec16(this.BC()));
-	    this.setPV(this.BC() != 0);
+	    this.setHL(this.dec16(this.HL()));
+	    this.setBC(this.dec16(this.BC()));
+	    this.fPV = (this.BC() != 0);
 	    return 16;
 	}
 	case 170:
-	    this.pokeb(this.HL(), this.inb(this.C()));
-	    this.mudaB(this.dec8(this.B()));
-	    this.mudaHL(this.dec16(this.HL()));
+	    this.pokeb(this.HL(), this.inb(this._C));
+	    this._B = (this.dec8(this._B));
+	    this.setHL(this.dec16(this.HL()));
 	    return 16;
 	case 171:
-	    this.mudaB(this.dec8(this.B()));
-	    this.outb(this.C(), this.peekb(this.HL()), i);
-	    this.mudaHL(this.dec16(this.HL()));
+	    this._B = (this.dec8(this._B));
+	    this.outb(this._C, this.peekb(this.HL()), i);
+	    this.setHL(this.dec16(this.HL()));
 	    return 16;
 	case 176: {
 	    var bool = false;
 	    this.pokeb(this.DE(), this.peekb(this.HL()));
-	    this.mudaHL(this.inc16(this.HL()));
-	    this.mudaDE(this.inc16(this.DE()));
-	    this.mudaBC(this.dec16(this.BC()));
+	    this.setHL(this.inc16(this.HL()));
+	    this.setDE(this.inc16(this.DE()));
+	    this.setBC(this.dec16(this.BC()));
 	    var i_48_ = 21;
 	    this.REFRESH(4);
 	    if (this.BC() != 0) {
-		this.mudaPC(this.PC() - 2 & 0xffff);
-		this.setH(false);
-		this.setN(false);
-		this.setPV(true);
+		this._PC = (this._PC - 2 & 0xffff);
+		this.fH = (false);
+		this.fN = (false);
+		this.fPV = (true);
 	    } else {
 		i_48_ -= 5;
-		this.setH(false);
-		this.setN(false);
-		this.setPV(false);
+		this.fH = (false);
+		this.fN = (false);
+		this.fPV = (false);
 	    }
 	    return i_48_;
 	}
 	case 177: {
-	    var bool = this.Cset();
+	    var bool = this.fC;
 	    this.cp_a(this.peekb(this.HL()));
-	    this.mudaHL(this.inc16(this.HL()));
-	    this.mudaBC(this.dec16(this.BC()));
+	    this.setHL(this.inc16(this.HL()));
+	    this.setBC(this.dec16(this.BC()));
 	    var bool_49_ = this.BC() != 0;
-	    this.setPV(bool_49_);
-	    this.setC(bool);
-	    if (bool_49_ && !this.Zset()) {
-		this.mudaPC(this.PC() - 2 & 0xffff);
+	    this.fPV = (bool_49_);
+	    this.fC = (bool);
+	    if (bool_49_ && !this.fZ) {
+		this._PC = (this._PC - 2 & 0xffff);
 		return 21;
 	    }
 	    return 16;
 	}
 	case 178: {
 	    var bool = false;
-	    this.pokeb(this.HL(), this.inb(this.C()));
+	    this.pokeb(this.HL(), this.inb(this._C));
 	    var i_50_ = 0;
-	    this.mudaB(i_50_ = this.dec8(this.B()));
-	    this.mudaHL(this.inc16(this.HL()));
+	    this._B = (i_50_ = this.dec8(this._B));
+	    this.setHL(this.inc16(this.HL()));
 	    if (i_50_ != 0) {
-		this.mudaPC(this.PC() - 2 & 0xffff);
+		this._PC = (this._PC - 2 & 0xffff);
 		return 21;
 	    }
 	    return 16;
@@ -2776,11 +2780,11 @@ function Z80(d)
 	case 179: {
 	    var bool = false;
 	    var i_51_ = 0;
-	    this.mudaB(i_51_ = this.dec8(this.B()));
-	    this.outb(this.C(), this.peekb(this.HL()), i);
-	    this.mudaHL(this.inc16(this.HL()));
+	    this._B = (i_51_ = this.dec8(this._B));
+	    this.outb(this._C, this.peekb(this.HL()), i);
+	    this.setHL(this.inc16(this.HL()));
 	    if (i_51_ != 0) {
-		this.mudaPC(this.PC() - 2 & 0xffff);
+		this._PC = (this._PC - 2 & 0xffff);
 		return 21;
 	    }
 	    return 16;
@@ -2789,33 +2793,33 @@ function Z80(d)
 	    var bool = false;
 	    this.REFRESH(4);
 	    this.pokeb(this.DE(), this.peekb(this.HL()));
-	    this.mudaDE(this.dec16(this.DE()));
-	    this.mudaHL(this.dec16(this.HL()));
-	    this.mudaBC(this.dec16(this.BC()));
+	    this.setDE(this.dec16(this.DE()));
+	    this.setHL(this.dec16(this.HL()));
+	    this.setBC(this.dec16(this.BC()));
 	    var i_52_ = 21;
 	    if (this.BC() != 0) {
-		this.mudaPC(this.PC() - 2 & 0xffff);
-		this.setH(false);
-		this.setN(false);
-		this.setPV(true);
+		this._PC = (this._PC - 2 & 0xffff);
+		this.fH = (false);
+		this.fN = (false);
+		this.fPV = (true);
 	    } else {
 		i_52_ -= 5;
-		this.setH(false);
-		this.setN(false);
-		this.setPV(false);
+		this.fH = (false);
+		this.fN = (false);
+		this.fPV = (false);
 	    }
 	    return i_52_;
 	}
 	case 185: {
-	    var bool = this.Cset();
+	    var bool = this.fC;
 	    this.cp_a(this.peekb(this.HL()));
-	    this.mudaHL(this.dec16(this.HL()));
-	    this.mudaBC(this.dec16(this.BC()));
+	    this.setHL(this.dec16(this.HL()));
+	    this.setBC(this.dec16(this.BC()));
 	    var bool_53_ = this.BC() != 0;
-	    this.setPV(bool_53_);
-	    this.setC(bool);
-	    if (bool_53_ && !this.Zset()) {
-		this.mudaPC(this.PC() - 2 & 0xffff);
+	    this.fPV = (bool_53_);
+	    this.fC = (bool);
+	    if (bool_53_ && !this.fZ) {
+		this._PC = (this._PC - 2 & 0xffff);
 		return 21;
 	    }
 	    return 16;
@@ -2823,21 +2827,21 @@ function Z80(d)
 	case 186: {
 	    this.pokeb(this.HL(), this.inb(this.BC() & 0xff));
 	    var i_54_ = 0;
-	    this.mudaB(i_54_ = this.dec8(this.B()));
-	    this.mudaHL(this.dec16(this.HL()));
+	    this._B = (i_54_ = this.dec8(this._B));
+	    this.setHL(this.dec16(this.HL()));
 	    if (i_54_ != 0) {
-		this.mudaPC(this.PC() - 2 & 0xffff);
+		this._PC = (this._PC - 2 & 0xffff);
 		return 21;
 	    }
 	    return 16;
 	}
 	case 187: {
 	    var i_55_ = 0;
-	    this.mudaB(i_55_ = this.dec8(this.B()));
-	    this.outb(this.C(), this.peekb(this.HL()), i);
-	    this.mudaHL(this.dec16(this.HL()));
+	    this._B = (i_55_ = this.dec8(this._B));
+	    this.outb(this._C, this.peekb(this.HL()), i);
+	    this.setHL(this.dec16(this.HL()));
 	    if (i_55_ != 0) {
-		this.mudaPC(this.PC() - 2 & 0xffff);
+		this._PC = (this._PC - 2 & 0xffff);
 		return 21;
 	    }
 	    return 16;
@@ -3013,43 +3017,43 @@ function Z80(d)
 	case 246:
 	case 247:
 	case 248:
-	    this.mudaPC(this.dec16(this.PC()));
+	    this._PC = (this.dec16(this._PC));
 	    this.REFRESH(-1);
 	    return 4;
 	case 9:
-	    this.mudaID(this.add16(this.ID(), this.BC()));
+	    this.setID(this.add16(this._ID, this.BC()));
 	    return 15;
 	case 25:
-	    this.mudaID(this.add16(this.ID(), this.DE()));
+	    this.setID(this.add16(this._ID, this.DE()));
 	    return 15;
 	case 41: {
-	    var i = this.ID();
-	    this.mudaID(this.add16(i, i));
+	    var i = this._ID;
+	    this.setID(this.add16(i, i));
 	    return 15;
 	}
 	case 57:
-	    this.mudaID(this.add16(this.ID(), this.SP()));
+	    this.setID(this.add16(this._ID, this._SP));
 	    return 15;
 	case 33:
-	    this.mudaID(this.nxtpcw());
+	    this.setID(this.nxtpcw());
 	    return 14;
 	case 34:
-	    this.pokew(this.nxtpcw(), this.ID());
+	    this.pokew(this.nxtpcw(), this._ID);
 	    return 20;
 	case 42:
-	    this.mudaID(this.peekw(this.nxtpcw()));
+	    this.setID(this.peekw(this.nxtpcw()));
 	    return 20;
 	case 35:
-	    this.mudaID(this.inc16(this.ID()));
+	    this.setID(this.inc16(this._ID));
 	    return 10;
 	case 43:
-	    this.mudaID(this.dec16(this.ID()));
+	    this.setID(this.dec16(this._ID));
 	    return 10;
 	case 36:
-	    this.mudaIDH(this.inc8(this.IDH()));
+	    this.setIDH(this.inc8(this.IDH()));
 	    return 8;
 	case 44:
-	    this.mudaIDL(this.inc8(this.IDL()));
+	    this.setIDL(this.inc8(this.IDL()));
 	    return 8;
 	case 52: {
 	    var i = this.ID_d();
@@ -3057,10 +3061,10 @@ function Z80(d)
 	    return 23;
 	}
 	case 37:
-	    this.mudaIDH(this.dec8(this.IDH()));
+	    this.setIDH(this.dec8(this.IDH()));
 	    return 8;
 	case 45:
-	    this.mudaIDL(this.dec8(this.IDL()));
+	    this.setIDL(this.dec8(this.IDL()));
 	    return 8;
 	case 53: {
 	    var i = this.ID_d();
@@ -3068,10 +3072,10 @@ function Z80(d)
 	    return 23;
 	}
 	case 38:
-	    this.mudaIDH(this.nxtpcb());
+	    this.setIDH(this.nxtpcb());
 	    return 11;
 	case 46:
-	    mudaIDL(nxtpcb());
+	    setIDL(nxtpcb());
 	    return 11;
 	case 54: {
 	    var i = this.ID_d();
@@ -3079,116 +3083,116 @@ function Z80(d)
 	    return 19;
 	}
 	case 68:
-	    this.mudaB(this.IDH());
+	    this._B = (this.IDH());
 	    return 8;
 	case 69:
-	    this.mudaB(this.IDL());
+	    this._B = (this.IDL());
 	    return 8;
 	case 70:
-	    this.mudaB(this.peekb(this.ID_d()));
+	    this._B = (this.peekb(this.ID_d()));
 	    return 19;
 	case 76:
-	    this.mudaC(this.IDH());
+	    this._C = (this.IDH());
 	    return 8;
 	case 77:
-	    this.mudaC(this.IDL());
+	    this._C = (this.IDL());
 	    return 8;
 	case 78:
-	    this.mudaC(this.peekb(this.ID_d()));
+	    this._C = (this.peekb(this.ID_d()));
 	    return 19;
 	case 84:
-	    this.mudaD(this.IDH());
+	    this._D = (this.IDH());
 	    return 8;
 	case 85:
-	    this.mudaD(this.IDL());
+	    this._D = (this.IDL());
 	    return 8;
 	case 86:
-	    this.mudaD(this.peekb(this.ID_d()));
+	    this._D = (this.peekb(this.ID_d()));
 	    return 19;
 	case 92:
-	    this.mudaE(this.IDH());
+	    this._E = (this.IDH());
 	    return 8;
 	case 93:
-	    this.mudaE(this.IDL());
+	    this._E = (this.IDL());
 	    return 8;
 	case 94:
-	    this.mudaE(this.peekb(this.ID_d()));
+	    this._E = (this.peekb(this.ID_d()));
 	    return 19;
 	case 96:
-	    this.mudaIDH(this.B());
+	    this.setIDH(this._B);
 	    return 8;
 	case 97:
-	    this.mudaIDH(this.C());
+	    this.setIDH(this._C);
 	    return 8;
 	case 98:
-	    this.mudaIDH(this.D());
+	    this.setIDH(this._D);
 	    return 8;
 	case 99:
-	    this.mudaIDH(this.E());
+	    this.setIDH(this._E);
 	    return 8;
 	case 100:
 	    return 8;
 	case 101:
-	    this.mudaIDH(this.IDL());
+	    this.setIDH(this.IDL());
 	    return 8;
 	case 102:
-	    this.mudaH(this.peekb(this.ID_d()));
+	    this._H = (this.peekb(this.ID_d()));
 	    return 19;
 	case 103:
-	    this.mudaIDH(this.A());
+	    this.setIDH(this._A);
 	    return 8;
 	case 104:
-	    this.mudaIDL(this.B());
+	    this.setIDL(this._B);
 	    return 8;
 	case 105:
-	    this.mudaIDL(this.C());
+	    this.setIDL(this._C);
 	    return 8;
 	case 106:
-	    this.mudaIDL(this.D());
+	    this.setIDL(this._D);
 	    return 8;
 	case 107:
-	    this.mudaIDL(this.E());
+	    this.setIDL(this._E);
 	    return 8;
 	case 108:
-	    this.mudaIDL(this.IDH());
+	    this.setIDL(this.IDH());
 	    return 8;
 	case 109:
 	    return 8;
 	case 110:
-	    this.mudaL(this.peekb(this.ID_d()));
+	    this._L = (this.peekb(this.ID_d()));
 	    return 19;
 	case 111:
-	    this.mudaIDL(this.A());
+	    this.setIDL(this._A);
 	    return 8;
 	case 112:
-	    this.pokeb(this.ID_d(), this.B());
+	    this.pokeb(this.ID_d(), this._B);
 	    return 19;
 	case 113:
-	    this.pokeb(this.ID_d(), this.C());
+	    this.pokeb(this.ID_d(), this._C);
 	    return 19;
 	case 114:
-	    this.pokeb(this.ID_d(), this.D());
+	    this.pokeb(this.ID_d(), this._D);
 	    return 19;
 	case 115:
-	    this.pokeb(this.ID_d(), this.E());
+	    this.pokeb(this.ID_d(), this._E);
 	    return 19;
 	case 116:
-	    this.pokeb(this.ID_d(), this.H());
+	    this.pokeb(this.ID_d(), this._H);
 	    return 19;
 	case 117:
-	    this.pokeb(this.ID_d(), this.L());
+	    this.pokeb(this.ID_d(), this._L);
 	    return 19;
 	case 119:
-	    this.pokeb(this.ID_d(), this.A());
+	    this.pokeb(this.ID_d(), this._A);
 	    return 19;
 	case 124:
-	    this.mudaA(this.IDH());
+	    this._A = (this.IDH());
 	    return 8;
 	case 125:
-	    this.mudaA(this.IDL());
+	    this._A = (this.IDL());
 	    return 8;
 	case 126:
-	    this.mudaA(this.peekb(this.ID_d()));
+	    this._A = (this.peekb(this.ID_d()));
 	    return 19;
 	case 132:
 	    this.add_a(this.IDH());
@@ -3263,13 +3267,13 @@ function Z80(d)
 	    this.cp_a(this.peekb(this.ID_d()));
 	    return 19;
 	case 225:
-	    this.mudaID(this.popw());
+	    this.setID(this.popw());
 	    return 14;
 	case 233:
-	    this.mudaPC(this.ID());
+	    this._PC = (this._ID);
 	    return 8;
 	case 249:
-	    this.mudaSP(this.ID());
+	    this._SP = (this._ID);
 	    return 10;
 	case 203: {
 	    var i = this.ID_d();
@@ -3278,14 +3282,14 @@ function Z80(d)
 	    return (i_56_ & 0xc0) == 64 ? 20 : 23;
 	}
 	case 227: {
-	    var i = this.ID();
-	    var i_57_ = this.SP();
-	    this.mudaID(this.peekw(i_57_));
+	    var i = this._ID;
+	    var i_57_ = this._SP;
+	    this.setID(this.peekw(i_57_));
 	    this.pokew(i_57_, i);
 	    return 23;
 	}
 	case 229:
-	    this.pushw(this.ID());
+	    this.pushw(this._ID);
 	    return 15;
 	default:
 	    return 0;
@@ -3295,251 +3299,251 @@ function Z80(d)
     this.execute_id_cb = function(i, i_58_) {
 	switch (i) {
 	case 0:
-	    this.mudaB(i = this.rlc(this.peekb(i_58_)));
+	    this._B = (i = this.rlc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 1:
-	    this.mudaC(i = this.rlc(this.peekb(i_58_)));
+	    this._C = (i = this.rlc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 2:
-	    this.mudaD(i = this.rlc(this.peekb(i_58_)));
+	    this._D = (i = this.rlc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 3:
-	    this.mudaE(i = this.rlc(this.peekb(i_58_)));
+	    this._E = (i = this.rlc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 4:
-	    this.mudaH(i = this.rlc(this.peekb(i_58_)));
+	    this._H = (i = this.rlc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 5:
-	    this.mudaL(i = this.rlc(this.peekb(i_58_)));
+	    this._L = (i = this.rlc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 6:
 	    this.pokeb(i_58_, this.rlc(this.peekb(i_58_)));
 	    break;
 	case 7:
-	    this.mudaA(i = this.rlc(this.peekb(i_58_)));
+	    this._A = (i = this.rlc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 8:
-	    this.mudaB(i = this.rrc(this.peekb(i_58_)));
+	    this._B = (i = this.rrc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 9:
-	    this.mudaC(i = this.rrc(this.peekb(i_58_)));
+	    this._C = (i = this.rrc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 10:
-	    this.mudaD(i = this.rrc(this.peekb(i_58_)));
+	    this._D = (i = this.rrc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 11:
-	    this.mudaE(i = this.rrc(this.peekb(i_58_)));
+	    this._E = (i = this.rrc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 12:
-	    this.mudaH(i = this.rrc(this.peekb(i_58_)));
+	    this._H = (i = this.rrc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 13:
-	    this.mudaL(i = this.rrc(this.peekb(i_58_)));
+	    this._L = (i = this.rrc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 14:
 	    this.pokeb(i_58_, this.rrc(this.peekb(i_58_)));
 	    break;
 	case 15:
-	    this.mudaA(i = this.rrc(this.peekb(i_58_)));
+	    this._A = (i = this.rrc(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 16:
-	    this.mudaB(i = this.rl(this.peekb(i_58_)));
+	    this._B = (i = this.rl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 17:
-	    this.mudaC(i = this.rl(this.peekb(i_58_)));
+	    this._C = (i = this.rl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 18:
-	    this.mudaD(i = this.rl(this.peekb(i_58_)));
+	    this._D = (i = this.rl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 19:
-	    this.mudaE(i = this.rl(this.peekb(i_58_)));
+	    this._E = (i = this.rl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 20:
-	    this.mudaH(i = this.rl(this.peekb(i_58_)));
+	    this._H = (i = this.rl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 21:
-	    this.mudaL(i = this.rl(this.peekb(i_58_)));
+	    this._L = (i = this.rl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 22:
 	    this.pokeb(i_58_, this.rl(this.peekb(i_58_)));
 	    break;
 	case 23:
-	    this.mudaA(i = this.rl(this.peekb(i_58_)));
+	    this._A = (i = this.rl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 24:
-	    this.mudaB(i = this.rr(this.peekb(i_58_)));
+	    this._B = (i = this.rr(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 25:
-	    this.mudaC(i = this.rr(this.peekb(i_58_)));
+	    this._C = (i = this.rr(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 26:
-	    this.mudaD(i = this.rr(this.peekb(i_58_)));
+	    this._D = (i = this.rr(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 27:
-	    this.mudaE(i = this.rr(this.peekb(i_58_)));
+	    this._E = (i = this.rr(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 28:
-	    this.mudaH(i = this.rr(this.peekb(i_58_)));
+	    this._H = (i = this.rr(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 29:
-	    this.mudaL(i = this.rr(this.peekb(i_58_)));
+	    this._L = (i = this.rr(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 30:
 	    this.pokeb(i_58_, this.rr(this.peekb(i_58_)));
 	    break;
 	case 31:
-	    this.mudaA(i = this.rr(this.peekb(i_58_)));
+	    this._A = (i = this.rr(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 32:
-	    this.mudaB(i = this.sla(this.peekb(i_58_)));
+	    this._B = (i = this.sla(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 33:
-	    this.mudaC(i = this.sla(this.peekb(i_58_)));
+	    this._C = (i = this.sla(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 34:
-	    this.mudaD(i = this.sla(this.peekb(i_58_)));
+	    this._D = (i = this.sla(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 35:
-	    this.mudaE(i = this.sla(this.peekb(i_58_)));
+	    this._E = (i = this.sla(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 36:
-	    this.mudaH(i = this.sla(this.peekb(i_58_)));
+	    this._H = (i = this.sla(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 37:
-	    this.mudaL(i = this.sla(this.peekb(i_58_)));
+	    this._L = (i = this.sla(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 38:
 	    this.pokeb(i_58_, this.sla(this.peekb(i_58_)));
 	    break;
 	case 39:
-	    this.mudaA(i = this.sla(this.peekb(i_58_)));
+	    this._A = (i = this.sla(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 40:
-	    this.mudaB(i = this.sra(this.peekb(i_58_)));
+	    this._B = (i = this.sra(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 41:
-	    this.mudaC(i = this.sra(this.peekb(i_58_)));
+	    this._C = (i = this.sra(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 42:
-	    this.mudaD(i = this.sra(this.peekb(i_58_)));
+	    this._D = (i = this.sra(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 43:
-	    this.mudaE(i = this.sra(this.peekb(i_58_)));
+	    this._E = (i = this.sra(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 44:
-	    this.mudaH(i = this.sra(this.peekb(i_58_)));
+	    this._H = (i = this.sra(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 45:
-	    this.mudaL(i = this.sra(this.peekb(i_58_)));
+	    this._L = (i = this.sra(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 46:
 	    this.pokeb(i_58_, this.sra(this.peekb(i_58_)));
 	    break;
 	case 47:
-	    this.mudaA(i = this.sra(this.peekb(i_58_)));
+	    this._A = (i = this.sra(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 48:
-	    this.mudaB(i = this.sls(this.peekb(i_58_)));
+	    this._B = (i = this.sls(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 49:
-	    this.mudaC(i = this.sls(this.peekb(i_58_)));
+	    this._C = (i = this.sls(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 50:
-	    this.mudaD(i = this.sls(this.peekb(i_58_)));
+	    this._D = (i = this.sls(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 51:
-	    this.mudaE(i = this.sls(this.peekb(i_58_)));
+	    this._E = (i = this.sls(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 52:
-	    this.mudaH(i = this.sls(this.peekb(i_58_)));
+	    this._H = (i = this.sls(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 53:
-	    this.mudaL(i = this.sls(this.peekb(i_58_)));
+	    this._L = (i = this.sls(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 54:
 	    this.pokeb(i_58_, this.sls(this.peekb(i_58_)));
 	    break;
 	case 55:
-	    this.mudaA(i = this.sls(this.peekb(i_58_)));
+	    this._A = (i = this.sls(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 56:
-	    this.mudaB(i = this.srl(this.peekb(i_58_)));
+	    this._B = (i = this.srl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 57:
-	    this.mudaC(i = this.srl(this.peekb(i_58_)));
+	    this._C = (i = this.srl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 58:
-	    this.mudaD(i = this.srl(this.peekb(i_58_)));
+	    this._D = (i = this.srl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 59:
-	    this.mudaE(i = this.srl(this.peekb(i_58_)));
+	    this._E = (i = this.srl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 60:
-	    this.mudaH(i = this.srl(this.peekb(i_58_)));
+	    this._H = (i = this.srl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 61:
-	    this.mudaL(i = this.srl(this.peekb(i_58_)));
+	    this._L = (i = this.srl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 62:
 	    this.pokeb(i_58_, this.srl(this.peekb(i_58_)));
 	    break;
 	case 63:
-	    this.mudaA(i = this.srl(this.peekb(i_58_)));
+	    this._A = (i = this.srl(this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 64:
@@ -3623,499 +3627,499 @@ function Z80(d)
 	    this.bit(128, this.peekb(i_58_));
 	    break;
 	case 128:
-	    this.mudaB(i = this.res(1, this.peekb(i_58_)));
+	    this._B = (i = this.res(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 129:
-	    this.mudaC(i = this.res(1, this.peekb(i_58_)));
+	    this._C = (i = this.res(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 130:
-	    this.mudaD(i = this.res(1, this.peekb(i_58_)));
+	    this._D = (i = this.res(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 131:
-	    this.mudaE(i = this.res(1, this.peekb(i_58_)));
+	    this._E = (i = this.res(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 132:
-	    this.mudaH(i = this.res(1, this.peekb(i_58_)));
+	    this._H = (i = this.res(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 133:
-	    this.mudaL(i = this.res(1, this.peekb(i_58_)));
+	    this._L = (i = this.res(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 134:
 	    this.pokeb(i_58_, this.res(1, this.peekb(i_58_)));
 	    break;
 	case 135:
-	    this.mudaA(i = this.res(1, this.peekb(i_58_)));
+	    this._A = (i = this.res(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 136:
-	    this.mudaB(i = this.res(2, this.peekb(i_58_)));
+	    this._B = (i = this.res(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 137:
-	    this.mudaC(i = this.res(2, this.peekb(i_58_)));
+	    this._C = (i = this.res(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 138:
-	    this.mudaD(i = this.res(2, this.peekb(i_58_)));
+	    this._D = (i = this.res(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 139:
-	    this.mudaE(i = this.res(2, this.peekb(i_58_)));
+	    this._E = (i = this.res(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 140:
-	    this.mudaH(i = this.res(2, this.peekb(i_58_)));
+	    this._H = (i = this.res(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 141:
-	    this.mudaL(i = this.res(2, this.peekb(i_58_)));
+	    this._L = (i = this.res(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 142:
 	    this.pokeb(i_58_, this.res(2, this.peekb(i_58_)));
 	    break;
 	case 143:
-	    this.mudaA(i = this.res(2, this.peekb(i_58_)));
+	    this._A = (i = this.res(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 144:
-	    this.mudaB(i = this.res(4, this.peekb(i_58_)));
+	    this._B = (i = this.res(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 145:
-	    this.mudaC(i = this.res(4, this.peekb(i_58_)));
+	    this._C = (i = this.res(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 146:
-	    this.mudaD(i = this.res(4, this.peekb(i_58_)));
+	    this._D = (i = this.res(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 147:
-	    this.mudaE(i = this.res(4, this.peekb(i_58_)));
+	    this._E = (i = this.res(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 148:
-	    this.mudaH(i = this.res(4, this.peekb(i_58_)));
+	    this._H = (i = this.res(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 149:
-	    this.mudaL(i = this.res(4, this.peekb(i_58_)));
+	    this._L = (i = this.res(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 150:
 	    this.pokeb(i_58_, this.res(4, this.peekb(i_58_)));
 	    break;
 	case 151:
-	    this.mudaA(i = this.res(4, this.peekb(i_58_)));
+	    this._A = (i = this.res(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 152:
-	    this.mudaB(i = this.res(8, this.peekb(i_58_)));
+	    this._B = (i = this.res(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 153:
-	    this.mudaC(i = this.res(8, this.peekb(i_58_)));
+	    this._C = (i = this.res(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 154:
-	    this.mudaD(i = this.res(8, this.peekb(i_58_)));
+	    this._D = (i = this.res(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 155:
-	    this.mudaE(i = this.res(8, this.peekb(i_58_)));
+	    this._E = (i = this.res(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 156:
-	    this.mudaH(i = this.res(8, this.peekb(i_58_)));
+	    this._H = (i = this.res(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 157:
-	    this.mudaL(i = this.res(8, this.peekb(i_58_)));
+	    this._L = (i = this.res(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 158:
 	    this.pokeb(i_58_, this.res(8, this.peekb(i_58_)));
 	    break;
 	case 159:
-	    this.mudaA(i = this.res(8, this.peekb(i_58_)));
+	    this._A = (i = this.res(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 160:
-	    this.mudaB(i = this.res(16, this.peekb(i_58_)));
+	    this._B = (i = this.res(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 161:
-	    this.mudaC(i = this.res(16, this.peekb(i_58_)));
+	    this._C = (i = this.res(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 162:
-	    this.mudaD(i = this.res(16, this.peekb(i_58_)));
+	    this._D = (i = this.res(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 163:
-	    this.mudaE(i = this.res(16, this.peekb(i_58_)));
+	    this._E = (i = this.res(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 164:
-	    this.mudaH(i = this.res(16, this.peekb(i_58_)));
+	    this._H = (i = this.res(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 165:
-	    this.mudaL(i = this.res(16, this.peekb(i_58_)));
+	    this._L = (i = this.res(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 166:
 	    this.pokeb(i_58_, this.res(16, this.peekb(i_58_)));
 	    break;
 	case 167:
-	    this.mudaA(i = this.res(16, this.peekb(i_58_)));
+	    this._A = (i = this.res(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 168:
-	    this.mudaB(i = this.res(32, this.peekb(i_58_)));
+	    this._B = (i = this.res(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 169:
-	    this.mudaC(i = this.res(32, this.peekb(i_58_)));
+	    this._C = (i = this.res(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 170:
-	    this.mudaD(i = this.res(32, this.peekb(i_58_)));
+	    this._D = (i = this.res(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 171:
-	    this.mudaE(i = this.res(32, this.peekb(i_58_)));
+	    this._E = (i = this.res(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 172:
-	    this.mudaH(i = this.res(32, this.peekb(i_58_)));
+	    this._H = (i = this.res(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 173:
-	    this.mudaL(i = this.res(32, this.peekb(i_58_)));
+	    this._L = (i = this.res(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 174:
 	    this.pokeb(i_58_, this.res(32, this.peekb(i_58_)));
 	    break;
 	case 175:
-	    this.mudaA(i = this.res(32, this.peekb(i_58_)));
+	    this._A = (i = this.res(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 176:
-	    this.mudaB(i = this.res(64, this.peekb(i_58_)));
+	    this._B = (i = this.res(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 177:
-	    this.mudaC(i = this.res(64, this.peekb(i_58_)));
+	    this._C = (i = this.res(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 178:
-	    this.mudaD(i = this.res(64, this.peekb(i_58_)));
+	    this._D = (i = this.res(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 179:
-	    this.mudaE(i = this.res(64, this.peekb(i_58_)));
+	    this._E = (i = this.res(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 180:
-	    this.mudaH(i = this.res(64, this.peekb(i_58_)));
+	    this._H = (i = this.res(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 181:
-	    this.mudaL(i = this.res(64, this.peekb(i_58_)));
+	    this._L = (i = this.res(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 182:
 	    this.pokeb(i_58_, this.res(64, this.peekb(i_58_)));
 	    break;
 	case 183:
-	    this.mudaA(i = this.res(64, this.peekb(i_58_)));
+	    this._A = (i = this.res(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 184:
-	    this.mudaB(i = this.res(128, this.peekb(i_58_)));
+	    this._B = (i = this.res(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 185:
-	    this.mudaC(i = this.res(128, this.peekb(i_58_)));
+	    this._C = (i = this.res(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 186:
-	    this.mudaD(i = this.res(128, this.peekb(i_58_)));
+	    this._D = (i = this.res(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 187:
-	    this.mudaE(i = this.res(128, this.peekb(i_58_)));
+	    this._E = (i = this.res(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 188:
-	    this.mudaH(i = this.res(128, this.peekb(i_58_)));
+	    this._H = (i = this.res(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 189:
-	    this.mudaL(i = this.res(128, this.peekb(i_58_)));
+	    this._L = (i = this.res(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 190:
 	    this.pokeb(i_58_, this.res(128, this.peekb(i_58_)));
 	    break;
 	case 191:
-	    this.mudaA(i = this.res(128, this.peekb(i_58_)));
+	    this._A = (i = this.res(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 192:
-	    this.mudaB(i = this.set(1, this.peekb(i_58_)));
+	    this._B = (i = this.set(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 193:
-	    this.mudaC(i = this.set(1, this.peekb(i_58_)));
+	    this._C = (i = this.set(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 194:
-	    this.mudaD(i = this.set(1, this.peekb(i_58_)));
+	    this._D = (i = this.set(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 195:
-	    this.mudaE(i = this.set(1, this.peekb(i_58_)));
+	    this._E = (i = this.set(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 196:
-	    this.mudaH(i = this.set(1, this.peekb(i_58_)));
+	    this._H = (i = this.set(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 197:
-	    this.mudaL(i = this.set(1, this.peekb(i_58_)));
+	    this._L = (i = this.set(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 198:
 	    this.pokeb(i_58_, this.set(1, this.peekb(i_58_)));
 	    break;
 	case 199:
-	    this.mudaA(i = this.set(1, this.peekb(i_58_)));
+	    this._A = (i = this.set(1, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 200:
-	    this.mudaB(i = this.set(2, this.peekb(i_58_)));
+	    this._B = (i = this.set(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 201:
-	    this.mudaC(i = this.set(2, this.peekb(i_58_)));
+	    this._C = (i = this.set(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 202:
-	    this.mudaD(i = this.set(2, this.peekb(i_58_)));
+	    this._D = (i = this.set(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 203:
-	    this.mudaE(i = this.set(2, this.peekb(i_58_)));
+	    this._E = (i = this.set(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 204:
-	    this.mudaH(i = this.set(2, this.peekb(i_58_)));
+	    this._H = (i = this.set(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 205:
-	    this.mudaL(i = this.set(2, this.peekb(i_58_)));
+	    this._L = (i = this.set(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 206:
 	    this.pokeb(i_58_, this.set(2, this.peekb(i_58_)));
 	    break;
 	case 207:
-	    this.mudaA(i = this.set(2, this.peekb(i_58_)));
+	    this._A = (i = this.set(2, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 208:
-	    this.mudaB(i = this.set(4, this.peekb(i_58_)));
+	    this._B = (i = this.set(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 209:
-	    this.mudaC(i = this.set(4, this.peekb(i_58_)));
+	    this._C = (i = this.set(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 210:
-	    this.mudaD(i = this.set(4, this.peekb(i_58_)));
+	    this._D = (i = this.set(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 211:
-	    this.mudaE(i = this.set(4, this.peekb(i_58_)));
+	    this._E = (i = this.set(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 212:
-	    this.mudaH(i = this.set(4, this.peekb(i_58_)));
+	    this._H = (i = this.set(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 213:
-	    this.mudaL(i = this.set(4, this.peekb(i_58_)));
+	    this._L = (i = this.set(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 214:
 	    this.pokeb(i_58_, this.set(4, this.peekb(i_58_)));
 	    break;
 	case 215:
-	    this.mudaA(i = this.set(4, this.peekb(i_58_)));
+	    this._A = (i = this.set(4, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 216:
-	    this.mudaB(i = this.set(8, this.peekb(i_58_)));
+	    this._B = (i = this.set(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 217:
-	    this.mudaC(i = this.set(8, this.peekb(i_58_)));
+	    this._C = (i = this.set(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 218:
-	    this.mudaD(i = this.set(8, this.peekb(i_58_)));
+	    this._D = (i = this.set(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 219:
-	    this.mudaE(i = this.set(8, this.peekb(i_58_)));
+	    this._E = (i = this.set(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 220:
-	    this.mudaH(i = this.set(8, this.peekb(i_58_)));
+	    this._H = (i = this.set(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 221:
-	    this.mudaL(i = this.set(8, this.peekb(i_58_)));
+	    this._L = (i = this.set(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 222:
 	    this.pokeb(i_58_, this.set(8, this.peekb(i_58_)));
 	    break;
 	case 223:
-	    this.mudaA(i = this.set(8, this.peekb(i_58_)));
+	    this._A = (i = this.set(8, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 224:
-	    this.mudaB(i = this.set(16, this.peekb(i_58_)));
+	    this._B = (i = this.set(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 225:
-	    this.mudaC(i = this.set(16, this.peekb(i_58_)));
+	    this._C = (i = this.set(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 226:
-	    this.mudaD(i = this.set(16, this.peekb(i_58_)));
+	    this._D = (i = this.set(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 227:
-	    this.mudaE(i = this.set(16, this.peekb(i_58_)));
+	    this._E = (i = this.set(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 228:
-	    this.mudaH(i = this.set(16, this.peekb(i_58_)));
+	    this._H = (i = this.set(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 229:
-	    this.mudaL(i = this.set(16, this.peekb(i_58_)));
+	    this._L = (i = this.set(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 230:
 	    this.pokeb(i_58_, this.set(16, this.peekb(i_58_)));
 	    break;
 	case 231:
-	    this.mudaA(i = this.set(16, this.peekb(i_58_)));
+	    this._A = (i = this.set(16, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 232:
-	    this.mudaB(i = this.set(32, this.peekb(i_58_)));
+	    this._B = (i = this.set(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 233:
-	    this.mudaC(i = this.set(32, this.peekb(i_58_)));
+	    this._C = (i = this.set(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 234:
-	    this.mudaD(i = this.set(32, this.peekb(i_58_)));
+	    this._D = (i = this.set(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 235:
-	    this.mudaE(i = this.set(32, this.peekb(i_58_)));
+	    this._E = (i = this.set(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 236:
-	    this.mudaH(i = this.set(32, this.peekb(i_58_)));
+	    this._H = (i = this.set(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 237:
-	    this.mudaL(i = this.set(32, this.peekb(i_58_)));
+	    this._L = (i = this.set(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 238:
 	    this.pokeb(i_58_, this.set(32, this.peekb(i_58_)));
 	    break;
 	case 239:
-	    this.mudaA(i = this.set(32, this.peekb(i_58_)));
+	    this._A = (i = this.set(32, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 240:
-	    this.mudaB(i = this.set(64, this.peekb(i_58_)));
+	    this._B = (i = this.set(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 241:
-	    this.mudaC(i = this.set(64, this.peekb(i_58_)));
+	    this._C = (i = this.set(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 242:
-	    this.mudaD(i = this.set(64, this.peekb(i_58_)));
+	    this._D = (i = this.set(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 243:
-	    this.mudaE(i = this.set(64, this.peekb(i_58_)));
+	    this._E = (i = this.set(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 244:
-	    this.mudaH(i = this.set(64, this.peekb(i_58_)));
+	    this._H = (i = this.set(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 245:
-	    this.mudaL(i = this.set(64, this.peekb(i_58_)));
+	    this._L = (i = this.set(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 246:
 	    this.pokeb(i_58_, this.set(64, this.peekb(i_58_)));
 	    break;
 	case 247:
-	    this.mudaA(i = this.set(64, this.peekb(i_58_)));
+	    this._A = (i = this.set(64, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 248:
-	    this.mudaB(i = this.set(128, this.peekb(i_58_)));
+	    this._B = (i = this.set(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 249:
-	    this.mudaC(i = this.set(128, this.peekb(i_58_)));
+	    this._C = (i = this.set(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 250:
-	    this.mudaD(i = this.set(128, this.peekb(i_58_)));
+	    this._D = (i = this.set(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 251:
-	    this.mudaE(i = this.set(128, this.peekb(i_58_)));
+	    this._E = (i = this.set(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 252:
-	    this.mudaH(i = this.set(128, this.peekb(i_58_)));
+	    this._H = (i = this.set(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 253:
-	    this.mudaL(i = this.set(128, this.peekb(i_58_)));
+	    this._L = (i = this.set(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	case 254:
 	    this.pokeb(i_58_, this.set(128, this.peekb(i_58_)));
 	    break;
 	case 255:
-	    this.mudaA(i = this.set(128, this.peekb(i_58_)));
+	    this._A = (i = this.set(128, this.peekb(i_58_)));
 	    this.pokeb(i_58_, i);
 	    break;
 	}
@@ -4123,25 +4127,25 @@ function Z80(d)
 
     this.exx = function() {
 	var i = this.HL();
-	this.mudaHL(this._HL_);
+	this.setHL(this._HL_);
 	this._HL_ = i;
 	i = this.DE();
-	this.mudaDE(this._DE_);
+	this.setDE(this._DE_);
 	this._DE_ = i;
 	i = this.BC();
-	this.mudaBC(this._BC_);
+	this.setBC(this._BC_);
 	this._BC_ = i;
     }
     
     this.in_bc = function() {
-	var i = this.inb(this.C());
-	this.setZ(i == 0);
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setPV(this.parity[i]);
-	this.setN(false);
-	this.setH(false);
+	var i = this.inb(this._C);
+	this.fZ = (i == 0);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fPV = (this.parity[i]);
+	this.fN = (false);
+	this.fH = (false);
 	return i;
     }
     
@@ -4158,18 +4162,17 @@ function Z80(d)
 	var bool = i == 127;
 	var bool_59_ = ((i & 0xf) + 1 & 0x10) != 0;
 	i = i + 1 & 0xff;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(bool);
-	this.setH(bool_59_);
-	this.setN(false);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (bool);
+	this.fH = (bool_59_);
+	this.fN = (false);
 	return i;
     }
     
     this.z80_interrupt = function() {
-//	return 0;// remove me - z80 interrupt disabled for debug
 
 	if (!this.IFF1())
 	    return 0;
@@ -4177,16 +4180,16 @@ function Z80(d)
 	case 0:
 	case 1:
 	    this.pushpc();
-	    this.mudaIFF1(false);
-	    this.mudaIFF2(false);
-	    this.mudaPC(56);
+	    this.setIFF1(false);
+	    this.setIFF2(false);
+	    this._PC = (56);
 	    return 13;
 	case 2: {
 	    this.pushpc();
-	    this.mudaIFF1(false);
-	    this.mudaIFF2(false);
+	    this.setIFF1(false);
+	    this.setIFF2(false);
 	    var i = this.I() << 8 | 0xff;
-	    this.mudaPC(this.peekw(i));
+	    this._PC = (this.peekw(i));
 	    return 19;
 	}
 	default:
@@ -4200,63 +4203,64 @@ function Z80(d)
     
     this.ld_a_i = function() {
 	var i = this.I();
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.IFF2());
-	this.setH(false);
-	this.setN(false);
-	this.mudaA(i);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.IFF2());
+	this.fH = (false);
+	this.fN = (false);
+	this._A = (i);
     }
     
     this.ld_a_r = function() {
 	var i = this.R();
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.IFF2());
-	this.setH(false);
-	this.setN(false);
-	this.mudaA(i);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.IFF2());
+	this.fH = (false);
+	this.fN = (false);
+	this._A = (i);
     }
     
-    this.mudaA = function(i) {
+    this.setA = function(i) {
 	this._A = i & 0xff;
     }
     
-    this.mudaAF = function(i) {
-	this.mudaA(i >> 8);
-	this.mudaF(i & 0xff);
+    this.setAF = function(i) {
+	this._A = (i >> 8);
+	this.setF(i & 0xff);
     }
     
-    this.mudaB = function(i) {
+    this.setB = function(i) {
 	this._B = i & 0xff;
     }
     
-    this.mudaBC = function(i) {
-	this.mudaB(i >> 8);
-	this.mudaC(i & 0xff);
+    this.setBC = function(i) {
+	this._B = (i >> 8);
+	this._C = (i & 0xff);
     }
     
-    this.mudaC = function(i) {
+    this.setC = function(i) {
 	this._C = i & 0xff;
     }
     
-    this.mudaD = function(i) {
-	this._DE = i << 8 & 0xff00 | this._DE & 0xff;
+    this.setD = function(i) {
+	this._D = i & 0xff;
     }
     
-    this.mudaDE = function(i) {
-	this._DE = i;
+    this.setDE = function(i) {
+	this._D = (i >> 8);
+	this._E = (i & 0xff);
     }
     
-    this.mudaE = function(i) {
-	this._DE = this._DE & 0xff00 | i & 0xff;
+    this.setE = function(i) {
+	this._E = i & 0xff;
     }
     
-    this.mudaF = function(i) {
+    this.setF = function(i) {
 	this.fS = (i & 0x80) != 0;
 	this.fZ = (i & 0x40) != 0;
 	this.f5 = (i & 0x20) != 0;
@@ -4267,99 +4271,100 @@ function Z80(d)
 	this.fC = (i & 0x1) != 0;
     }
     
-    this.mudaH = function(i) {
-	this._HL = i << 8 & 0xff00 | this._HL & 0xff;
+    this.setH = function(i) {
+	this._H = i & 0xff;
     }
     
-    this.mudaHL = function(i) {
-	this._HL = i;
+    this.setHL = function(i) {
+	this._H = (i >> 8);
+	this._L = (i & 0xff);
     }
     
-    this.mudaI = function(i) {
+    this.setI = function(i) {
 	this._I = i;
     }
     
-    this.mudaID = function(i) {
+    this.setID = function(i) {
 	this._ID = i;
     }
     
-    this.mudaIDH = function(i) {
+    this.setIDH = function(i) {
 	this._ID = i << 8 & 0xff00 | this._ID & 0xff;
     }
     
-    this.mudaIDL = function(i) {
+    this.setIDL = function(i) {
 	this._ID = this._ID & 0xff00 | i & 0xff;
     }
     
-    this.mudaIFF1 = function(bool) {
+    this.setIFF1 = function(bool) {
 	this._IFF1 = bool;
     }
     
-    this.mudaIFF2 = function(bool) {
+    this.setIFF2 = function(bool) {
 	this._IFF2 = bool;
     }
     
-    this.mudaIM = function(i) {
+    this.setIM = function(i) {
 	this._IM = i;
     }
     
-    this.mudaIX = function(i) {
+    this.setIX = function(i) {
 	this._IX = i;
     }
     
-    this.mudaIY = function(i) {
+    this.setIY = function(i) {
 	this._IY = i;
     }
     
-    this.mudaL = function(i) {
-	this._HL = this._HL & 0xff00 | i & 0xff;
+    this.setL = function(i) {
+	this._L = i & 0xff;
     }
     
-    this.mudaPC = function(i) {
+    this.setPC = function(i) {
 	this._PC = i;
     }
     
-    this.mudaR = function(i) {
+    this.setR = function(i) {
 	this._R = i;
 	this._R7 = i & 0x80;
     }
     
-    this.mudaSP = function(i) {
+    this.setSP = function(i) {
 	this._SP = i;
     }
     
     this.neg_a = function() {
-	var i = this.A();
-	this.mudaA(0);
+	var i = this._A;
+	this._A = (0);
 	this.sub_a(i);
     }
     
     this.nxtpcb = function() {
-	var i = this.PC();
+	var i = this._PC;
 	var i_60_ = this.peekb(i);
-	this.mudaPC(++i & 0xffff);
+	this._PC = (++i & 0xffff);
 	return i_60_;
     }
     
     this.nxtpcw = function() {
-	var i = this.PC();
+	var i = this._PC;
 	var i_61_ = this.peekb(i);
 	i_61_ |= this.peekb(++i & 0xffff) << 8;
-	this.mudaPC(++i & 0xffff);
+	this._PC = (++i & 0xffff);
 	return i_61_;
     }
     
     this.or_a = function(i) {
-	var i_62_ = this.A() | i;
-	this.setS((i_62_ & 0x80) != 0);
-	this.set3((i_62_ & 0x8) != 0);
-	this.set5((i_62_ & 0x20) != 0);
-	this.setH(false);
-	this.setPV(this.parity[i_62_]);
-	this.setZ(i_62_ == 0);
-	this.setN(false);
-	this.setC(false);
-	this.mudaA(i_62_);
+	var i_62_ = this._A | i;
+	this.fS = ((i_62_ & 0x80) != 0);
+	this.f3 = ((i_62_ & 0x8) != 0);
+	this.f5 = ((i_62_ & 0x20) != 0);
+	this.fH = (false);
+	this.fPV = (this.parity[i_62_]);
+	this.fZ = (i_62_ == 0);
+	this.fN = (false);
+	this.fC = (false);
+	this._A = (i_62_);
     }
     
     this.outb = function(i, i_63_, i_64_) {
@@ -4383,13 +4388,13 @@ function Z80(d)
     }
     
     this.poppc = function() {
-	this.mudaPC(this.popw());
+	this._PC = (this.popw());
     }
     
     this.popw = function() {
-	var i = this.SP();
+	var i = this._SP;
 	var i_67_ = this.peekw(i++);
-	this.mudaSP(++i & 0xffff);
+	this._SP = (++i & 0xffff);
 	return i_67_;
     }
     
@@ -4450,12 +4455,12 @@ function Z80(d)
     }
     
     this.pushpc = function() {
-	this.pushw(this.PC());
+	this.pushw(this._PC);
     }
     
     this.pushw = function(i) {
-	var i_70_ = this.SP() - 2 & 0xffff;
-	this.mudaSP(i_70_);
+	var i_70_ = this._SP - 2 & 0xffff;
+	this._SP = (i_70_);
 	this.pokew(i_70_, i);
     }
     
@@ -4472,27 +4477,27 @@ function Z80(d)
     }
     
     this.reset = function() {
-	this.mudaPC(0);
-	this.mudaSP(65520);
-	this.mudaA(0);
-	this.mudaF(0);
-	this.mudaBC(0);
-	this.mudaDE(0);
-	this.mudaHL(0);
+	this._PC = (0);
+	this._SP = (65520);
+	this._A = (0);
+	this.setF(0);
+	this.setBC(0);
+	this.setDE(0);
+	this.setHL(0);
 	this.exx();
 	this.ex_af_af();
-	this.mudaA(0);
-	this.mudaF(0);
-	this.mudaBC(0);
-	this.mudaDE(0);
-	this.mudaHL(0);
-	this.mudaIX(0);
-	this.mudaIY(0);
-	this.mudaR(0);
-	this.mudaI(0);
-	this.mudaIFF1(false);
-	this.mudaIFF2(false);
-	this.mudaIM(0);
+	this._A = (0);
+	this.setF(0);
+	this.setBC(0);
+	this.setDE(0);
+	this.setHL(0);
+	this.setIX(0);
+	this.setIY(0);
+	this.setR(0);
+	this.setI(0);
+	this.setIFF1(false);
+	this.setIFF2(false);
+	this.setIM(0);
     }
     
     this.retornaHex = function(i) {
@@ -5074,36 +5079,36 @@ function Z80(d)
     
     this.rl = function(i) {
 	var bool = (i & 0x80) != 0;
-	if (this.Cset())
+	if (this.fC)
 	    i = i << 1 | 0x1;
 	else
 	    i <<= 1;
 	i &= 0xff;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.setC(bool);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this.fC = (bool);
 	return i;
     }
     
     this.rl_a = function() {
-	var i = this.A();
+	var i = this._A;
 	var bool = (i & 0x80) != 0;
-	if (this.Cset())
+	if (this.fC)
 	    i = i << 1 | 0x1;
 	else
 	    i <<= 1;
 	i &= 0xff;
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setN(false);
-	this.setH(false);
-	this.setC(bool);
-	this.mudaA(i);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fN = (false);
+	this.fH = (false);
+	this.fC = (bool);
+	this._A = (i);
     }
     
     this.rlc = function(i) {
@@ -5113,80 +5118,80 @@ function Z80(d)
 	else
 	    i <<= 1;
 	i &= 0xff;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.setC(bool);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this.fC = (bool);
 	return i;
     }
     
     this.rlc_a = function() {
-	var i = this.A();
+	var i = this._A;
 	var bool = (i & 0x80) != 0;
 	if (bool)
 	    i = i << 1 | 0x1;
 	else
 	    i <<= 1;
 	i &= 0xff;
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setN(false);
-	this.setH(false);
-	this.setC(bool);
-	this.mudaA(i);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fN = (false);
+	this.fH = (false);
+	this.fC = (bool);
+	this._A = (i);
     }
     
     this.rld_a = function() {
-	var i = this.A();
+	var i = this._A;
 	var i_74_ = this.peekb(this.HL());
 	var i_75_ = i_74_;
 	i_74_ = i_74_ << 4 | i & 0xf;
 	i = i & 0xf0 | i_75_ >> 4;
 	this.pokeb(this.HL(), i_74_ & 0xff);
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.mudaA(i);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this._A = (i);
     }
     
     this.rr = function(i) {
 	var bool = (i & 0x1) != 0;
-	if (this.Cset())
+	if (this.fC)
 	    i = i >> 1 | 0x80;
 	else
 	    i >>= 1;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.setC(bool);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this.fC = (bool);
 	return i;
     }
     
     this.rr_a = function() {
-	var i = this.A();
+	var i = this._A;
 	var bool = (i & 0x1) != 0;
-	if (this.Cset())
+	if (this.fC)
 	    i = i >> 1 | 0x80;
 	else
 	    i >>= 1;
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setN(false);
-	this.setH(false);
-	this.setC(bool);
-	this.mudaA(i);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fN = (false);
+	this.fH = (false);
+	this.fC = (bool);
+	this._A = (i);
     }
     
     this.rrc = function(i) {
@@ -5195,206 +5200,206 @@ function Z80(d)
 	    i = i >> 1 | 0x80;
 	else
 	    i >>= 1;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.setC(bool);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this.fC = (bool);
 	return i;
     }
     
     this.rrc_a = function() {
-	var i = this.A();
+	var i = this._A;
 	var bool = (i & 0x1) != 0;
 	if (bool)
 	    i = i >> 1 | 0x80;
 	else
 	    i >>= 1;
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setN(false);
-	this.setH(false);
-	this.setC(bool);
-	this.mudaA(i);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fN = (false);
+	this.fH = (false);
+	this.fC = (bool);
+	this._A = (i);
     }
     
     this.rrd_a = function() {
-	var i = this.A();
+	var i = this._A;
 	var i_76_ = this.peekb(this.HL());
 	var i_77_ = i_76_;
 	var i_76_ = i_76_ >> 4 | i << 4;
 	i = i & 0xf0 | i_77_ & 0xf;
 	this.pokeb(this.HL(), i_76_);
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.mudaA(i);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this._A = (i);
     }
     
     this.sbc16 = function(i, i_78_) {
-	var i_79_ = this.Cset() ? 1 : 0;
+	var i_79_ = this.fC ? 1 : 0;
 	var i_80_ = i - i_78_ - i_79_;
 	var i_81_ = i_80_ & 0xffff;
-	this.setS((i_81_ & 0x8000) != 0);
-	this.set3((i_81_ & 0x800) != 0);
-	this.set5((i_81_ & 0x2000) != 0);
-	this.setZ(i_81_ == 0);
-	this.setC((i_80_ & 0x10000) != 0);
-	this.setPV(((i ^ i_78_) & (i ^ i_81_) & 0x8000) != 0);
-	this.setH(((i & 0xfff) - (i_78_ & 0xfff) - i_79_ & 0x1000) != 0);
-	this.setN(true);
+	this.fS = ((i_81_ & 0x8000) != 0);
+	this.f3 = ((i_81_ & 0x800) != 0);
+	this.f5 = ((i_81_ & 0x2000) != 0);
+	this.fZ = (i_81_ == 0);
+	this.fC = ((i_80_ & 0x10000) != 0);
+	this.fPV = (((i ^ i_78_) & (i ^ i_81_) & 0x8000) != 0);
+	this.fH = (((i & 0xfff) - (i_78_ & 0xfff) - i_79_ & 0x1000) != 0);
+	this.fN = (true);
 	return i_81_;
     }
     
     this.sbc_a = function(i) {
-	var i_82_ = this.A();
-	var i_83_ = this.Cset() ? 1 : 0;
+	var i_82_ = this._A;
+	var i_83_ = this.fC ? 1 : 0;
 	var i_84_ = i_82_ - i - i_83_;
 	var i_85_ = i_84_ & 0xff;
-	this.setS((i_85_ & 0x80) != 0);
-	this.set3((i_85_ & 0x8) != 0);
-	this.set5((i_85_ & 0x20) != 0);
-	this.setZ(i_85_ == 0);
-	this.setC((i_84_ & 0x100) != 0);
-	this.setPV(((i_82_ ^ i) & (i_82_ ^ i_85_) & 0x80) != 0);
-	this.setH(((i_82_ & 0xf) - (i & 0xf) - i_83_ & 0x10) != 0);
-	this.setN(true);
-	this.mudaA(i_85_);
+	this.fS = ((i_85_ & 0x80) != 0);
+	this.f3 = ((i_85_ & 0x8) != 0);
+	this.f5 = ((i_85_ & 0x20) != 0);
+	this.fZ = (i_85_ == 0);
+	this.fC = ((i_84_ & 0x100) != 0);
+	this.fPV = (((i_82_ ^ i) & (i_82_ ^ i_85_) & 0x80) != 0);
+	this.fH = (((i_82_ & 0xf) - (i & 0xf) - i_83_ & 0x10) != 0);
+	this.fN = (true);
+	this._A = (i_85_);
     }
     
     this.scf = function() {
-	var i = this.A();
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setN(false);
-	this.setH(false);
-	this.setC(true);
+	var i = this._A;
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fN = (false);
+	this.fH = (false);
+	this.fC = (true);
     }
     
     this.set = function(i, i_86_) {
 	return i_86_ | i;
     }
     
-    this.set3 = function(bool) {
+    this.setf3 = function(bool) {
 	this.f3 = bool;
     }
     
-    this.set5 = function(bool) {
+    this.setf5 = function(bool) {
 	this.f5 = bool;
     }
     
-    this.setC = function(bool) {
+    this.setfC = function(bool) {
 	this.fC = bool;
     }
     
-    this.setH = function(bool) {
+    this.setfH = function(bool) {
 	this.fH = bool;
     }
     
-    this.setN = function(bool) {
+    this.setfN = function(bool) {
 	this.fN = bool;
     }
     
-    this.setPV = function(bool) {
+    this.setfPV = function(bool) {
 	this.fPV = bool;
     }
     
-    this.setS = function(bool) {
+    this.setfS = function(bool) {
 	this.fS = bool;
     }
     
-    this.setZ = function(bool) {
+    this.setfZ = function(bool) {
 	this.fZ = bool;
     }
     
     this.sla = function(i) {
 	var bool = (i & 0x80) != 0;
 	i = i << 1 & 0xff;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.setC(bool);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this.fC = (bool);
 	return i;
     }
     
     this.sls = function(i) {
 	var bool = (i & 0x80) != 0;
 	i = (i << 1 | 0x1) & 0xff;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.setC(bool);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this.fC = (bool);
 	return i;
     }
     
     this.sra = function(i) {
 	var bool = (i & 0x1) != 0;
 	i = i >> 1 | i & 0x80;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.setC(bool);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this.fC = (bool);
 	return i;
     }
     
     this.srl = function(i) {
 	var bool = (i & 0x1) != 0;
 	i >>= 1;
-	this.setS((i & 0x80) != 0);
-	this.set3((i & 0x8) != 0);
-	this.set5((i & 0x20) != 0);
-	this.setZ(i == 0);
-	this.setPV(this.parity[i]);
-	this.setH(false);
-	this.setN(false);
-	this.setC(bool);
+	this.fS = ((i & 0x80) != 0);
+	this.f3 = ((i & 0x8) != 0);
+	this.f5 = ((i & 0x20) != 0);
+	this.fZ = (i == 0);
+	this.fPV = (this.parity[i]);
+	this.fH = (false);
+	this.fN = (false);
+	this.fC = (bool);
 	return i;
     }
     
     this.sub_a = function(i) {
-	var i_87_ = this.A();
+	var i_87_ = this._A;
 	var i_88_ = i_87_ - i;
 	var i_89_ = i_88_ & 0xff;
-	this.setS((i_89_ & 0x80) != 0);
-	this.set3((i_89_ & 0x8) != 0);
-	this.set5((i_89_ & 0x20) != 0);
-	this.setZ(i_89_ == 0);
-	this.setC((i_88_ & 0x100) != 0);
-	this.setPV(((i_87_ ^ i) & (i_87_ ^ i_89_) & 0x80) != 0);
-	this.setH(((i_87_ & 0xf) - (i & 0xf) & 0x10) != 0);
-	this.setN(true);
-	this.mudaA(i_89_);
+	this.fS = ((i_89_ & 0x80) != 0);
+	this.f3 = ((i_89_ & 0x8) != 0);
+	this.f5 = ((i_89_ & 0x20) != 0);
+	this.fZ = (i_89_ == 0);
+	this.fC = ((i_88_ & 0x100) != 0);
+	this.fPV = (((i_87_ ^ i) & (i_87_ ^ i_89_) & 0x80) != 0);
+	this.fH = (((i_87_ & 0xf) - (i & 0xf) & 0x10) != 0);
+	this.fN = (true);
+	this._A = (i_89_);
     }
     
     this.xor_a = function(i) {
-	var i_90_ = (this.A() ^ i) & 0xff;
-	this.setS((i_90_ & 0x80) != 0);
-	this.set3((i_90_ & 0x8) != 0);
-	this.set5((i_90_ & 0x20) != 0);
-	this.setH(false);
-	this.setPV(this.parity[i_90_]);
-	this.setZ(i_90_ == 0);
-	this.setN(false);
-	this.setC(false);
-	this.mudaA(i_90_);
+	var i_90_ = (this._A ^ i) & 0xff;
+	this.fS = ((i_90_ & 0x80) != 0);
+	this.f3 = ((i_90_ & 0x8) != 0);
+	this.f5 = ((i_90_ & 0x20) != 0);
+	this.fH = (false);
+	this.fPV = (this.parity[i_90_]);
+	this.fZ = (i_90_ == 0);
+	this.fN = (false);
+	this.fC = (false);
+	this._A = (i_90_);
     }
 }
