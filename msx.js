@@ -55,7 +55,6 @@ function MSX(window,canvas,logbuf)
     this.pauseAtNextInterrupt=false;
     this.refreshNextInterrupt=true;
     this.DipSwitchSYNC=true;
-    //private float frameRate;
 
 
     this.println = function(str) {
@@ -846,11 +845,6 @@ function MSX(window,canvas,logbuf)
 	this.pauseAtNextInterrupt = false;
 	this.refreshNextInterrupt = true;
 	this.DipSwitchSYNC = 0;
-	this.pausedThread = null;
-	this.timeOfLastInterrupt = 0;
-	this.timeOfLastSample = 0;
-	this.timeOfLastFrameInterrupt = 0;
-	this.timeOfLastFrameSample = 0;
 
 	this.println("Starting RAM slots");
 	this.memoria = new Array(4);
@@ -912,19 +906,12 @@ msx_interrupt = function()
 }
 
 
-msx_loadurl = function(url) { //fetches binary file
-    try {
-      netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
-	var req = new XMLHttpRequest();
-	req.open('GET', url, false); 
-	// charset opt by Marcus Granado 2006 [mgran.blogspot.com]
-	req.overrideMimeType('text/plain; charset=x-user-defined');
-	req.send(null);
-	if(req.status != 200) return '';
-	return req.responseText;
-    } catch (e) {
-	alert("Error loading "+url+":"+e);
-    }
-    return '';
+msx_loadurl = function(url) {
+	//alert(url);
+	var io = new browserio();
+	var data = io.load(url);
+	//alert(data);
+	return data; 
 }
+
 
