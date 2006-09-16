@@ -71,9 +71,7 @@ function MSX(window,canvas,logbuf)
     this.inb = function(i) {
 	switch (i) {
 	case 162:
-	    if (this.psg != null)
-		return this.psg.lePortaDados();
-	    /* fall through */
+	    return this.psg.lePortaDados();
 	case 168:
 	    return this.PPIPortA;
 	case 169:
@@ -83,13 +81,9 @@ function MSX(window,canvas,logbuf)
 	case 171:
 	    return this.PPIPortD;
 	case 152:
-	    if (this.vdp != null)
-		return this.vdp.lePortaDados();
-	    /* fall through */
+	    return this.vdp.lePortaDados();
 	case 153:
-	    if (this.vdp != null)
-		return this.vdp.lePortaComandos();
-	    /* fall through */
+	    return this.vdp.lePortaComandos();
 	default:
 	    if (this.portos[i] != -1)
 		return this.portos[i];
@@ -234,12 +228,10 @@ function MSX(window,canvas,logbuf)
 	    this.println("Megarom mode");
 	    break;
 	case 160:
-	    if (this.psg != null)
-		this.psg.escrevePortaEndereco(i_19_);
+	    this.psg.escrevePortaEndereco(i_19_);
 	    break;
 	case 161:
-	    if (this.psg != null)
-		this.psg.escrevePortaDados(i_19_);
+	    this.psg.escrevePortaDados(i_19_);
 	    break;
 	case 168:
 	    this.PPIPortA = i_19_;
@@ -254,12 +246,10 @@ function MSX(window,canvas,logbuf)
 	    this.PPIPortD = i_19_;
 	    break;
 	case 152:
-	    if (this.vdp != null)
-		this.vdp.escrevePortaDados(i_19_);
+	    this.vdp.escrevePortaDados(i_19_);
 	    break;
 	case 153:
-	    if (this.vdp != null)
-		this.vdp.escrevePortaComandos(i_19_);
+	    this.vdp.escrevePortaComandos(i_19_);
 	    break;
 	default:
 	    this.portos[i] = i_19_;
@@ -267,82 +257,37 @@ function MSX(window,canvas,logbuf)
     }
     
     this.peekb = function(i) {
-	var i_21_ = 0;
-	switch ((i & 0xc000) >> 14) {
-	case 0:
-	    i_21_ = this.PPIPortA & 0x3;
-	    break;
-	case 1:
-	    i_21_ = (this.PPIPortA & 0xc) >> 2;
-	    break;
-	case 2:
-	    i_21_ = (this.PPIPortA & 0x30) >> 4;
-	    break;
-	case 3:
-	    i_21_ = (this.PPIPortA & 0xc0) >> 6;
-	    break;
-	default:
-	    i_21_ = 0;
-	}
-	var i_22_ = 0;
-	if (i_21_ == this.cartSlot && this.megarom && i <= 49151 && i >= 16384)
-	    i_22_ = this.cart[this.pagMegaRom[Math.floor(i / 8192) - 2]][i % 8192];
-	else
-	    i_22_ = this.memoria[i_21_][i];
-
-	return i_22_;
-    }
-    
-    this.peekw = function(i) {
-	var i_23_ = 0;
-	switch ((i & 0xc000) >> 14) {
-	case 0:
-	    i_23_ = this.PPIPortA & 0x3;
-	    break;
-	case 1:
-	    i_23_ = (this.PPIPortA & 0xc) >> 2;
-	    break;
-	case 2:
-	    i_23_ = (this.PPIPortA & 0x30) >> 4;
-	    break;
-	case 3:
-	    i_23_ = (this.PPIPortA & 0xc0) >> 6;
-	    break;
-	default:
-	    i_23_ = 0;
-	}
-	var i_24_ = 0;
-	if (i_23_ == this.cartSlot && this.megarom && i >= 16384 && i < 49152) {
-	    i_24_ = this.cart[this.pagMegaRom[Math.floor(i / 8192) - 2]][i % 8192];
-	    i++;
-	    i_24_ = this.cart[this.pagMegaRom[Math.floor(i / 8192) - 2]][i % 8192] << 8 | i_24_;
+	if (!this.megarom) {
+	  return this.memoria[0x3 & (this.PPIPortA >> ((i&0xc000)>>13))][i];
 	} else {
-	    i_24_ = this.memoria[i_23_][i];
-	    i++;
-	    i_24_ = this.memoria[i_23_][i] << 8 | i_24_;
+	  if (((i&0xc000)>>14)==this.cartSlot && i<=49151 && i>=16384)
+	    return this.cart[this.pagMegaRom[(i>>13)-2]][i%8192];
+	  else
+	    return this.memoria[0x3 & (this.PPIPortA >> ((i&0xc000)>>13))][i];
 	}
-	return i_24_;
+    }
+
+    this.peekw = function(i) {
+	if (!this.megarom) {
+	  return this.memoria[0x3 & (this.PPIPortA>>(((i+1)&0xc000)>>13))][i+1]<<8 |
+	    this.memoria[0x3 & (this.PPIPortA >> ((i&0xc000)>>13))][i];
+	} else {
+	  if (((i&0xc000)>>14)==this.cartSlot && i<=49151 && i>=16384)
+	    return this.cart[this.pagMegaRom[((i+1)>>13)-2]][(i+1)%8192]<<8 |   
+	      this.cart[this.pagMegaRom[(i>>13)-2]][i%8192];
+	  else
+	  return this.memoria[0x3 & (this.PPIPortA>>(((i+1)&0xc000)>>13))][i+1]<<8 |
+	    this.memoria[0x3 & (this.PPIPortA >> ((i&0xc000)>>13))][i];
+	}
     }
     
     this.pokeb = function(i, i_25_) {
-	var i_26_ = 0;
-	switch ((i & 0xc000) >> 14) {
-	case 0:
-	    i_26_ = this.PPIPortA & 0x3;
-	    break;
-	case 1:
-	    i_26_ = (this.PPIPortA & 0xc) >> 2;
-	    break;
-	case 2:
-	    i_26_ = (this.PPIPortA & 0x30) >> 4;
-	    break;
-	case 3:
-	    i_26_ = (this.PPIPortA & 0xc0) >> 6;
-	    break;
-	default:
-	    i_26_ = 0;
-	}
-	if (this.megarom && i_26_ == this.cartSlot) {
+	var i_26_ = 0x3 & (this.PPIPortA >> ((i&0xc000)>>13));
+	if (this.podeEscrever[i_26_]) this.memoria[i_26_][i] = i_25_ & 0xff;
+	if (i == 65535) this.memoria[i_26_][65535] = 255;
+	if (!this.megarom) return;
+
+	if (i_26_ == this.cartSlot) {
 	    switch (this.tipoMegarom) {
 	    case 0:
 		if (i == 16384 || i == 20480)
@@ -384,31 +329,18 @@ function MSX(window,canvas,logbuf)
 		break;
 	    }
 	}
-	if (this.podeEscrever[i_26_])
-	    this.memoria[i_26_][i] = i_25_ & 0xff;
-	if (i == 65535)
-	    this.memoria[i_26_][65535] = 255;
     }
     
     this.pokew = function(i, i_27_) {
-	var i_28_ = 0;
-	switch ((i & 0xc000) >> 14) {
-	case 0:
-	    i_28_ = this.PPIPortA & 0x3;
-	    break;
-	case 1:
-	    i_28_ = (this.PPIPortA & 0xc) >> 2;
-	    break;
-	case 2:
-	    i_28_ = (this.PPIPortA & 0x30) >> 4;
-	    break;
-	case 3:
-	    i_28_ = (this.PPIPortA & 0xc0) >> 6;
-	    break;
-	default:
-	    i_28_ = 0;
+	var i_28_ = 0x3 & (this.PPIPortA >> ((i&0xc000)>>13));
+	if (this.podeEscrever[i_28_]) {
+	    this.memoria[i_28_][i] = i_27_ & 0xff;
+	    if (++i < 65535) this.memoria[i_28_][i] = i_27_ >> 8;
+	    if (i == 65535 || i == 65536) this.memoria[i_28_][65535] = 255;
 	}
-	if (this.megarom && i_28_ == this.cartSlot) {
+	if (!this.megarom) return;
+
+	if (i_28_ == this.cartSlot) {
 	    switch (this.tipoMegarom) {
 	    case 0:
 		if (i == 16384 || i == 20480)
@@ -476,13 +408,6 @@ function MSX(window,canvas,logbuf)
 		}
 		break;
 	    }
-	}
-	if (this.podeEscrever[i_28_]) {
-	    this.memoria[i_28_][i] = i_27_ & 0xff;
-	    if (++i < 65535)
-		this.memoria[i_28_][i] = i_27_ >> 8;
-	    if (i == 65535 || i == 65536)
-		this.memoria[i_28_][65535] = 255;
 	}
     }
     
@@ -847,7 +772,7 @@ function MSX(window,canvas,logbuf)
 	this.DipSwitchSYNC = 0;
 
 	this.println("Starting RAM slots");
-	this.memoria = new Array(4);
+	this.memoria = new Array(4); //4 primary slots
 	this.m0 = new Array(65536);
 	this.memoria[0] = this.m0;
 	for (var i=0;i<65536;i++) this.m0[i]=255;
