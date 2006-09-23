@@ -388,11 +388,13 @@ function Z80(d)
 
 	var i = -(this.tstatesPerInterrupt - this.interrupt());
 
+	//var i_22_ = this.nxtpcb();	
+	//if (this.showpc) 
+	//this.vdp.imagedata.data[this._PC*4]+=247;
+
 	while (i < 0) {
-	    this.REFRESH(1);
-	    var i_22_ = this.nxtpcb();
-	    //if (this.showpc) 
-	    //this.vdp.imagedata.data[this._PC*4]+=247;
+	    this._R+=(1);
+           var i_22_ = this.peekb(this._PC++);
 
 	    switch (i_22_) {
 	    default:
@@ -906,7 +908,7 @@ function Z80(d)
 	    case 118: {
 		var i_33_ = (-i - 1) / 4 + 1;
 		i += i_33_ * 4;
-		this.REFRESH(i_33_ - 1);
+		this._R+=(i_33_ - 1);
 		break;
 	    }
 	    case 119:
@@ -1584,7 +1586,7 @@ function Z80(d)
     }
     
     this.execute_cb = function() {
-	this.REFRESH(1);
+	this._R+=(1);
 	switch (this.nxtpcb()) {
 	case 0:
 	    this._B = (this.rlc(this._B));
@@ -2408,7 +2410,7 @@ function Z80(d)
     }
     
     this.execute_ed = function(i) {
-	this.REFRESH(1);
+	this._R+=(1);
 	switch (this.nxtpcb()) {
 	case 0:
 	case 1:
@@ -2737,7 +2739,7 @@ function Z80(d)
 	    this.setDE(this.inc16(this.DE()));
 	    this.setBC(this.dec16(this.BC()));
 	    var i_48_ = 21;
-	    this.REFRESH(4);
+	    this._R+=(4);
 	    if (this.BC() != 0) {
 		this._PC = (this._PC - 2 & 0xffff);
 		this.fH = (false);
@@ -2791,7 +2793,7 @@ function Z80(d)
 	}
 	case 184: {
 	    var bool = false;
-	    this.REFRESH(4);
+	    this._R+=(4);
 	    this.pokeb(this.DE(), this.peekb(this.HL()));
 	    this.setDE(this.dec16(this.DE()));
 	    this.setHL(this.dec16(this.HL()));
@@ -2852,7 +2854,7 @@ function Z80(d)
     }
     
     this.execute_id = function() {
-	this.REFRESH(1);
+	this._R+=(1);
 	switch (this.nxtpcb()) {
 	case 0:
 	case 1:
@@ -3018,7 +3020,7 @@ function Z80(d)
 	case 247:
 	case 248:
 	    this._PC = (this.dec16(this._PC));
-	    this.REFRESH(-1);
+	    this._R+=(-1);
 	    return 4;
 	case 9:
 	    this.setID(this.add16(this._ID, this.BC()));
@@ -4339,11 +4341,18 @@ function Z80(d)
 	this.sub_a(i);
     }
     
+
+    //** original nxtpcb() code:
+    //var i = this._PC;
+    //var i_60_ = this.peekb(i);
+    //this._PC = (++i & 0xffff);
+    //return i_60_; 
+    //** optimization 1:
+    //return this.peekb(this._PC++) | 0&(this._PC&=0xffff);
+    //** optimization 2: it seems that the overflow check is unnecessary
+    //since everywhere PC is used, a check is also executed. 
     this.nxtpcb = function() {
-	var i = this._PC;
-	var i_60_ = this.peekb(i);
-	this._PC = (++i & 0xffff);
-	return i_60_;
+       return this.peekb(this._PC++);
     }
     
     this.nxtpcw = function() {
