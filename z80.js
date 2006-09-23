@@ -163,7 +163,7 @@ function Z80(d)
     }
     
     this.ID_d = function() {
-	return this._ID + this.byte(this.nxtpcb()) & 0xffff;
+	return this._ID + this.byte(this.peekb(this._PC++)) & 0xffff;
     }
     
     this.IFF1 = function() {
@@ -388,7 +388,7 @@ function Z80(d)
 
 	var i = -(this.tstatesPerInterrupt - this.interrupt());
 
-	//var i_22_ = this.nxtpcb();	
+	//var i_22_ = this.peekb(this._PC++);	
 	//if (this.showpc) 
 	//this.vdp.imagedata.data[this._PC*4]+=247;
 
@@ -410,7 +410,7 @@ function Z80(d)
 		var i_23_ = 0;
 		this._B = (i_23_ = this.qdec8(this._B));
 		if (i_23_ != 0) {
-		    var i_24_ = this.byte(this.nxtpcb());
+		    var i_24_ = this.byte(this.peekb(this._PC++));
 		    this._PC = (this._PC + i_24_ & 0xffff);
 		    i += 13;
 		} else {
@@ -420,14 +420,14 @@ function Z80(d)
 		break;
 	    }
 	    case 24: {
-		var i_25_ = this.byte(this.nxtpcb());
+		var i_25_ = this.byte(this.peekb(this._PC++));
 		this._PC = (this._PC + i_25_ & 0xffff);
 		i += 12;
 		break;
 	    }
 	    case 32:
 		if (!this.fZ) {
-		    var i_26_ = this.byte(this.nxtpcb());
+		    var i_26_ = this.byte(this.peekb(this._PC++));
 		    this._PC = (this._PC + i_26_ & 0xffff);
 		    i += 12;
 		} else {
@@ -437,7 +437,7 @@ function Z80(d)
 		break;
 	    case 40:
 		if (this.fZ) {
-		    var i_27_ = this.byte(this.nxtpcb());
+		    var i_27_ = this.byte(this.peekb(this._PC++));
 		    this._PC = (this._PC + i_27_ & 0xffff);
 		    i += 12;
 		} else {
@@ -447,7 +447,7 @@ function Z80(d)
 		break;
 	    case 48:
 		if (!this.fC) {
-		    var i_28_ = this.byte(this.nxtpcb());
+		    var i_28_ = this.byte(this.peekb(this._PC++));
 		    this._PC = (this._PC + i_28_ & 0xffff);
 		    i += 12;
 		} else {
@@ -457,7 +457,7 @@ function Z80(d)
 		break;
 	    case 56:
 		if (this.fC) {
-		    var i_29_ = this.byte(this.nxtpcb());
+		    var i_29_ = this.byte(this.peekb(this._PC++));
 		    this._PC = (this._PC + i_29_ & 0xffff);
 		    i += 12;
 		} else {
@@ -466,7 +466,7 @@ function Z80(d)
 		}
 		break;
 	    case 1:
-		this.setBC(this.nxtpcw());
+		this.setBC(this.peekw((this._PC=this._PC+2)-2));
 		i += 10;
 		break;
 	    case 9:
@@ -474,7 +474,7 @@ function Z80(d)
 		i += 11;
 		break;
 	    case 17:
-		this.setDE(this.nxtpcw());
+		this.setDE(this.peekw((this._PC=this._PC+2)-2));
 		i += 10;
 		break;
 	    case 25:
@@ -482,7 +482,7 @@ function Z80(d)
 		i += 11;
 		break;
 	    case 33:
-		this.setHL(this.nxtpcw());
+		this.setHL(this.peekw((this._PC=this._PC+2)-2));
 		i += 10;
 		break;
 	    case 41: {
@@ -492,7 +492,7 @@ function Z80(d)
 		break;
 	    }
 	    case 49:
-		this._SP = (this.nxtpcw());
+		this._SP = (this.peekw((this._PC=this._PC+2)-2));
 		i += 10;
 		break;
 	    case 57:
@@ -516,19 +516,19 @@ function Z80(d)
 		i += 7;
 		break;
 	    case 34:
-		this.pokew(this.nxtpcw(), this.HL());
+		this.pokew(this.peekw((this._PC=this._PC+2)-2), this.HL());
 		i += 16;
 		break;
 	    case 42:
-		this.setHL(this.peekw(this.nxtpcw()));
+		this.setHL(this.peekw(this.peekw((this._PC=this._PC+2)-2)));
 		i += 16;
 		break;
 	    case 50:
-		this.pokeb(this.nxtpcw(), this._A);
+		this.pokeb(this.peekw((this._PC=this._PC+2)-2), this._A);
 		i += 13;
 		break;
 	    case 58:
-		this._A = (this.peekb(this.nxtpcw()));
+		this._A = (this.peekb(this.peekw((this._PC=this._PC+2)-2)));
 		i += 13;
 		break;
 	    case 3:
@@ -632,35 +632,35 @@ function Z80(d)
 		i += 4;
 		break;
 	    case 6:
-		this._B = (this.nxtpcb());
+		this._B = (this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 14:
-		this._C = (this.nxtpcb());
+		this._C = (this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 22:
-		this._D = (this.nxtpcb());
+		this._D = (this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 30:
-		this._E = (this.nxtpcb());
+		this._E = (this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 38:
-		this._H = (this.nxtpcb());
+		this._H = (this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 46:
-		this._L = (this.nxtpcb());
+		this._L = (this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 54:
-		this.pokeb(this.HL(), this.nxtpcb());
+		this.pokeb(this.HL(), this.peekb(this._PC++));
 		i += 10;
 		break;
 	    case 62:
-		this._A = (this.nxtpcb());
+		this._A = (this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 7:
@@ -1292,56 +1292,56 @@ function Z80(d)
 		break;
 	    case 194:
 		if (!this.fZ)
-		    this._PC = (this.nxtpcw());
+		    this._PC = (this.peekw((this._PC=this._PC+2)-2));
 		else
 		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 202:
 		if (this.fZ)
-		    this._PC = (this.nxtpcw());
+		    this._PC = (this.peekw((this._PC=this._PC+2)-2));
 		else
 		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 210:
 		if (!this.fC)
-		    this._PC = (this.nxtpcw());
+		    this._PC = (this.peekw((this._PC=this._PC+2)-2));
 		else
 		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 218:
 		if (this.fC)
-		    this._PC = (this.nxtpcw());
+		    this._PC = (this.peekw((this._PC=this._PC+2)-2));
 		else
 		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 226:
 		if (!this.fPV)
-		    this._PC = (this.nxtpcw());
+		    this._PC = (this.peekw((this._PC=this._PC+2)-2));
 		else
 		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 234:
 		if (this.fPV)
-		    this._PC = (this.nxtpcw());
+		    this._PC = (this.peekw((this._PC=this._PC+2)-2));
 		else
 		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 242:
 		if (!this.fS)
-		    this._PC = (this.nxtpcw());
+		    this._PC = (this.peekw((this._PC=this._PC+2)-2));
 		else
 		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
 		break;
 	    case 250:
 		if (this.fS)
-		    this._PC = (this.nxtpcw());
+		    this._PC = (this.peekw((this._PC=this._PC+2)-2));
 		else
 		    this._PC = (this._PC + 2 & 0xffff);
 		i += 10;
@@ -1354,11 +1354,11 @@ function Z80(d)
 		i += this.execute_cb();
 		break;
 	    case 211:
-		this.outb(this.nxtpcb(), this._A, i);
+		this.outb(this.peekb(this._PC++), this._A, i);
 		i += 11;
 		break;
 	    case 219:
-		this._A = (this.inb(this.nxtpcb()));
+		this._A = (this.inb(this.peekb(this._PC++)));
 		i += 11;
 		break;
 	    case 227: {
@@ -1388,7 +1388,7 @@ function Z80(d)
 		break;
 	    case 196:
 		if (!this.fZ) {
-		    var i_37_ = this.nxtpcw();
+		    var i_37_ = this.peekw((this._PC=this._PC+2)-2);
 		    this.pushpc();
 		    this._PC = (i_37_);
 		    i += 17;
@@ -1399,7 +1399,7 @@ function Z80(d)
 		break;
 	    case 204:
 		if (this.fZ) {
-		    var i_38_ = this.nxtpcw();
+		    var i_38_ = this.peekw((this._PC=this._PC+2)-2);
 		    this.pushpc();
 		    this._PC = (i_38_);
 		    i += 17;
@@ -1410,7 +1410,7 @@ function Z80(d)
 		break;
 	    case 212:
 		if (!this.fC) {
-		    var i_39_ = this.nxtpcw();
+		    var i_39_ = this.peekw((this._PC=this._PC+2)-2);
 		    this.pushpc();
 		    this._PC = (i_39_);
 		    i += 17;
@@ -1421,7 +1421,7 @@ function Z80(d)
 		break;
 	    case 220:
 		if (this.fC) {
-		    var i_40_ = this.nxtpcw();
+		    var i_40_ = this.peekw((this._PC=this._PC+2)-2);
 		    this.pushpc();
 		    this._PC = (i_40_);
 		    i += 17;
@@ -1432,7 +1432,7 @@ function Z80(d)
 		break;
 	    case 228:
 		if (!this.fPV) {
-		    var i_41_ = this.nxtpcw();
+		    var i_41_ = this.peekw((this._PC=this._PC+2)-2);
 		    this.pushpc();
 		    this._PC = (i_41_);
 		    i += 17;
@@ -1443,7 +1443,7 @@ function Z80(d)
 		break;
 	    case 236:
 		if (this.fPV) {
-		    var i_42_ = this.nxtpcw();
+		    var i_42_ = this.peekw((this._PC=this._PC+2)-2);
 		    this.pushpc();
 		    this._PC = (i_42_);
 		    i += 17;
@@ -1454,7 +1454,7 @@ function Z80(d)
 		break;
 	    case 244:
 		if (!this.fS) {
-		    var i_43_ = this.nxtpcw();
+		    var i_43_ = this.peekw((this._PC=this._PC+2)-2);
 		    this.pushpc();
 		    this._PC = (i_43_);
 		    i += 17;
@@ -1465,7 +1465,7 @@ function Z80(d)
 		break;
 	    case 252:
 		if (this.fS) {
-		    var i_44_ = this.nxtpcw();
+		    var i_44_ = this.peekw((this._PC=this._PC+2)-2);
 		    this.pushpc();
 		    this._PC = (i_44_);
 		    i += 17;
@@ -1479,7 +1479,7 @@ function Z80(d)
 		i += 11;
 		break;
 	    case 205: {
-		var i_45_ = this.nxtpcw();
+		var i_45_ = this.peekw((this._PC=this._PC+2)-2);
 		this.pushpc();
 		this._PC = (i_45_);
 		i += 17;
@@ -1511,35 +1511,35 @@ function Z80(d)
 		this.setIY(this._ID);
 		break;
 	    case 198:
-		this.add_a(this.nxtpcb());
+		this.add_a(this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 206:
-		this.adc_a(this.nxtpcb());
+		this.adc_a(this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 214:
-		this.sub_a(this.nxtpcb());
+		this.sub_a(this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 222:
-		this.sbc_a(this.nxtpcb());
+		this.sbc_a(this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 230:
-		this.and_a(this.nxtpcb());
+		this.and_a(this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 238:
-		this.xor_a(this.nxtpcb());
+		this.xor_a(this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 246:
-		this.or_a(this.nxtpcb());
+		this.or_a(this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 254:
-		this.cp_a(this.nxtpcb());
+		this.cp_a(this.peekb(this._PC++));
 		i += 7;
 		break;
 	    case 199:
@@ -1587,7 +1587,7 @@ function Z80(d)
     
     this.execute_cb = function() {
 	this._R+=(1);
-	switch (this.nxtpcb()) {
+	switch (this.peekb(this._PC++)) {
 	case 0:
 	    this._B = (this.rlc(this._B));
 	    return 8;
@@ -2411,7 +2411,7 @@ function Z80(d)
     
     this.execute_ed = function(i) {
 	this._R+=(1);
-	switch (this.nxtpcb()) {
+	switch (this.peekb(this._PC++)) {
 	case 0:
 	case 1:
 	case 2:
@@ -2599,28 +2599,28 @@ function Z80(d)
 	    this.setHL(this.adc16(this.HL(), this._SP));
 	    return 15;
 	case 67:
-	    this.pokew(this.nxtpcw(), this.BC());
+	    this.pokew(this.peekw((this._PC=this._PC+2)-2), this.BC());
 	    return 20;
 	case 75:
-	    this.setBC(this.peekw(this.nxtpcw()));
+	    this.setBC(this.peekw(this.peekw((this._PC=this._PC+2)-2)));
 	    return 20;
 	case 83:
-	    this.pokew(this.nxtpcw(), this.DE());
+	    this.pokew(this.peekw((this._PC=this._PC+2)-2), this.DE());
 	    return 20;
 	case 91:
-	    this.setDE(this.peekw(this.nxtpcw()));
+	    this.setDE(this.peekw(this.peekw((this._PC=this._PC+2)-2)));
 	    return 20;
 	case 99:
-	    this.pokew(this.nxtpcw(), this.HL());
+	    this.pokew(this.peekw((this._PC=this._PC+2)-2), this.HL());
 	    return 20;
 	case 107:
-	    this.setHL(this.peekw(this.nxtpcw()));
+	    this.setHL(this.peekw(this.peekw((this._PC=this._PC+2)-2)));
 	    return 20;
 	case 115:
-	    this.pokew(this.nxtpcw(), this._SP);
+	    this.pokew(this.peekw((this._PC=this._PC+2)-2), this._SP);
 	    return 20;
 	case 123:
-	    this._SP = (this.peekw(this.nxtpcw()));
+	    this._SP = (this.peekw(this.peekw((this._PC=this._PC+2)-2)));
 	    return 20;
 	case 68:
 	case 76:
@@ -2855,7 +2855,7 @@ function Z80(d)
     
     this.execute_id = function() {
 	this._R+=(1);
-	switch (this.nxtpcb()) {
+	switch (this.peekb(this._PC++)) {
 	case 0:
 	case 1:
 	case 2:
@@ -3037,13 +3037,13 @@ function Z80(d)
 	    this.setID(this.add16(this._ID, this._SP));
 	    return 15;
 	case 33:
-	    this.setID(this.nxtpcw());
+	    this.setID(this.peekw((this._PC=this._PC+2)-2));
 	    return 14;
 	case 34:
-	    this.pokew(this.nxtpcw(), this._ID);
+	    this.pokew(this.peekw((this._PC=this._PC+2)-2), this._ID);
 	    return 20;
 	case 42:
-	    this.setID(this.peekw(this.nxtpcw()));
+	    this.setID(this.peekw(this.peekw((this._PC=this._PC+2)-2)));
 	    return 20;
 	case 35:
 	    this.setID(this.inc16(this._ID));
@@ -3074,14 +3074,14 @@ function Z80(d)
 	    return 23;
 	}
 	case 38:
-	    this.setIDH(this.nxtpcb());
+	    this.setIDH(this.peekb(this._PC++));
 	    return 11;
 	case 46:
 	    setIDL(nxtpcb());
 	    return 11;
 	case 54: {
 	    var i = this.ID_d();
-	    this.pokeb(i, this.nxtpcb());
+	    this.pokeb(i, this.peekb(this._PC++));
 	    return 19;
 	}
 	case 68:
@@ -3279,7 +3279,7 @@ function Z80(d)
 	    return 10;
 	case 203: {
 	    var i = this.ID_d();
-	    var i_56_ = this.nxtpcb();
+	    var i_56_ = this.peekb(this._PC++);
 	    this.execute_id_cb(i_56_, i);
 	    return (i_56_ & 0xc0) == 64 ? 20 : 23;
 	}
@@ -4350,17 +4350,25 @@ function Z80(d)
     //** optimization 1:
     //return this.peekb(this._PC++) | 0&(this._PC&=0xffff);
     //** optimization 2: it seems that the overflow check is unnecessary
-    //since everywhere PC is used, a check is also executed. 
+    //since everywhere PC is used, a check is also executed.(PROOF?***) 
+    //** optimization 3: every call to nxtpcb() replaced by
+    //the return statement below.
     this.nxtpcb = function() {
        return this.peekb(this._PC++);
     }
     
+    //** original nxtpcw() code:
+    //var i = this._PC;
+    //var i_61_ = this.peekb(i);
+    //i_61_ |= this.peekb(++i & 0xffff) << 8;
+    //this._PC = (++i & 0xffff);
+    //return i_61_;
+    //** optimization 1: call peekw() just once,instead peekb() twice...
+    //but peekw() doesn't check overflow of _PC+1...
+    //** optimization 2: no overflow check at all not even in the end
+    //just like in nxtpcb() above
     this.nxtpcw = function() {
-	var i = this._PC;
-	var i_61_ = this.peekb(i);
-	i_61_ |= this.peekb(++i & 0xffff) << 8;
-	this._PC = (++i & 0xffff);
-	return i_61_;
+	return this.peekw((this._PC=this._PC+2)-2);
     }
     
     this.or_a = function(i) {
