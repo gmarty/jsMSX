@@ -4,11 +4,7 @@ Unofficial mirror of jsmsx repo.
 
 Original repo is on [SourceForge](http://sourceforge.net/projects/jsmsx/).
 
-<<<<<<< HEAD
 Original author is [Marcus Granado](mrc.gran @ gmail.com).
-=======
-Original author is [Marcus Granado](mrc.gran(@)gmail.com).
->>>>>>> 4c26cb806864a3134c4497049cb21189a8dce441
 
 ## README from the original author
 
@@ -16,4 +12,5 @@ jsMSX is a MSX emulator 100% written in Javascript. Yes, you read it: Javascript
 
 If you think you'd like to participate, are just curious or want to say hello, please have a look at the project.
 
-Portions of the initial javascript code was derived from Arnon Cardoso's Java MSX Emulator (first Java MSX emulator), Murilo Queiroz's Java Phoenix Emulator (first Java Arcade emulator) and Davidson&Pollard's Z80 class of the Spectrum Java Emulator, after reading this thread: http://www.msx.org/forumtopic4176.html. Thank you all for your past efforts!
+Portions of the initial javascript code was derived from Arnon Cardoso's Java MSX Emulator (first Java MSX emulator), Murilo Queiroz's Java Phoenix Emulator (first Java Arcade emulator) and Davidson&Pollard's Z80 class of the
+ Spectrum Java Emulator, after reading this thread: http://www.msx.org/forumtopic4176.html. Thank you all for your past efforts!
