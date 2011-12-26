@@ -4,7 +4,11 @@ Unofficial mirror of jsmsx repo.
 
 Original repo is on [SourceForge](http://sourceforge.net/projects/jsmsx/).
 
+<<<<<<< HEAD
 Original author is [Marcus Granado](mrc.gran @ gmail.com).
+=======
+Original author is [Marcus Granado](mrc.gran(@)gmail.com).
+>>>>>>> 4c26cb806864a3134c4497049cb21189a8dce441
 
 ## README from the original author
 
