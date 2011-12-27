@@ -20,6 +20,11 @@
  *
  */
 
+
+
+/**
+ * @constructor
+ */
 function browserio() {
   this.load = function(url) {
     //1) let's try the ff way of reading i/o data.

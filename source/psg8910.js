@@ -18,6 +18,11 @@
  *
  */
 
+
+
+/**
+ * @constructor
+ */
 function psg8910() {
   this.enderecoAtual = 0;
   this.registros = new Array(16);

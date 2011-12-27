@@ -18,6 +18,11 @@
  *
  */
 
+
+
+/**
+ * @constructor
+ */
 function Z80(d) {
   this.steps = 0; //steps since reset
   this.showpc = false; //show _PC red pixel

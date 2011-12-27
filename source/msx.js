@@ -18,7 +18,12 @@
  *
  */
 
-function MSX(window,canvas,logbuf) {
+
+
+/**
+ * @constructor
+ */
+function MSX(window, canvas, logbuf) {
   this.window = window;
   this.canvas = canvas;
   this.logbuf = logbuf;

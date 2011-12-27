@@ -18,6 +18,11 @@
  *
  */
 
+
+
+/**
+ * @constructor
+ */
 function tms9918(canvas) {
   this.canvas = canvas;
   //this.canvasctx = undefined;
