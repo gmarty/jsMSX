@@ -40,15 +40,15 @@ function MSX(window, canvas, logbuf) {
   this.psg = null;
   this.megarom = false;
   this.PPIPortA = 0;
-  this.PPIPortB = 255;
+  //this.PPIPortB = 255;
   this.PPIPortC = 0;
   this.PPIPortD = 0;
   this.pagMegaRom = [0, 1, 2, 3];
-  this.tamPagMegarom = 8192;
+  //this.tamPagMegarom = 8192;
   this.tipoMegarom = 0;
   this.portos = new Array(256);
-  this.controlPressionado = false;
-  this.shiftPressionado = false;
+  //this.controlPressionado = false;
+  //this.shiftPressionado = false;
   this.estadoTeclas = new Array();
   this.memoria = new Array(); //int[][]
   this.podeEscrever = Array();
@@ -57,11 +57,11 @@ function MSX(window, canvas, logbuf) {
   this.cart = new Array(); //private int[][] cart;
   this.interruptCounter = 0;
   var frameSkip = 0;
-  var sleepHack = 5;
+  //var sleepHack = 5;
   this.resetAtNextInterrupt = false;
   this.pauseAtNextInterrupt = false;
-  this.refreshNextInterrupt = true;
-  this.DipSwitchSYNC = true;
+  //this.refreshNextInterrupt = true;
+  //this.DipSwitchSYNC = true;
 
   this.println = function(str) {
     this.logbuf.textContent += str + '\n';
@@ -243,7 +243,7 @@ function MSX(window, canvas, logbuf) {
         this.PPIPortA = i_19_;
         break;
       case 169:
-        this.PPIPortB = i_19_;
+        //this.PPIPortB = i_19_;
         break;
       case 170:
         this.PPIPortC = i_19_;
@@ -762,7 +762,7 @@ function MSX(window, canvas, logbuf) {
     //this.println('interrupt='+this.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
     this.interruptCounter++;
 
-    this.DipSwitchSYNC = 1;
+    //this.DipSwitchSYNC = 1;
     if (this.pinta) {
       this.vdp.updateScreen();
       this.pinta = false;
@@ -792,11 +792,11 @@ function MSX(window, canvas, logbuf) {
   }
   this.interruptCounter = 0;
   this.frameSkip = 1;
-  this.sleepHack = 5;
+  //this.sleepHack = 5;
   this.resetAtNextInterrupt = false;
   this.pauseAtNextInterrupt = false;
-  this.refreshNextInterrupt = true;
-  this.DipSwitchSYNC = 0;
+  //this.refreshNextInterrupt = true;
+  //this.DipSwitchSYNC = 0;
 
   this.println('Starting RAM slots');
   this.memoria = new Array(4); //4 primary slots

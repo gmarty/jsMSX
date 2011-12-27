@@ -26,23 +26,23 @@
 function Z80(d) {
   var bool;
 
-  this.steps = 0; //steps since reset
+  //this.steps = 0; //steps since reset
   this.showpc = false; //show _PC red pixel
 
   this.tstatesPerInterrupt = 0;
-  this.IM0 = 0;
-  this.IM1 = 1;
-  this.IM2 = 2;
-  this.F_C = 1;
-  this.F_N = 2;
-  this.F_PV = 4;
-  this.F_3 = 8;
-  this.F_H = 16;
-  this.F_5 = 32;
-  this.F_Z = 64;
-  this.F_S = 128;
-  this.PF = 4;
-  this.p_ = 0;
+  //this.IM0 = 0;
+  //this.IM1 = 1;
+  //this.IM2 = 2;
+  //this.F_C = 1;
+  //this.F_N = 2;
+  //this.F_PV = 4;
+  //this.F_3 = 8;
+  //this.F_H = 16;
+  //this.F_5 = 32;
+  //this.F_Z = 64;
+  //this.F_S = 128;
+  //this.PF = 4;
+  //this.p_ = 0;
   this.parity = new Array(256);
   this._A = 0;
   this._B = 0;
@@ -51,8 +51,8 @@ function Z80(d) {
   this._E = 0;
   this._H = 0;
   this._L = 0;
-  this._DE = 0;
-  this._HL = 0;
+  //this._DE = 0;
+  //this._HL = 0;
   this.fS = false;
   this.fZ = false;
   this.f5 = false;
@@ -95,33 +95,33 @@ function Z80(d) {
     return ((i & 0x80) != 0) ? i - 256 : i;
   };
 
-  this.A = function() {
+  /*this.A = function() {
     return this._A;
-  };
+  };*/
 
   this.AF = function() {
     return this._A << 8 | this.F();
   };
 
-  this.B = function() {
+  /*this.B = function() {
     return this._B;
-  };
+  };*/
 
   this.BC = function() {
     return this._B << 8 | this._C;
   };
 
-  this.C = function() {
+  /*this.C = function() {
     return this._C;
-  };
+  };*/
 
-  this.Cset = function() {
+  /*this.Cset = function() {
     return this.fC;
-  };
+  };*/
 
-  this.D = function() {
+  /*this.D = function() {
     return this._D;
-  };
+  };*/
 
   this.DE = function() {
     return this._D << 8 | this._E;
@@ -137,25 +137,25 @@ function Z80(d) {
       | (this.fN ? 2 : 0) | (this.fC ? 1 : 0));
   };
 
-  this.H = function() {
+  /*this.H = function() {
     return this._H;
-  };
+  };*/
 
   this.HL = function() {
     return this._H << 8 | this._L;
   };
 
-  this.Hset = function() {
+  /*this.Hset = function() {
     return this.fH;
-  };
+  };*/
 
-  this.I = function() {
+  /*this.I = function() {
     return this._I;
-  };
+  };*/
 
-  this.ID = function() {
+  /*this.ID = function() {
     return this._ID;
-  };
+  };*/
 
   this.IDH = function() {
     return this._ID >> 8;
