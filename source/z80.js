@@ -84,7 +84,7 @@ function Z80(d) {
   this.tstatesPerInterrupt = (d * 1000000.0 / 60.0);
   //}
 
-  this.byte = function(i) { //returns i between -128 to +127
+  this.bytef = function(i) { //returns i between -128 to +127
     return ((i & 0x80) != 0) ? i - 256 : i;
   };
 
@@ -159,7 +159,7 @@ function Z80(d) {
   };
 
   this.ID_d = function() {
-    return this._ID + this.byte(this.peekb(this._PC++)) & 0xffff;
+    return this._ID + this.bytef(this.peekb(this._PC++)) & 0xffff;
   };
 
   this.IFF1 = function() {
@@ -406,7 +406,7 @@ function Z80(d) {
           var i_23_ = 0;
           this._B = (i_23_ = this.qdec8(this._B));
           if (i_23_ != 0) {
-            var i_24_ = this.byte(this.peekb(this._PC++));
+            var i_24_ = this.bytef(this.peekb(this._PC++));
             this._PC = (this._PC + i_24_ & 0xffff);
             i += 13;
           } else {
@@ -416,14 +416,14 @@ function Z80(d) {
           break;
         }
         case 24: {
-          var i_25_ = this.byte(this.peekb(this._PC++));
+          var i_25_ = this.bytef(this.peekb(this._PC++));
           this._PC = (this._PC + i_25_ & 0xffff);
           i += 12;
           break;
         }
         case 32:
           if (!this.fZ) {
-            var i_26_ = this.byte(this.peekb(this._PC++));
+            var i_26_ = this.bytef(this.peekb(this._PC++));
             this._PC = (this._PC + i_26_ & 0xffff);
             i += 12;
           } else {
@@ -433,7 +433,7 @@ function Z80(d) {
           break;
         case 40:
           if (this.fZ) {
-            var i_27_ = this.byte(this.peekb(this._PC++));
+            var i_27_ = this.bytef(this.peekb(this._PC++));
             this._PC = (this._PC + i_27_ & 0xffff);
             i += 12;
           } else {
@@ -443,7 +443,7 @@ function Z80(d) {
           break;
         case 48:
           if (!this.fC) {
-            var i_28_ = this.byte(this.peekb(this._PC++));
+            var i_28_ = this.bytef(this.peekb(this._PC++));
             this._PC = (this._PC + i_28_ & 0xffff);
             i += 12;
           } else {
@@ -453,7 +453,7 @@ function Z80(d) {
           break;
         case 56:
           if (this.fC) {
-            var i_29_ = this.byte(this.peekb(this._PC++));
+            var i_29_ = this.bytef(this.peekb(this._PC++));
             this._PC = (this._PC + i_29_ & 0xffff);
             i += 12;
           } else {
