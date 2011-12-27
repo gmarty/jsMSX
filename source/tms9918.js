@@ -24,6 +24,8 @@
  * @constructor
  */
 function tms9918(canvas) {
+  var i;
+
   this.canvas = canvas;
   //this.canvasctx = undefined;
   this.imagedata = undefined;
@@ -41,16 +43,16 @@ function tms9918(canvas) {
   this.updateWholeScreen = true;
   this.regStatus = 0;
   this.registros = Array(8);
-  for (var i = 0; i < 8; i++) {
+  for (i = 0; i < 8; i++) {
     this.registros[i] = 0;
   }
   this.screenAtual = 0;
   this.vidMem = Array(16384);//vram
-  for (var i = 0; i < 16384; i++) {
+  for (i = 0; i < 16384; i++) {
     this.vidMem[i] = 0;
   }
   this.dirtyVidMem = Array(960);//linked list of modified chars on scr
-  for (var i = 0; i < 960; i++) {
+  for (i = 0; i < 960; i++) {
     this.dirtyVidMem[i] = -1;
   }
   this.primeiro = -1;
