@@ -94,10 +94,9 @@ function MSX(window, canvas, logbuf) {
     }
   };
 
-  this.interrupt = msx_interrupt;
   this.interrupt_start = function() {
     this.interval = setInterval(function() {
-      msx_interrupt.apply(self);
+      self.interrupt.apply(self);
     }, 17); //60 intervals/sec
   };
   this.interrupt_stop = function() {
@@ -749,6 +748,32 @@ function MSX(window, canvas, logbuf) {
     return false; //key event already handled
   };
 
+  this.interrupt = function() {
+    if (this.resetAtNextInterrupt) {
+      this.resetAtNextInterrupt = false;
+      this.reset();
+    }
+    if (this.vdp.imagedata)
+      this.vdp.imagedata.data[this.interruptCounter * 4 + 1] = 255;//green line
+
+    document.getElementById('interrupts').value = this.interruptCounter;
+    //if (this.interruptCounter%600==0)
+    //this.println('interrupt='+this.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
+    this.interruptCounter++;
+
+    this.DipSwitchSYNC = 1;
+    if (this.pinta) {
+      this.vdp.updateScreen();
+      this.pinta = false;
+    }
+    if (this.interruptCounter % this.frameSkip == 0)
+      this.vdp.montaUsandoMemoria();
+
+    //return this.superclass.interrupt();
+    //calls superclass' interrupt() in msx context/scope.
+    return this.z80_interrupt();
+  };
+
   //local constructor
   //initializes local variables
   this.println('Booting jsMSX');
@@ -797,32 +822,6 @@ function MSX(window, canvas, logbuf) {
   this.println('interrupt=' + this.interruptCounter + ',ticks=' + Math.floor(this.tstatesPerInterrupt) + ' cpu ticks/interrupt, cpu clock=3.58 MHz');
   this.println('MSX ready to go. Load ROMs and hit [start].');
 }
-
-var msx_interrupt = function() {
-  if (msx.resetAtNextInterrupt) {
-    msx.resetAtNextInterrupt = false;
-    msx.reset();
-  }
-  if (msx.vdp.imagedata)
-    msx.vdp.imagedata.data[msx.interruptCounter * 4 + 1] = 255;//green line
-
-  document.getElementById('interrupts').value = msx.interruptCounter;
-  //if (msx.interruptCounter%600==0)
-  //msx.println('interrupt='+msx.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
-  msx.interruptCounter++;
-
-  msx.DipSwitchSYNC = 1;
-  if (msx.pinta) {
-    msx.vdp.updateScreen();
-    msx.pinta = false;
-  }
-  if (msx.interruptCounter % msx.frameSkip == 0)
-    msx.vdp.montaUsandoMemoria();
-
-  //return msx.superclass.interrupt();
-  //calls superclass' interrupt() in msx context/scope.
-  return msx.z80_interrupt.apply(msx);
-};
 
 var msx_loadurl = function(url) {
   //alert(url);
