@@ -43,7 +43,7 @@ function Z80(d) {
   //this.F_S = 128;
   //this.PF = 4;
   //this.p_ = 0;
-  this.parity = new Array(256);
+  this.parity = Array(256);
   this._A = 0;
   this._B = 0;
   this._C = 0;

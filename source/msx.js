@@ -46,15 +46,15 @@ function MSX(window, canvas, logbuf) {
   this.pagMegaRom = [0, 1, 2, 3];
   //this.tamPagMegarom = 8192;
   this.tipoMegarom = 0;
-  this.portos = new Array(256);
+  this.portos = Array(256);
   //this.controlPressionado = false;
   //this.shiftPressionado = false;
-  this.estadoTeclas = new Array();
-  this.memoria = new Array(); //int[][]
-  this.podeEscrever = Array();
+  this.estadoTeclas = [];
+  this.memoria = []; //int[][]
+  this.podeEscrever = [];
   this.pinta = true;
   this.cartSlot = 0;
-  this.cart = new Array(); //private int[][] cart;
+  this.cart = []; //private int[][] cart;
   this.interruptCounter = 0;
   var frameSkip = 0;
   //var sleepHack = 5;
@@ -171,7 +171,7 @@ function MSX(window, canvas, logbuf) {
         imgdatacartrom = ctxcartrom.getImageData(0, 0, canvascartrom.width, canvascartrom.height);
         dbr = imgdatacartrom.data;
       } else {
-        dbr = new Array(canvascartrom.width * canvascartrom.height * 4);
+        dbr = Array(canvascartrom.width * canvascartrom.height * 4);
       }
       var cartromlength = cartrom.length;
       // MimeType('application/octet-stream; charset=x-user-defined')
@@ -784,9 +784,9 @@ function MSX(window, canvas, logbuf) {
   this.estadoTeclas = [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255];
   this.podeEscrever = [false, false, false, true];
   this.pinta = true;
-  this.cart = new Array(32); //2-dimensional array 32x8192 of cartridges
+  this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
   for (i = 0; i < 32; i++) {
-    var acart = new Array(8192);
+    var acart = Array(8192);
     //for (j=0; j<8192; j++) acart[j]=0;
     this.cart[i] = acart;
   }
@@ -799,17 +799,17 @@ function MSX(window, canvas, logbuf) {
   //this.DipSwitchSYNC = 0;
 
   this.println('Starting RAM slots');
-  this.memoria = new Array(4); //4 primary slots
-  this.m0 = new Array(65536);
+  this.memoria = Array(4); //4 primary slots
+  this.m0 = Array(65536);
   this.memoria[0] = this.m0;
   for (i = 0; i < 65536; i++) this.m0[i] = 255;
-  this.m1 = new Array(65536);
+  this.m1 = Array(65536);
   this.memoria[1] = this.m1;
   for (i = 0; i < 65536; i++) this.m1[i] = 255;
-  this.m2 = new Array(65536);
+  this.m2 = Array(65536);
   this.memoria[2] = this.m2;
   for (i = 0; i < 65536; i++) this.m2[i] = 255;
-  this.m3 = new Array(65536);
+  this.m3 = Array(65536);
   this.memoria[3] = this.m3;
   for (i = 0; i < 65536; i++) this.m3[i] = 255;
   this.reset();
