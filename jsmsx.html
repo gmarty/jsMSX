@@ -8,17 +8,17 @@ a:hover {background:yellow;}
 h1 {color:red;}
 big {color:red;}
 </style>
-<script src="psg8910.js" type="text/javascript"></script>
-<script src="tms9918.js" type="text/javascript"></script>
-<script src="z80.js" type="text/javascript"></script>
-<script src="msx.js" type="text/javascript"></script>
+<script src="source/psg8910.js" type="text/javascript"></script>
+<script src="source/tms9918.js" type="text/javascript"></script>
+<script src="source/z80.js" type="text/javascript"></script>
+<script src="source/msx.js" type="text/javascript"></script>
 <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
-<script src="browserio.js" type="text/javascript"></script>
-<script src="msx1.rom.js" type="text/javascript"></script>
-<script src="goonies.rom.js" type="text/javascript"></script>
+<script src="source/browserio.js" type="text/javascript"></script>
+<script src="express/msx1.rom.js" type="text/javascript"></script>
+<script src="express/goonies.rom.js" type="text/javascript"></script>
 </head>
 <body onload="msx_init();">
-  <div style="width:1000px;margin: 2em auto 0 auto;">
+  <div style="width:1000px;margin:2em auto 0 auto;">
     <table>
       <tr>
         <td valign="top" style="width:260px">
@@ -40,7 +40,7 @@ big {color:red;}
               <a href="#demo"><big><b>Express Demo (just hit the button [start])</b></big></a>
             </p>
             <a name="introduction"></a>
-            <p style="background-color: rgb(223, 223, 160);">
+            <p style="background-color:rgb(223, 223, 160);">
               This page allows you to do an <a href="#emulator">online test</a> of <a href="http://sourceforge.net/projects/jsmsx">jsMSX</a>. 
               If you would like to download or contribute to it, please have a look at the page of <a href="http://sourceforge.net/projects/jsmsx">the project</a>.
             </p>
@@ -50,7 +50,7 @@ big {color:red;}
             </p>
             <div>
               jsMSX 0.9.2 on [canvas]:<br>
-              <canvas id="canvas" name="canvas" width="256" height="192" style="border: medium solid;"></canvas>
+              <canvas id="canvas" name="canvas" width="256" height="192" style="border:medium solid;"></canvas>
               <br>
               <input id="start" value="start" onclick="msx_start();" type="button">
               <input id="stop" value="pause" disabled="true" onclick="msx_stop();" type="button">
@@ -83,7 +83,7 @@ big {color:red;}
               Thank you all for your past efforts!
             </p>
             <a name="requirements"></a>
-            <h2 style="background-color: rgb(223, 223, 160);">Requirements:</h2>
+            <h2 style="background-color:rgb(223, 223, 160);">Requirements:</h2>
             <p>
               jsMSX requires a web browser that is able to execute Javascript 1.3 and that implements the tag <a href="http://whatwg.org/specs/web-apps/current-work/#scs-dynamic">[canvas]</a>, for instance <a href="http://www.mozilla.org">Firefox 1.5</a> or 2.0+, <a href="http://www.opera.com">Opera 9.0</a>, <a href="http://www.apple.com/support/downloads/safari.html">Safari</a> and <a href="http://excanvas.sourceforge.net/">maybe even IE 6.0 with the Canvas Hack Plug-in (excanvas)</a> (this hack is very very slow here, and since IE 6.0 and 7.0 do not implement [canvas] natively, you'd better switch for instance to Firefox or wait for IE 8.0 :). 
             </p>
@@ -99,7 +99,7 @@ big {color:red;}
               If you know of any other web browsers on which the jsMSX demo works, or you would like to add I/O support for your favorite web browser, <a href="http://sourceforge.net/forum/?group_id=175343">please drop a line to the project forum</a>.
             </p>
             <a name="emulator"></a>
-            <h2 style="background-color: rgb(223, 223, 160);">The Online Demo:</h2>
+            <h2 style="background-color:rgb(223, 223, 160);">The Online Demo:</h2>
             <h3><i>Express Demo:</i></h3>
             <p>
               <a href="#demo">Just press [start] in the demo above</a> and the default demo bios and cartridge roms will be already loaded in the correct MSX virtual slots. The express demo should work on any web browser with [canvas] tag (such as Firefox 1.5/2.0+, Opera 9.0, Safari and IE 6.0/7.0+excanvas).
@@ -133,7 +133,7 @@ big {color:red;}
               Other game/appl ROMs:<a href="http://www.msxarchive.nl/pub/msx/games/roms/msx1/">http://www.msxarchive.nl/pub/msx/games/roms/msx1/</a>
             </p>
             <p></p>
-            <table style="background: rgb(238, 238, 208) none repeat scroll 0% 50%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;" width="100%">
+            <table style="background:rgb(238, 238, 208) none repeat scroll 0% 50%; -moz-background-clip:-moz-initial; -moz-background-origin:-moz-initial; -moz-background-inline-policy:-moz-initial;" width="100%">
               <tbody>
                 <tr>
                   <td>
@@ -148,7 +148,7 @@ big {color:red;}
             </table>
             <div id="3"></div>
             <div>
-              <pre style="border: medium solid;"><p id="logbuf">Console:</p></pre>
+              <pre style="border:medium solid;"><p id="logbuf">Console:</p></pre>
             </div>
             <div>
               <script type="text/javascript">
