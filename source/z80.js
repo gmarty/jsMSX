@@ -5248,7 +5248,7 @@ function Z80(d) {
     var i = this._A;
     var i_76_ = this.peekb(this.HL());
     var i_77_ = i_76_;
-    var i_76_ = i_76_ >> 4 | i << 4;
+    i_76_ = i_76_ >> 4 | i << 4;
     i = i & 0xf0 | i_77_ & 0xf;
     this.pokeb(this.HL(), i_76_);
     this.fS = ((i & 0x80) != 0);

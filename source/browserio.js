@@ -72,7 +72,7 @@ function browserio() {
         var bis = Components.classes['@mozilla.org/binaryinputstream;1'].createInstance(Components.interfaces.nsIBinaryInputStream);
         bis.setInputStream(is);
         var datasize = is.available();
-        for (var i = 0; i < datasize; i++) {
+        for (i = 0; i < datasize; i++) {
           data += String.fromCharCode(bis.read8());
         }
       }

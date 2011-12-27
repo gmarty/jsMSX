@@ -25,6 +25,7 @@
  */
 function MSX(window, canvas, logbuf) {
   var self = this;
+  var i;
 
   this.window = window;
   this.canvas = canvas;
@@ -801,16 +802,16 @@ function MSX(window, canvas, logbuf) {
   this.memoria = new Array(4); //4 primary slots
   this.m0 = new Array(65536);
   this.memoria[0] = this.m0;
-  for (var i = 0; i < 65536; i++) this.m0[i] = 255;
+  for (i = 0; i < 65536; i++) this.m0[i] = 255;
   this.m1 = new Array(65536);
   this.memoria[1] = this.m1;
-  for (var i = 0; i < 65536; i++) this.m1[i] = 255;
+  for (i = 0; i < 65536; i++) this.m1[i] = 255;
   this.m2 = new Array(65536);
   this.memoria[2] = this.m2;
-  for (var i = 0; i < 65536; i++) this.m2[i] = 255;
+  for (i = 0; i < 65536; i++) this.m2[i] = 255;
   this.m3 = new Array(65536);
   this.memoria[3] = this.m3;
-  for (var i = 0; i < 65536; i++) this.m3[i] = 255;
+  for (i = 0; i < 65536; i++) this.m3[i] = 255;
   this.reset();
 
   this.println('Starting VDP');
