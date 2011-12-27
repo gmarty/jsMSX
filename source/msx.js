@@ -24,6 +24,8 @@
  * @constructor
  */
 function MSX(window, canvas, logbuf) {
+  var self = this;
+
   this.window = window;
   this.canvas = canvas;
   this.logbuf = logbuf;
@@ -66,7 +68,7 @@ function MSX(window, canvas, logbuf) {
 
   this.handleEvent = function(e) {
     //alert("You pressed: which="+e.which+",keyUniCode="+e.keyCode+",shift="+e.shiftKey+",charCode="+e.charCode+",tochar="+String.fromCharCode(e.which)+",type="+e.type);
-    return msx.trataTecla.call(msx, e.keyCode, e.type == 'keydown', e);
+    return self.trataTecla.call(self, e.keyCode, e.type == 'keydown', e);
   };
 
   this.inb = function(i) {
@@ -94,17 +96,21 @@ function MSX(window, canvas, logbuf) {
 
   this.interrupt = msx_interrupt;
   this.interrupt_start = function() {
-    this.interval = setInterval('msx_interrupt.apply(msx)', 17); //60 intervals/sec
+    this.interval = setInterval(function() {
+      msx_interrupt.apply(self);
+    }, 17); //60 intervals/sec
   };
   this.interrupt_stop = function() {
     clearInterval(this.interval);
   };
 
   this.execute_start = function() {
-    this.exec_interval = setInterval('msx.execute.apply(msx)', 17); //60 intervals/sec
+    this.exec_interval = setInterval(function() {
+      self.execute.apply(self);
+    }, 17); //60 intervals/sec
   };
   this.execute_stop = function() {
-    clearInterval(msx.exec_interval);
+    clearInterval(this.exec_interval);
   };
 
   this.loadbiosrom = function(url, slot, canvasbiosrom) {
@@ -148,7 +154,6 @@ function MSX(window, canvas, logbuf) {
   };
 
   this.loadcartrom = function(url, cartslot, megaromtype, canvascartrom) {
-
     this.println('Reading cart rom ' + url);
     var cartrom = msx_loadurl(url);
     this.println(cartrom.length + ' bytes read');
@@ -188,7 +193,7 @@ function MSX(window, canvas, logbuf) {
     }
 
     var i_9_ = 0;
-    bool = false;
+    //bool = false;
     i = cartslot;
     var is = dbr;
 
@@ -623,7 +628,7 @@ function MSX(window, canvas, logbuf) {
         break;
       case 1017:
         if (bool == true)
-          pauseAtNextInterrupt = pauseAtNextInterrupt ^ true;
+          this.pauseAtNextInterrupt = this.pauseAtNextInterrupt ^ true;
         break;
       case 1019:
         if (bool == true) {
@@ -793,7 +798,7 @@ function MSX(window, canvas, logbuf) {
   this.println('MSX ready to go. Load ROMs and hit [start].');
 }
 
-msx_interrupt = function() {
+var msx_interrupt = function() {
   if (msx.resetAtNextInterrupt) {
     msx.resetAtNextInterrupt = false;
     msx.reset();
@@ -819,7 +824,7 @@ msx_interrupt = function() {
   return msx.z80_interrupt.apply(msx);
 };
 
-msx_loadurl = function(url) {
+var msx_loadurl = function(url) {
   //alert(url);
   var io = new browserio();
   var data = io.load(url);

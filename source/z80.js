@@ -24,6 +24,8 @@
  * @constructor
  */
 function Z80(d) {
+  var bool;
+
   this.steps = 0; //steps since reset
   this.showpc = false; //show _PC red pixel
 
@@ -342,7 +344,7 @@ function Z80(d) {
   this.daa_a = function() {
     var i = this._A;
     var i_20_ = 0;
-    bool = this.fC;
+    var bool = this.fC;
     if (this.fH || (i & 0xf) > 9)
       i_20_ |= 0x6;
     if (bool || i > 159 || i > 143 && (i & 0xf) > 9)
@@ -3078,7 +3080,7 @@ function Z80(d) {
         this.setIDH(this.peekb(this._PC++));
         return 11;
       case 46:
-        setIDL(nxtpcb());
+        this.setIDL(this.nxtpcb());
         return 11;
       case 54: {
         var i = this.ID_d();
@@ -4419,52 +4421,52 @@ function Z80(d) {
       var i_69_ = i >> i_68_ * 4 & 0xf;
       switch (i_69_) {
         case 10:
-          System.out.print('a');
+          console.log('a');
           break;
         case 11:
-          System.out.print('b');
+          console.log('b');
           break;
         case 12:
-          System.out.print('c');
+          console.log('c');
           break;
         case 13:
-          System.out.print('d');
+          console.log('d');
           break;
         case 14:
-          System.out.print('e');
+          console.log('e');
           break;
         case 15:
-          System.out.print('f');
+          console.log('f');
           break;
         case 0:
-          System.out.print('0');
+          console.log('0');
           break;
         case 1:
-          System.out.print('1');
+          console.log('1');
           break;
         case 2:
-          System.out.print('2');
+          console.log('2');
           break;
         case 3:
-          System.out.print('3');
+          console.log('3');
           break;
         case 4:
-          System.out.print('4');
+          console.log('4');
           break;
         case 5:
-          System.out.print('5');
+          console.log('5');
           break;
         case 6:
-          System.out.print('6');
+          console.log('6');
           break;
         case 7:
-          System.out.print('7');
+          console.log('7');
           break;
         case 8:
-          System.out.print('8');
+          console.log('8');
           break;
         case 9:
-          System.out.print('9');
+          console.log('9');
           break;
       }
     }
@@ -4517,7 +4519,7 @@ function Z80(d) {
   };
 
   this.retornaHex = function(i) {
-    string = '';
+    var string = '';
     for (var i_72_ = 1; i_72_ >= 0; i_72_--) {
       var i_73_ = i >> i_72_ * 4 & 0xf;
       switch (i_73_) {
@@ -5089,7 +5091,7 @@ function Z80(d) {
       case 255:
         return 'RST 56';
       default:
-        return 'Instrucao nao catalogada ' + retornaHex(i);
+        return 'Instrucao nao catalogada ' + this.retornaHex(i);
     }
   };
 
