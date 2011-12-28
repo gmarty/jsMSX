@@ -390,17 +390,18 @@ function Z80(d) {
     //var pcs = '';
 
     var i = -(this.tstatesPerInterrupt - this.interrupt());
-    var i_23_;
+    var i_2_;
+    var i_3_;
 
-    //var i_22_ = this.peekb(this._PC++);
+    //var i_2_ = this.peekb(this._PC++);
     //if (this.showpc)
     //this.vdp.imagedata.data[this._PC*4]+=247;
 
     while (i < 0) {
       this._R += (1);
-      var i_22_ = this.peekb(this._PC++);
+      i_2_ = this.peekb(this._PC++);
 
-      switch (i_22_) {
+      switch (i_2_) {
         default:
           break;
         case 0:
@@ -411,10 +412,10 @@ function Z80(d) {
           i += 4;
           break;
         case 16: {
-          this._B = (i_23_ = this.qdec8(this._B));
-          if (i_23_ != 0) {
-            var i_24_ = this.bytef(this.peekb(this._PC++));
-            this._PC = (this._PC + i_24_ & 0xffff);
+          this._B = (i_3_ = this.qdec8(this._B));
+          if (i_3_ != 0) {
+            i_2_ = this.bytef(this.peekb(this._PC++));
+            this._PC = (this._PC + i_2_ & 0xffff);
             i += 13;
           } else {
             this._PC = (this.inc16(this._PC));
@@ -423,15 +424,15 @@ function Z80(d) {
           break;
         }
         case 24: {
-          var i_25_ = this.bytef(this.peekb(this._PC++));
-          this._PC = (this._PC + i_25_ & 0xffff);
+          i_2_ = this.bytef(this.peekb(this._PC++));
+          this._PC = (this._PC + i_2_ & 0xffff);
           i += 12;
           break;
         }
         case 32:
           if (!this.fZ) {
-            var i_26_ = this.bytef(this.peekb(this._PC++));
-            this._PC = (this._PC + i_26_ & 0xffff);
+            i_2_ = this.bytef(this.peekb(this._PC++));
+            this._PC = (this._PC + i_2_ & 0xffff);
             i += 12;
           } else {
             this._PC = (this.inc16(this._PC));
@@ -440,8 +441,8 @@ function Z80(d) {
           break;
         case 40:
           if (this.fZ) {
-            var i_27_ = this.bytef(this.peekb(this._PC++));
-            this._PC = (this._PC + i_27_ & 0xffff);
+            i_2_ = this.bytef(this.peekb(this._PC++));
+            this._PC = (this._PC + i_2_ & 0xffff);
             i += 12;
           } else {
             this._PC = (this.inc16(this._PC));
@@ -450,8 +451,8 @@ function Z80(d) {
           break;
         case 48:
           if (!this.fC) {
-            var i_28_ = this.bytef(this.peekb(this._PC++));
-            this._PC = (this._PC + i_28_ & 0xffff);
+            i_2_ = this.bytef(this.peekb(this._PC++));
+            this._PC = (this._PC + i_2_ & 0xffff);
             i += 12;
           } else {
             this._PC = (this.inc16(this._PC));
@@ -460,8 +461,8 @@ function Z80(d) {
           break;
         case 56:
           if (this.fC) {
-            var i_29_ = this.bytef(this.peekb(this._PC++));
-            this._PC = (this._PC + i_29_ & 0xffff);
+            i_2_ = this.bytef(this.peekb(this._PC++));
+            this._PC = (this._PC + i_2_ & 0xffff);
             i += 12;
           } else {
             this._PC = (this.inc16(this._PC));
@@ -489,8 +490,8 @@ function Z80(d) {
           i += 10;
           break;
         case 41: {
-          i_23_ = this.HL();
-          this.setHL(this.add16(i_23_, i_23_));
+          i_2_ = this.HL();
+          this.setHL(this.add16(i_2_, i_2_));
           i += 11;
           break;
         }
@@ -591,8 +592,8 @@ function Z80(d) {
           i += 4;
           break;
         case 52: {
-          i_23_ = this.HL();
-          this.pokeb(i_23_, this.inc8(this.peekb(i_23_)));
+          i_2_ = this.HL();
+          this.pokeb(i_2_, this.inc8(this.peekb(i_2_)));
           i += 11;
           break;
         }
@@ -625,8 +626,8 @@ function Z80(d) {
           i += 4;
           break;
         case 53: {
-          i_23_ = this.HL();
-          this.pokeb(i_23_, this.dec8(this.peekb(i_23_)));
+          i_2_ = this.HL();
+          this.pokeb(i_2_, this.dec8(this.peekb(i_2_)));
           i += 11;
           break;
         }
@@ -909,9 +910,9 @@ function Z80(d) {
           i += 7;
           break;
         case 118: {
-          i_23_ = (-i - 1) / 4 + 1;
-          i += i_23_ * 4;
-          this._R += (i_23_ - 1);
+          i_2_ = (-i - 1) / 4 + 1;
+          i += i_2_ * 4;
+          this._R += (i_2_ - 1);
           break;
         }
         case 119:
@@ -1365,17 +1366,17 @@ function Z80(d) {
           i += 11;
           break;
         case 227: {
-          i_23_ = this.HL();
-          var i_35_ = this._SP;
-          this.setHL(this.peekw(i_35_));
-          this.pokew(i_35_, i_23_);
+          i_3_ = this.HL();
+          i_2_ = this._SP;
+          this.setHL(this.peekw(i_2_));
+          this.pokew(i_2_, i_3_);
           i += 19;
           break;
         }
         case 235: {
-          i_23_ = this.HL();
+          i_2_ = this.HL();
           this.setHL(this.DE());
-          this.setDE(i_23_);
+          this.setDE(i_2_);
           i += 4;
           break;
         }
@@ -1391,9 +1392,9 @@ function Z80(d) {
           break;
         case 196:
           if (!this.fZ) {
-            i_23_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
             this.pushpc();
-            this._PC = (i_23_);
+            this._PC = (i_2_);
             i += 17;
           } else {
             this._PC = (this._PC + 2 & 0xffff);
@@ -1402,9 +1403,9 @@ function Z80(d) {
           break;
         case 204:
           if (this.fZ) {
-            i_23_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
             this.pushpc();
-            this._PC = (i_23_);
+            this._PC = (i_2_);
             i += 17;
           } else {
             this._PC = (this._PC + 2 & 0xffff);
@@ -1413,9 +1414,9 @@ function Z80(d) {
           break;
         case 212:
           if (!this.fC) {
-            i_23_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
             this.pushpc();
-            this._PC = (i_23_);
+            this._PC = (i_2_);
             i += 17;
           } else {
             this._PC = (this._PC + 2 & 0xffff);
@@ -1424,9 +1425,9 @@ function Z80(d) {
           break;
         case 220:
           if (this.fC) {
-            i_23_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
             this.pushpc();
-            this._PC = (i_23_);
+            this._PC = (i_2_);
             i += 17;
           } else {
             this._PC = (this._PC + 2 & 0xffff);
@@ -1435,9 +1436,9 @@ function Z80(d) {
           break;
         case 228:
           if (!this.fPV) {
-            i_23_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
             this.pushpc();
-            this._PC = (i_23_);
+            this._PC = (i_2_);
             i += 17;
           } else {
             this._PC = (this._PC + 2 & 0xffff);
@@ -1446,9 +1447,9 @@ function Z80(d) {
           break;
         case 236:
           if (this.fPV) {
-            i_23_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
             this.pushpc();
-            this._PC = (i_23_);
+            this._PC = (i_2_);
             i += 17;
           } else {
             this._PC = (this._PC + 2 & 0xffff);
@@ -1457,9 +1458,9 @@ function Z80(d) {
           break;
         case 244:
           if (!this.fS) {
-            i_23_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
             this.pushpc();
-            this._PC = (i_23_);
+            this._PC = (i_2_);
             i += 17;
           } else {
             this._PC = (this._PC + 2 & 0xffff);
@@ -1468,9 +1469,9 @@ function Z80(d) {
           break;
         case 252:
           if (this.fS) {
-            i_23_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
             this.pushpc();
-            this._PC = (i_23_);
+            this._PC = (i_2_);
             i += 17;
           } else {
             this._PC = (this._PC + 2 & 0xffff);
@@ -1482,9 +1483,9 @@ function Z80(d) {
           i += 11;
           break;
         case 205: {
-          i_23_ = this.peekw((this._PC = this._PC + 2) - 2);
+          i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
           this.pushpc();
-          this._PC = (i_23_);
+          this._PC = (i_2_);
           i += 17;
           break;
         }
