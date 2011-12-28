@@ -25,6 +25,8 @@
  */
 function Z80(d) {
   var bool;
+  var i;
+  var i_0_;
 
   //this.steps = 0; //steps since reset
   this.showpc = false; //show _PC red pixel
@@ -78,9 +80,9 @@ function Z80(d) {
   this._IM = 2;
 
   //static
-  for (var i = 0; i < 256; i++) {
+  for (i = 0; i < 256; i++) {
     bool = true;
-    for (var i_0_ = 0; i_0_ < 8; i_0_++) {
+    for (i_0_ = 0; i_0_ < 8; i_0_++) {
       if ((i & 1 << i_0_) != 0)
         bool ^= true;
     }
