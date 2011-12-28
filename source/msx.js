@@ -26,6 +26,8 @@
 function MSX(window, canvas, logbuf) {
   var self = this;
   var i;
+  var frameSkip = 0;
+  //var sleepHack = 5;
 
   this.window = window;
   this.canvas = canvas;
@@ -56,8 +58,6 @@ function MSX(window, canvas, logbuf) {
   this.cartSlot = 0;
   this.cart = []; //private int[][] cart;
   this.interruptCounter = 0;
-  var frameSkip = 0;
-  //var sleepHack = 5;
   this.resetAtNextInterrupt = false;
   this.pauseAtNextInterrupt = false;
   //this.refreshNextInterrupt = true;
@@ -114,27 +114,31 @@ function MSX(window, canvas, logbuf) {
   };
 
   this.loadbiosrom = function(url, slot, canvasbiosrom) {
-    this.println('Reading bios rom ' + url);
     var biosrom = msx_loadurl(url);
+    var ctxbiosrom;
+    var imgdatabiosrom;
+    var dbr;
+    var biosromlength;
+    var charcode;
+    var i;
+
+    this.println('Reading bios rom ' + url);
     this.println(biosrom.length + ' bytes read');
 
     if (biosrom != '') {
       canvasbiosrom.width = 256;
       canvasbiosrom.height = biosrom.length / 256;
       //alert(biosrom.length+','+canvasbiosrom.width+','+canvasbiosrom.height);
-      var ctxbiosrom = canvasbiosrom.getContext('2d');
+      ctxbiosrom = canvasbiosrom.getContext('2d');
       ctxbiosrom.fillStyle = 'rgb(0,0,0)';
       ctxbiosrom.fillRect(0, 0, canvasbiosrom.width, canvasbiosrom.height);
-      var imgdatabiosrom = undefined;
-      var dbr = undefined;
       if (ctxbiosrom.getImageData) {
         imgdatabiosrom = ctxbiosrom.getImageData(0, 0, canvasbiosrom.width, canvasbiosrom.height);
         dbr = imgdatabiosrom.data;
       }
-      var biosromlength = biosrom.length;
+      biosromlength = biosrom.length;
       // MimeType('application/octet-stream; charset=x-user-defined')
-      var charcode = 0;
-      for (var i = 0; i < biosromlength; i++) {
+      for (i = 0; i < biosromlength; i++) {
         charcode = biosrom.charCodeAt(i) & 0xff;
         this.memoria[slot][i] = charcode;
         if (dbr) {
@@ -154,29 +158,34 @@ function MSX(window, canvas, logbuf) {
   };
 
   this.loadcartrom = function(url, cartslot, megaromtype, canvascartrom) {
-    this.println('Reading cart rom ' + url);
     var cartrom = msx_loadurl(url);
+    var ctxcartrom;
+    var imgdatacartrom;
+    var dbr;
+    var cartromlength;
+    var charcode;
+    var i;
+    var i_2_;
+
+    this.println('Reading cart rom ' + url);
     this.println(cartrom.length + ' bytes read');
 
     if (cartrom != '') {
       canvascartrom.width = 256;
       canvascartrom.height = cartrom.length / 256;
       //alert(cartrom.length+','+canvascartrom.width+','+canvascartrom.height);
-      var ctxcartrom = canvascartrom.getContext('2d');
+      ctxcartrom = canvascartrom.getContext('2d');
       ctxcartrom.fillStyle = 'rgb(0,0,0)';
       ctxcartrom.fillRect(0, 0, canvascartrom.width, canvascartrom.height);
-      var imgdatacartrom = undefined;
-      var dbr = undefined;
       if (ctxcartrom.getImageData) {
         imgdatacartrom = ctxcartrom.getImageData(0, 0, canvascartrom.width, canvascartrom.height);
         dbr = imgdatacartrom.data;
       } else {
         dbr = Array(canvascartrom.width * canvascartrom.height * 4);
       }
-      var cartromlength = cartrom.length;
+      cartromlength = cartrom.length;
       // MimeType('application/octet-stream; charset=x-user-defined')
-      var charcode = 0;
-      for (var i = 0; i < cartromlength; i++) {
+      for (i = 0; i < cartromlength; i++) {
         charcode = cartrom.charCodeAt(i) & 0xff;
         //this.memoria[slot][i]=charcode;
         dbr[i * 4] = charcode;
@@ -192,37 +201,33 @@ function MSX(window, canvas, logbuf) {
       }
     }
 
-    var i_9_ = 0;
     //bool = false;
-    i = cartslot;
-    var is = dbr;
 
-    var i_12_ = cartrom.length;
+    cartromlength = cartrom.length;
 
-    for (var i_13_ = 0; i_13_ < i_12_; i_13_++) {
-      var i_14_ = Math.floor(i_13_ / 8192);
-      this.cart[i_14_][i_13_ % 8192] = is[i_13_ * 4] + 256 & 0xff;
+    for (i = 0; i < cartromlength; i++) {
+      this.cart[Math.floor(i / 8192)][i % 8192] = dbr[i * 4] + 256 & 0xff;
     }
-    if (i_12_ > 0)
-      i_9_ = (is[3 * 4] < 0 ? is[3 * 4] + 256 : is[3 * 4]) * 256 + (is[2 * 4] < 0 ? is[2 * 4] + 256 : is[2 * 4]);
-    if (i_9_ < 8192) {
-      i_9_ = 0;
+    if (cartromlength > 0)
+      i_2_ = (dbr[3 * 4] < 0 ? dbr[3 * 4] + 256 : dbr[3 * 4]) * 256 + (dbr[2 * 4] < 0 ? dbr[2 * 4] + 256 : dbr[2 * 4]);
+    if (i_2_ < 8192) {
+      i_2_ = 0;
       this.PPIPortC = 250;
-    } else if (i_9_ < 16384)
-      i_9_ = 8192;
-    else if (i_9_ < 32768)
-      i_9_ = 16384;
+    } else if (i_2_ < 16384)
+      i_2_ = 8192;
+    else if (i_2_ < 32768)
+      i_2_ = 16384;
     else
-      i_9_ = 32768;
-    this.println('Cart start address:' + i_9_);
-    if (i_12_ > 32768) {
-      i_12_ = 16384;
+      i_2_ = 32768;
+    this.println('Cart start address:' + i_2_);
+    if (cartromlength > 32768) {
+      cartromlength = 16384;
       this.megarom = true;
       this.preparaMemoriaMegarom(megaromtype);
       this.println('Megarom type ' + megaromtype);
     }
-    for (var i_15_ = 0; i_15_ < i_12_; i_15_++)
-      this.memoria[i][i_15_ + i_9_] = is[i_15_ * 4] + 256 & 0xff;
+    for (i = 0; i < cartromlength; i++)
+      this.memoria[cartslot][i + i_2_] = dbr[i * 4] + 256 & 0xff;
 
     return cartrom;
   };
@@ -289,6 +294,7 @@ function MSX(window, canvas, logbuf) {
 
   this.pokeb = function(i, i_25_) {
     var i_26_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
+
     if (this.podeEscrever[i_26_]) this.memoria[i_26_][i] = i_25_ & 0xff;
     if (i == 65535) this.memoria[i_26_][65535] = 255;
     if (!this.megarom) return;
@@ -339,6 +345,7 @@ function MSX(window, canvas, logbuf) {
 
   this.pokew = function(i, i_27_) {
     var i_28_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
+
     if (this.podeEscrever[i_28_]) {
       this.memoria[i_28_][i] = i_27_ & 0xff;
       if (++i < 65535) this.memoria[i_28_][i] = i_27_ >> 8;
@@ -786,9 +793,8 @@ function MSX(window, canvas, logbuf) {
   this.pinta = true;
   this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
   for (i = 0; i < 32; i++) {
-    var acart = Array(8192);
     //for (j=0; j<8192; j++) acart[j]=0;
-    this.cart[i] = acart;
+    this.cart[i] = Array(8192);
   }
   this.interruptCounter = 0;
   this.frameSkip = 1;
