@@ -128,8 +128,6 @@ function tms9918(canvas) {
               case 2:
                 i_10_ = ((this.vidMem[this.tabCor + i_7_ - this.tabCar] & 0xf0) >>> 4);
                 break;
-              default:
-                i_10_ = 0;
             }
             this.imagemTela[i_9_] = i_10_;
             if (this.fastgfx) {
@@ -153,8 +151,6 @@ function tms9918(canvas) {
               case 2:
                 i_11_ = this.vidMem[this.tabCor + i_7_ - this.tabCar] & 0xf;
                 break;
-              default:
-                i_11_ = 0;
             }
             this.imagemTela[i_9_] = i_11_;
             if (this.fastgfx) {
@@ -357,8 +353,6 @@ function tms9918(canvas) {
               break;
             case 6:
               this.tabImgSpt = (this.registros[6] & 0x7) << 11;
-              break;
-            default:
               break;
           }
           break;

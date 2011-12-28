@@ -404,8 +404,6 @@ function Z80(d) {
       i_2_ = this.peekb(this._PC++);
 
       switch (i_2_) {
-        default:
-          break;
         case 0:
           i += 4;
           break;
