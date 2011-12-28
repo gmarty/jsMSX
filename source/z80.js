@@ -2414,6 +2414,8 @@ function Z80(d) {
   };
 
   this.execute_ed = function(i) {
+    var i_2_;
+    var i_3_;
     this._R += (1);
     switch (this.peekb(this._PC++)) {
       case 0:
@@ -2587,13 +2589,13 @@ function Z80(d) {
         this.setHL(this.adc16(this.HL(), this.DE()));
         return 15;
       case 98: {
-        var i_46_ = this.HL();
-        this.setHL(this.sbc16(i_46_, i_46_));
+        i_2_ = this.HL();
+        this.setHL(this.sbc16(i_2_, i_2_));
         return 15;
       }
       case 106: {
-        var i_47_ = this.HL();
-        this.setHL(this.adc16(i_47_, i_47_));
+        i_2_ = this.HL();
+        this.setHL(this.adc16(i_2_, i_2_));
         return 15;
       }
       case 114:
@@ -2691,12 +2693,12 @@ function Z80(d) {
         this.fN = (false);
         return 16;
       case 161: {
-        var bool = this.fC;
+        i_2_ = this.fC;
         this.cp_a(this.peekb(this.HL()));
         this.setHL(this.inc16(this.HL()));
         this.setBC(this.dec16(this.BC()));
         this.fPV = (this.BC() != 0);
-        this.fC = (bool);
+        this.fC = (i_2_);
         return 16;
       }
       case 162:
@@ -2719,7 +2721,7 @@ function Z80(d) {
         this.fN = (false);
         return 16;
       case 169: {
-        var bool = this.fC;
+        //var bool = this.fC;
         this.cp_a(this.peekb(this.HL()));
         this.setHL(this.dec16(this.HL()));
         this.setBC(this.dec16(this.BC()));
@@ -2737,12 +2739,12 @@ function Z80(d) {
         this.setHL(this.dec16(this.HL()));
         return 16;
       case 176: {
-        var bool = false;
+        //var bool = false;
         this.pokeb(this.DE(), this.peekb(this.HL()));
         this.setHL(this.inc16(this.HL()));
         this.setDE(this.inc16(this.DE()));
         this.setBC(this.dec16(this.BC()));
-        var i_48_ = 21;
+        i_2_ = 21;
         this._R += (4);
         if (this.BC() != 0) {
           this._PC = (this._PC - 2 & 0xffff);
@@ -2750,103 +2752,103 @@ function Z80(d) {
           this.fN = (false);
           this.fPV = (true);
         } else {
-          i_48_ -= 5;
+          i_2_ -= 5;
           this.fH = (false);
           this.fN = (false);
           this.fPV = (false);
         }
-        return i_48_;
+        return i_2_;
       }
       case 177: {
-        var bool = this.fC;
+        i_2_ = this.fC;
         this.cp_a(this.peekb(this.HL()));
         this.setHL(this.inc16(this.HL()));
         this.setBC(this.dec16(this.BC()));
-        var bool_49_ = this.BC() != 0;
-        this.fPV = (bool_49_);
-        this.fC = (bool);
-        if (bool_49_ && !this.fZ) {
+        i_3_ = this.BC() != 0;
+        this.fPV = (i_3_);
+        this.fC = (i_2_);
+        if (i_3_ && !this.fZ) {
           this._PC = (this._PC - 2 & 0xffff);
           return 21;
         }
         return 16;
       }
       case 178: {
-        var bool = false;
+        //var bool = false;
+        i_2_ = 0;
         this.pokeb(this.HL(), this.inb(this._C));
-        var i_50_ = 0;
-        this._B = (i_50_ = this.dec8(this._B));
+        this._B = (i_2_ = this.dec8(this._B));
         this.setHL(this.inc16(this.HL()));
-        if (i_50_ != 0) {
+        if (i_2_ != 0) {
           this._PC = (this._PC - 2 & 0xffff);
           return 21;
         }
         return 16;
       }
       case 179: {
-        var bool = false;
-        var i_51_ = 0;
-        this._B = (i_51_ = this.dec8(this._B));
+        //var bool = false;
+        i_2_ = 0;
+        this._B = (i_2_ = this.dec8(this._B));
         this.outb(this._C, this.peekb(this.HL()), i);
         this.setHL(this.inc16(this.HL()));
-        if (i_51_ != 0) {
+        if (i_2_ != 0) {
           this._PC = (this._PC - 2 & 0xffff);
           return 21;
         }
         return 16;
       }
       case 184: {
-        var bool = false;
+        //var bool = false;
+        i_2_ = 21;
         this._R += (4);
         this.pokeb(this.DE(), this.peekb(this.HL()));
         this.setDE(this.dec16(this.DE()));
         this.setHL(this.dec16(this.HL()));
         this.setBC(this.dec16(this.BC()));
-        var i_52_ = 21;
         if (this.BC() != 0) {
           this._PC = (this._PC - 2 & 0xffff);
           this.fH = (false);
           this.fN = (false);
           this.fPV = (true);
         } else {
-          i_52_ -= 5;
+          i_2_ -= 5;
           this.fH = (false);
           this.fN = (false);
           this.fPV = (false);
         }
-        return i_52_;
+        return i_2_;
       }
       case 185: {
-        var bool = this.fC;
+        i_2_ = this.fC;
         this.cp_a(this.peekb(this.HL()));
         this.setHL(this.dec16(this.HL()));
         this.setBC(this.dec16(this.BC()));
-        var bool_53_ = this.BC() != 0;
-        this.fPV = (bool_53_);
-        this.fC = (bool);
-        if (bool_53_ && !this.fZ) {
+        i_3_ = this.BC() != 0;
+        this.fPV = (i_3_);
+        this.fC = (i_2_);
+        if (i_3_ && !this.fZ) {
           this._PC = (this._PC - 2 & 0xffff);
           return 21;
         }
         return 16;
       }
       case 186: {
+        i_2_ = 0;
         this.pokeb(this.HL(), this.inb(this.BC() & 0xff));
-        var i_54_ = 0;
-        this._B = (i_54_ = this.dec8(this._B));
+        this._B = (i_2_ = this.dec8(this._B));
         this.setHL(this.dec16(this.HL()));
-        if (i_54_ != 0) {
+        if (i_2_ != 0) {
           this._PC = (this._PC - 2 & 0xffff);
           return 21;
         }
         return 16;
       }
       case 187: {
-        var i_55_ = 0;
-        this._B = (i_55_ = this.dec8(this._B));
+        i_2_ = 0;
+        this._B = (i_2_ = this.dec8(this._B));
         this.outb(this._C, this.peekb(this.HL()), i);
         this.setHL(this.dec16(this.HL()));
-        if (i_55_ != 0) {
+        if (i_2_ != 0) {
           this._PC = (this._PC - 2 & 0xffff);
           return 21;
         }
