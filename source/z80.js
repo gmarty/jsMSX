@@ -1590,6 +1590,7 @@ function Z80(d) {
   };
 
   this.execute_cb = function() {
+    var i = this.HL();
     this._R += (1);
     switch (this.peekb(this._PC++)) {
       case 0:
@@ -1611,7 +1612,7 @@ function Z80(d) {
         this._L = (this.rlc(this._L));
         return 8;
       case 6: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.rlc(this.peekb(i)));
         return 15;
       }
@@ -1637,7 +1638,7 @@ function Z80(d) {
         this._L = (this.rrc(this._L));
         return 8;
       case 14: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.rrc(this.peekb(i)));
         return 15;
       }
@@ -1663,7 +1664,7 @@ function Z80(d) {
         this._L = (this.rl(this._L));
         return 8;
       case 22: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.rl(this.peekb(i)));
         return 15;
       }
@@ -1689,7 +1690,7 @@ function Z80(d) {
         this._L = (this.rr(this._L));
         return 8;
       case 30: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.rr(this.peekb(i)));
         return 15;
       }
@@ -1715,7 +1716,7 @@ function Z80(d) {
         this._L = (this.sla(this._L));
         return 8;
       case 38: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.sla(this.peekb(i)));
         return 15;
       }
@@ -1741,7 +1742,7 @@ function Z80(d) {
         this._L = (this.sra(this._L));
         return 8;
       case 46: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.sra(this.peekb(i)));
         return 15;
       }
@@ -1767,7 +1768,7 @@ function Z80(d) {
         this._L = (this.sls(this._L));
         return 8;
       case 54: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.sls(this.peekb(i)));
         return 15;
       }
@@ -1793,7 +1794,7 @@ function Z80(d) {
         this._L = (this.srl(this._L));
         return 8;
       case 62: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.srl(this.peekb(i)));
         return 15;
       }
@@ -2011,7 +2012,7 @@ function Z80(d) {
         this._L = (this.res(1, this._L));
         return 8;
       case 134: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.res(1, this.peekb(i)));
         return 15;
       }
@@ -2037,7 +2038,7 @@ function Z80(d) {
         this._L = (this.res(2, this._L));
         return 8;
       case 142: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.res(2, this.peekb(i)));
         return 15;
       }
@@ -2063,7 +2064,7 @@ function Z80(d) {
         this._L = (this.res(4, this._L));
         return 8;
       case 150: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.res(4, this.peekb(i)));
         return 15;
       }
@@ -2089,7 +2090,7 @@ function Z80(d) {
         this._L = (this.res(8, this._L));
         return 8;
       case 158: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.res(8, this.peekb(i)));
         return 15;
       }
@@ -2115,7 +2116,7 @@ function Z80(d) {
         this._L = (this.res(16, this._L));
         return 8;
       case 166: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.res(16, this.peekb(i)));
         return 15;
       }
@@ -2141,7 +2142,7 @@ function Z80(d) {
         this._L = (this.res(32, this._L));
         return 8;
       case 174: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.res(32, this.peekb(i)));
         return 15;
       }
@@ -2167,7 +2168,7 @@ function Z80(d) {
         this._L = (this.res(64, this._L));
         return 8;
       case 182: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.res(64, this.peekb(i)));
         return 15;
       }
@@ -2193,7 +2194,7 @@ function Z80(d) {
         this._L = (this.res(128, this._L));
         return 8;
       case 190: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.res(128, this.peekb(i)));
         return 15;
       }
@@ -2219,7 +2220,7 @@ function Z80(d) {
         this._L = (this.set(1, this._L));
         return 8;
       case 198: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.set(1, this.peekb(i)));
         return 15;
       }
@@ -2245,7 +2246,7 @@ function Z80(d) {
         this._L = (this.set(2, this._L));
         return 8;
       case 206: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.set(2, this.peekb(i)));
         return 15;
       }
@@ -2271,7 +2272,7 @@ function Z80(d) {
         this._L = (this.set(4, this._L));
         return 8;
       case 214: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.set(4, this.peekb(i)));
         return 15;
       }
@@ -2297,7 +2298,7 @@ function Z80(d) {
         this._L = (this.set(8, this._L));
         return 8;
       case 222: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.set(8, this.peekb(i)));
         return 15;
       }
@@ -2323,7 +2324,7 @@ function Z80(d) {
         this._L = (this.set(16, this._L));
         return 8;
       case 230: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.set(16, this.peekb(i)));
         return 15;
       }
@@ -2349,7 +2350,7 @@ function Z80(d) {
         this._L = (this.set(32, this._L));
         return 8;
       case 238: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.set(32, this.peekb(i)));
         return 15;
       }
@@ -2375,7 +2376,7 @@ function Z80(d) {
         this._L = (this.set(64, this._L));
         return 8;
       case 246: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.set(64, this.peekb(i)));
         return 15;
       }
@@ -2401,7 +2402,7 @@ function Z80(d) {
         this._L = (this.set(128, this._L));
         return 8;
       case 254: {
-        var i = this.HL();
+        //i = this.HL();
         this.pokeb(i, this.set(128, this.peekb(i)));
         return 15;
       }
@@ -2860,6 +2861,8 @@ function Z80(d) {
   };
 
   this.execute_id = function() {
+    var i;
+    var i_2_;
     this._R += (1);
     switch (this.peekb(this._PC++)) {
       case 0:
@@ -3035,7 +3038,7 @@ function Z80(d) {
         this.setID(this.add16(this._ID, this.DE()));
         return 15;
       case 41: {
-        var i = this._ID;
+        i = this._ID;
         this.setID(this.add16(i, i));
         return 15;
       }
@@ -3064,7 +3067,7 @@ function Z80(d) {
         this.setIDL(this.inc8(this.IDL()));
         return 8;
       case 52: {
-        var i = this.ID_d();
+        i = this.ID_d();
         this.pokeb(i, this.inc8(this.peekb(i)));
         return 23;
       }
@@ -3075,7 +3078,7 @@ function Z80(d) {
         this.setIDL(this.dec8(this.IDL()));
         return 8;
       case 53: {
-        var i = this.ID_d();
+        i = this.ID_d();
         this.pokeb(i, this.dec8(this.peekb(i)));
         return 23;
       }
@@ -3086,7 +3089,7 @@ function Z80(d) {
         this.setIDL(this.nxtpcb());
         return 11;
       case 54: {
-        var i = this.ID_d();
+        i = this.ID_d();
         this.pokeb(i, this.peekb(this._PC++));
         return 19;
       }
@@ -3284,16 +3287,16 @@ function Z80(d) {
         this._SP = (this._ID);
         return 10;
       case 203: {
-        var i = this.ID_d();
-        var i_56_ = this.peekb(this._PC++);
-        this.execute_id_cb(i_56_, i);
-        return (i_56_ & 0xc0) == 64 ? 20 : 23;
+        i = this.ID_d();
+        i_2_ = this.peekb(this._PC++);
+        this.execute_id_cb(i_2_, i);
+        return (i_2_ & 0xc0) == 64 ? 20 : 23;
       }
       case 227: {
-        var i = this._ID;
-        var i_57_ = this._SP;
-        this.setID(this.peekw(i_57_));
-        this.pokew(i_57_, i);
+        i = this._ID;
+        i_2_ = this._SP;
+        this.setID(this.peekw(i_2_));
+        this.pokew(i_2_, i);
         return 23;
       }
       case 229:
@@ -4195,8 +4198,7 @@ function Z80(d) {
         this.pushpc();
         this.setIFF1(false);
         this.setIFF2(false);
-        var i = this.I() << 8 | 0xff;
-        this._PC = (this.peekw(i));
+        this._PC = (this.peekw(this.I() << 8 | 0xff));
         return 19;
       }
       default:
@@ -4420,8 +4422,10 @@ function Z80(d) {
   };
 
   this.printHex = function(i) {
-    for (var i_68_ = 1; i_68_ >= 0; i_68_--) {
-      var i_69_ = i >> i_68_ * 4 & 0xf;
+    var i_68_;
+    var i_69_;
+    for (i_68_ = 1; i_68_ >= 0; i_68_--) {
+      i_69_ = i >> i_68_ * 4 & 0xf;
       switch (i_69_) {
         case 10:
           console.log('a');
@@ -4523,8 +4527,10 @@ function Z80(d) {
 
   this.retornaHex = function(i) {
     var string = '';
-    for (var i_72_ = 1; i_72_ >= 0; i_72_--) {
-      var i_73_ = i >> i_72_ * 4 & 0xf;
+    var i_72_;
+    var i_73_;
+    for (i_72_ = 1; i_72_ >= 0; i_72_--) {
+      i_73_ = i >> i_72_ * 4 & 0xf;
       switch (i_73_) {
         case 10:
           string += 'a';
