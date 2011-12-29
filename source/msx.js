@@ -23,7 +23,7 @@
 /**
  * @constructor
  */
-function MSX(window, canvas, logbuf) {
+function JSMSX(window, canvas, logbuf) {
   var self = this;
   var i;
   var frameSkip = 0;
@@ -827,7 +827,7 @@ function MSX(window, canvas, logbuf) {
   this.psg = new psg8910();
 
   this.println('interrupt=' + this.interruptCounter + ',ticks=' + Math.floor(this.tstatesPerInterrupt) + ' cpu ticks/interrupt, cpu clock=3.58 MHz');
-  this.println('MSX ready to go. Load ROMs and hit [start].');
+  this.println('jsMSX ready to go. Load ROMs and hit [start].');
 }
 
 var msx_loadurl = function(url) {
