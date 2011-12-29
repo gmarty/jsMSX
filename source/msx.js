@@ -63,10 +63,6 @@ function JSMSX(window, canvas, logbuf) {
   //this.refreshNextInterrupt = true;
   //this.DipSwitchSYNC = true;
 
-  this.println = function(str) {
-    this.logbuf.textContent += str + '\n';
-  };
-
   this.handleEvent = function(e) {
     //alert("You pressed: which="+e.which+",keyUniCode="+e.keyCode+",shift="+e.shiftKey+",charCode="+e.charCode+",tochar="+String.fromCharCode(e.which)+",type="+e.type);
     return self.trataTecla.call(self, e.keyCode, e.type == 'keydown', e);

@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @constructor
  */
 JSMSX.UI = function(log) {
-  this.status = log;
+  this.stat = log;
 };
 
 JSMSX.UI.prototype = {
   updateStatus: function(s) {
-    this.status.textContent += s + '\n';
+    this.stat.textContent += s + '\n';
   }
 };
