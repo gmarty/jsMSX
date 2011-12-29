@@ -151,8 +151,20 @@ big {color:red;}
             <div>
               <pre style="border:medium solid;"><p id="logbuf">Console:</p></pre>
             </div>
-            <div>
-              <script type="text/javascript">
+            <div></div>
+            <div id="0"></div>
+          </div>
+        </td>
+        <td valign="top" style="width:160px;">
+          <br><br>
+          <div style="width:160px;"></div>
+          <div style="width:160px;"></div>
+          <div style="width:160px;"></div>
+        </td>
+      </tr>
+    </table>
+  </div>
+<script type="text/javascript">
 var msx;
 
 function msx_init() {
@@ -192,7 +204,7 @@ function msx_start() {
   //msx.interrupt_start();
   window.onkeydown = msx.handleEvent;
   window.onkeyup = msx.handleEvent;
-  msx.execute_start.apply(msx);
+  msx.execute_start();
   document.getElementById('start').disabled = true;
   document.getElementById('stop').disabled = false;
   document.getElementById('scale2x').disabled = true;
@@ -202,13 +214,13 @@ function msx_stop() {
   //msx.interrupt_stop();
   window.onkeydown = null;
   window.onkeyup = null;
-  msx.execute_stop.apply(msx);
+  msx.execute_stop();
   document.getElementById('start').disabled = false;
   document.getElementById('stop').disabled = true;
 }
 
 function msx_reset() {
-  msx.reset.call(msx);
+  msx.reset();
   msx.interruptCounter = 0;
 }
 
@@ -224,18 +236,5 @@ function msx_loadcartrom() {
   msx.loadcartrom(document.getElementById('urlcartrom').value, 2, 2, document.getElementById('canvascartrom'));
 }
 </script>
-            </div>
-            <div id="0"></div>
-          </div>
-        </td>
-        <td valign="top" style="width:160px;">
-          <br><br>
-          <div style="width:160px;"></div>
-          <div style="width:160px;"></div>
-          <div style="width:160px;"></div>
-        </td>
-      </tr>
-    </table>
-  </div>
 </body>
 </html>
