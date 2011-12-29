@@ -38,6 +38,12 @@ function browserio() {
     var data = '';
     var i = url.indexOf(':');
     var prot = '';
+    var req;
+    var f;
+    var is;
+    var bis;
+    var datasize;
+
     if (i > -1) {
       prot = url.substring(0, i);
     } else {
@@ -48,7 +54,7 @@ function browserio() {
       if (prot == 'http' || prot == 'https') {
         // http fetch
         netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserRead');
-        var req = new XMLHttpRequest();
+        req = new XMLHttpRequest();
         req.open('GET', url, false);
         // charset opt by Marcus Granado 2006 [mgran.blogspot.com]
         req.overrideMimeType('text/plain; charset=x-user-defined');
@@ -62,16 +68,16 @@ function browserio() {
         url = url.substring(i + 3, url.length);
         //alert(url);
         netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');
-        var f = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
+        f = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
         f.initWithPath(url);//absolute file path
         if (!f.exists()) {
           return '';
         }
-        var is = Components.classes['@mozilla.org/network/file-input-stream;1'].createInstance(Components.interfaces.nsIFileInputStream);
+        is = Components.classes['@mozilla.org/network/file-input-stream;1'].createInstance(Components.interfaces.nsIFileInputStream);
         is.init(f, 0x01, 00004, null);
-        var bis = Components.classes['@mozilla.org/binaryinputstream;1'].createInstance(Components.interfaces.nsIBinaryInputStream);
+        bis = Components.classes['@mozilla.org/binaryinputstream;1'].createInstance(Components.interfaces.nsIBinaryInputStream);
         bis.setInputStream(is);
-        var datasize = is.available();
+        datasize = is.available();
         for (i = 0; i < datasize; i++) {
           data += String.fromCharCode(bis.read8());
         }
@@ -87,6 +93,9 @@ function browserio() {
     var data = '';
     var i = url.indexOf(':');
     var prot = '';
+    var fso;
+    var f;
+
     if (i > -1) {
       prot = url.substring(0, i);
     } else {
@@ -99,8 +108,8 @@ function browserio() {
     } else {
       //default: local file fetch
       try {
-        var fso = new ActiveXObject('Scripting.FileSystemObject');
-        var f = fso.OpenTextFile(url, 1);
+        fso = new ActiveXObject('Scripting.FileSystemObject');
+        f = fso.OpenTextFile(url, 1);
         data = f.ReadAll();
         f.Close();
       } catch (e) {
