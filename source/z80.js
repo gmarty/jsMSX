@@ -391,7 +391,7 @@ function Z80(d) {
     //var ticks=1000;
     //var pcs = '';
 
-    var i = -(this.tstatesPerInterrupt - this.interrupt());
+    var i = -(this.tstatesPerInterrupt - this.z80_interrupt());
     var i_2_;
     var i_3_;
 

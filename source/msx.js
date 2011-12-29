@@ -95,8 +95,37 @@ function JSMSX(window, canvas, logbuf) {
     var self = this;
 
     this.exec_interval = setInterval(function() {
-      self.execute();
+      self.frame();
     }, 17); //60 intervals/sec
+  };
+
+  this.frame = function() {
+    if (this.resetAtNextInterrupt) {
+      this.resetAtNextInterrupt = false;
+      this.reset();
+    }
+
+    this.execute();
+
+    if (this.vdp.imagedata)
+      this.vdp.imagedata.data[this.interruptCounter * 4 + 1] = 255;//green line
+
+    document.getElementById('interrupts').value = this.interruptCounter;
+    //if (this.interruptCounter%600==0)
+    //this.ui.updateStatus('interrupt='+this.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
+    this.interruptCounter++;
+
+    //this.DipSwitchSYNC = 1;
+    if (this.pinta) {
+      this.vdp.updateScreen();
+      this.pinta = false;
+    }
+    if (this.interruptCounter % this.frameSkip == 0)
+      this.vdp.montaUsandoMemoria();
+
+    //return this.superclass.interrupt();
+    //calls superclass' interrupt() in msx context/scope.
+    //return this.z80_interrupt();
   };
 
   this.stop = function() {
@@ -744,32 +773,6 @@ function JSMSX(window, canvas, logbuf) {
     e.returnValue = false;
     //e.cancelBubble = true;
     return false; //key event already handled
-  };
-
-  this.interrupt = function() {
-    if (this.resetAtNextInterrupt) {
-      this.resetAtNextInterrupt = false;
-      this.reset();
-    }
-    if (this.vdp.imagedata)
-      this.vdp.imagedata.data[this.interruptCounter * 4 + 1] = 255;//green line
-
-    document.getElementById('interrupts').value = this.interruptCounter;
-    //if (this.interruptCounter%600==0)
-    //this.ui.updateStatus('interrupt='+this.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
-    this.interruptCounter++;
-
-    //this.DipSwitchSYNC = 1;
-    if (this.pinta) {
-      this.vdp.updateScreen();
-      this.pinta = false;
-    }
-    if (this.interruptCounter % this.frameSkip == 0)
-      this.vdp.montaUsandoMemoria();
-
-    //return this.superclass.interrupt();
-    //calls superclass' interrupt() in msx context/scope.
-    return this.z80_interrupt();
   };
 
   this.ui = new JSMSX.UI(logbuf);
