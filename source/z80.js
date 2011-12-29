@@ -151,9 +151,9 @@ function Z80(d) {
     return this.fH;
   };*/
 
-  /*this.I = function() {
+  this.I = function() {
     return this._I;
-  };*/
+  };
 
   /*this.ID = function() {
     return this._ID;
@@ -4161,7 +4161,7 @@ function Z80(d) {
   };
 
   this.inb = function(i) {
-    this.println('inb do Z80');
+    this.ui.updateStatus('inb do Z80');
     return 255;
   };
 

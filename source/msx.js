@@ -122,8 +122,8 @@ function JSMSX(window, canvas, logbuf) {
     var charcode;
     var i;
 
-    this.println('Reading bios rom ' + url);
-    this.println(biosrom.length + ' bytes read');
+    this.ui.updateStatus('Reading bios rom ' + url);
+    this.ui.updateStatus(biosrom.length + ' bytes read');
 
     if (biosrom != '') {
       canvasbiosrom.width = 256;
@@ -167,8 +167,8 @@ function JSMSX(window, canvas, logbuf) {
     var i;
     var i_2_;
 
-    this.println('Reading cart rom ' + url);
-    this.println(cartrom.length + ' bytes read');
+    this.ui.updateStatus('Reading cart rom ' + url);
+    this.ui.updateStatus(cartrom.length + ' bytes read');
 
     if (cartrom != '') {
       canvascartrom.width = 256;
@@ -219,12 +219,12 @@ function JSMSX(window, canvas, logbuf) {
       i_2_ = 16384;
     else
       i_2_ = 32768;
-    this.println('Cart start address:' + i_2_);
+    this.ui.updateStatus('Cart start address:' + i_2_);
     if (cartromlength > 32768) {
       cartromlength = 16384;
       this.megarom = true;
       this.preparaMemoriaMegarom(megaromtype);
-      this.println('Megarom type ' + megaromtype);
+      this.ui.updateStatus('Megarom type ' + megaromtype);
     }
     for (i = 0; i < cartromlength; i++)
       this.memoria[cartslot][i + i_2_] = dbr[i * 4] + 256 & 0xff;
@@ -236,7 +236,7 @@ function JSMSX(window, canvas, logbuf) {
     switch (i) {
       case 142:
         this.megarom = true;
-        this.println('Megarom mode');
+        this.ui.updateStatus('Megarom mode');
         break;
       case 160:
         this.psg.escrevePortaEndereco(i_19_);
@@ -766,7 +766,7 @@ function JSMSX(window, canvas, logbuf) {
 
     document.getElementById('interrupts').value = this.interruptCounter;
     //if (this.interruptCounter%600==0)
-    //this.println('interrupt='+this.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
+    //this.ui.updateStatus('interrupt='+this.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
     this.interruptCounter++;
 
     //this.DipSwitchSYNC = 1;
@@ -782,9 +782,11 @@ function JSMSX(window, canvas, logbuf) {
     return this.z80_interrupt();
   };
 
+  this.ui = new JSMSX.UI(logbuf);
+
   //local constructor
   //initializes local variables
-  this.println('Booting jsMSX');
+  this.ui.updateStatus('Booting jsMSX');
 
   for (i = 0; i < 256; i++)
     this.portos[i] = -1;
@@ -804,7 +806,7 @@ function JSMSX(window, canvas, logbuf) {
   //this.refreshNextInterrupt = true;
   //this.DipSwitchSYNC = 0;
 
-  this.println('Starting RAM slots');
+  this.ui.updateStatus('Starting RAM slots');
   this.memoria = Array(4); //4 primary slots
   this.m0 = Array(65536);
   this.memoria[0] = this.m0;
@@ -820,14 +822,14 @@ function JSMSX(window, canvas, logbuf) {
   for (i = 0; i < 65536; i++) this.m3[i] = 255;
   this.reset();
 
-  this.println('Starting VDP');
+  this.ui.updateStatus('Starting VDP');
   this.vdp = new tms9918(this.canvas);
 
-  this.println('Starting PSG (No Sound)');
+  this.ui.updateStatus('Starting PSG (No Sound)');
   this.psg = new psg8910();
 
-  this.println('interrupt=' + this.interruptCounter + ',ticks=' + Math.floor(this.tstatesPerInterrupt) + ' cpu ticks/interrupt, cpu clock=3.58 MHz');
-  this.println('jsMSX ready to go. Load ROMs and hit [start].');
+  this.ui.updateStatus('interrupt=' + this.interruptCounter + ',ticks=' + Math.floor(this.tstatesPerInterrupt) + ' cpu ticks/interrupt, cpu clock=3.58 MHz');
+  this.ui.updateStatus('jsMSX ready to go. Load ROMs and hit [start].');
 }
 
 var msx_loadurl = function(url) {
