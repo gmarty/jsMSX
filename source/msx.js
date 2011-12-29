@@ -33,11 +33,6 @@ function JSMSX(window, canvas, logbuf) {
   this.canvas = canvas;
   this.logbuf = logbuf;
 
-  //this class builds on the Z80 class.
-  this.superclass = Z80; //superclass
-  this.superclass(3.58); //initialization
-  //this.z80_interrupt = this.interrupt;
-
   this.vdp = null;
   this.psg = null;
   this.megarom = false;
@@ -68,29 +63,6 @@ function JSMSX(window, canvas, logbuf) {
     return self.trataTecla.call(self, e.keyCode, e.type == 'keydown', e);
   };
 
-  this.inb = function(i) {
-    switch (i) {
-      case 162:
-        return this.psg.lePortaDados();
-      case 168:
-        return this.PPIPortA;
-      case 169:
-        return this.estadoTeclas[this.PPIPortC & 0xf];
-      case 170:
-        return this.PPIPortC;
-      case 171:
-        return this.PPIPortD;
-      case 152:
-        return this.vdp.lePortaDados();
-      case 153:
-        return this.vdp.lePortaComandos();
-      default:
-        if (this.portos[i] != -1)
-          return this.portos[i];
-        return 255;
-    }
-  };
-
   this.start = function() {
     var self = this;
 
@@ -102,10 +74,10 @@ function JSMSX(window, canvas, logbuf) {
   this.frame = function() {
     if (this.resetAtNextInterrupt) {
       this.resetAtNextInterrupt = false;
-      this.reset();
+      this.cpu.reset();
     }
 
-    this.execute();
+    this.cpu.execute();
 
     if (this.vdp.imagedata)
       this.vdp.imagedata.data[this.interruptCounter * 4 + 1] = 255;//green line
@@ -249,198 +221,6 @@ function JSMSX(window, canvas, logbuf) {
       this.memoria[cartslot][i + i_2_] = dbr[i * 4] + 256 & 0xff;
 
     return cartrom;
-  };
-
-  this.outb = function(i, i_19_, i_20_) {
-    switch (i) {
-      case 142:
-        this.megarom = true;
-        this.ui.updateStatus('Megarom mode');
-        break;
-      case 160:
-        this.psg.escrevePortaEndereco(i_19_);
-        break;
-      case 161:
-        this.psg.escrevePortaDados(i_19_);
-        break;
-      case 168:
-        this.PPIPortA = i_19_;
-        break;
-      case 169:
-        //this.PPIPortB = i_19_;
-        break;
-      case 170:
-        this.PPIPortC = i_19_;
-        break;
-      case 171:
-        this.PPIPortD = i_19_;
-        break;
-      case 152:
-        this.vdp.escrevePortaDados(i_19_);
-        break;
-      case 153:
-        this.vdp.escrevePortaComandos(i_19_);
-        break;
-      default:
-        this.portos[i] = i_19_;
-    }
-  };
-
-  this.peekb = function(i) {
-    if (!this.megarom) {
-      return this.memoria[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
-    } else {
-      if (((i & 0xc000) >> 14) == this.cartSlot && i <= 49151 && i >= 16384)
-        return this.cart[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
-      else
-        return this.memoria[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
-    }
-  };
-
-  this.peekw = function(i) {
-    if (!this.megarom) {
-      return this.memoria[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
-          this.memoria[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
-    } else {
-      if (((i & 0xc000) >> 14) == this.cartSlot && i <= 49151 && i >= 16384)
-        return this.cart[this.pagMegaRom[((i + 1) >> 13) - 2]][(i + 1) % 8192] << 8 |
-            this.cart[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
-      else
-        return this.memoria[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
-            this.memoria[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
-    }
-  };
-
-  this.pokeb = function(i, i_25_) {
-    var i_26_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
-
-    if (this.podeEscrever[i_26_]) this.memoria[i_26_][i] = i_25_ & 0xff;
-    if (i == 65535) this.memoria[i_26_][65535] = 255;
-    if (!this.megarom) return;
-
-    if (i_26_ == this.cartSlot) {
-      switch (this.tipoMegarom) {
-        case 0:
-          if (i == 16384 || i == 20480)
-            this.pagMegaRom[0] = i_25_ & 0xff;
-          else if (i == 24576 || i == 28672)
-            this.pagMegaRom[1] = i_25_ & 0xff;
-          else if (i == 32768 || i == 36864)
-            this.pagMegaRom[2] = i_25_ & 0xff;
-          else if (i == 40960 || i == 45056)
-            this.pagMegaRom[3] = i_25_ & 0xff;
-          break;
-        case 1:
-          if (i == 16384 || i == 20480) {
-            this.pagMegaRom[0] = i_25_ & 0xff;
-            this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i == 32768 || i == 36864) {
-            this.pagMegaRom[2] = i_25_ & 0xff;
-            this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
-          }
-          break;
-        case 2:
-          if (i >= 24576 && i <= 26623)
-            this.pagMegaRom[0] = i_25_ & 0xff;
-          else if (i >= 26624 && i <= 28671)
-            this.pagMegaRom[1] = i_25_ & 0xff;
-          else if (i >= 28672 && i <= 30719)
-            this.pagMegaRom[2] = i_25_ & 0xff;
-          else if (i >= 30720 && i <= 32767)
-            this.pagMegaRom[3] = i_25_ & 0xff;
-          break;
-        case 3:
-          if (i >= 24576 && i <= 26623) {
-            this.pagMegaRom[0] = i_25_ & 0xff;
-            this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i >= 28672 && i <= 30719) {
-            this.pagMegaRom[2] = i_25_ & 0xff;
-            this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
-          }
-          break;
-      }
-    }
-  };
-
-  this.pokew = function(i, i_27_) {
-    var i_28_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
-
-    if (this.podeEscrever[i_28_]) {
-      this.memoria[i_28_][i] = i_27_ & 0xff;
-      if (++i < 65535) this.memoria[i_28_][i] = i_27_ >> 8;
-      if (i == 65535 || i == 65536) this.memoria[i_28_][65535] = 255;
-    }
-    if (!this.megarom) return;
-
-    if (i_28_ == this.cartSlot) {
-      switch (this.tipoMegarom) {
-        case 0:
-          if (i == 16384 || i == 20480)
-            this.pagMegaRom[0] = i_27_ & 0xff;
-          else if (i == 24576 || i == 28672)
-            this.pagMegaRom[1] = i_27_ & 0xff;
-          else if (i == 32768 || i == 36864)
-            this.pagMegaRom[2] = i_27_ & 0xff;
-          else if (i == 40960 || i == 45056)
-            this.pagMegaRom[3] = i_27_ & 0xff;
-          else if (i == 24575 || i == 28671)
-            this.pagMegaRom[1] = i_27_ & 0xff;
-          else if (i == 32767 || i == 36863)
-            this.pagMegaRom[2] = i_27_ & 0xff;
-          else if (i == 40959 || i == 45055)
-            this.pagMegaRom[3] = i_27_ & 0xff;
-          break;
-        case 1:
-          if (i == 16384 || i == 20480) {
-            this.pagMegaRom[0] = i_27_ & 0xff;
-            this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i == 32768 || i == 36864) {
-            this.pagMegaRom[2] = i_27_ & 0xff;
-            this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
-          } else if (i == 16383 || i == 20479) {
-            this.pagMegaRom[0] = i_27_ >> 8 & 0xff;
-            this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i == 24575 || i == 28671) {
-            this.pagMegaRom[0] = i_27_ & 0xff;
-            this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-            this.pagMegaRom[2] = i_27_ >> 8 & 0xff;
-            this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
-          }
-          break;
-        case 2:
-          if (i >= 24576 && i < 26623)
-            this.pagMegaRom[0] = i_27_ & 0xff;
-          else if (i >= 26624 && i < 28671)
-            this.pagMegaRom[1] = i_27_ & 0xff;
-          else if (i >= 28672 && i < 30719)
-            this.pagMegaRom[2] = i_27_ & 0xff;
-          else if (i >= 30720 && i < 32767)
-            this.pagMegaRom[3] = i_27_ & 0xff;
-          else if (i == 24575)
-            this.pagMegaRom[0] = i_27_ >> 8 & 0xff;
-          else if (i == 26623) {
-            this.pagMegaRom[0] = i_27_ & 0xff;
-            this.pagMegaRom[1] = i_27_ >> 8 & 0xff;
-          } else if (i == 28671) {
-            this.pagMegaRom[1] = i_27_ & 0xff;
-            this.pagMegaRom[2] = i_27_ >> 8 & 0xff;
-          } else if (i == 30719) {
-            this.pagMegaRom[2] = i_27_ & 0xff;
-            this.pagMegaRom[3] = i_27_ >> 8 & 0xff;
-          } else if (i == 32767)
-            this.pagMegaRom[3] = i_27_ & 0xff;
-          break;
-        case 3:
-          if (i >= 24576 && i <= 26623) {
-            this.pagMegaRom[0] = i_27_ & 0xff;
-            this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i >= 28672 && i <= 30719) {
-            this.pagMegaRom[2] = i_27_ & 0xff;
-            this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
-          }
-          break;
-      }
-    }
   };
 
   this.preparaMemoriaMegarom = function(string) {
@@ -776,6 +556,7 @@ function JSMSX(window, canvas, logbuf) {
   };
 
   this.ui = new JSMSX.UI(logbuf);
+  this.cpu = new Z80(this, 3.58);
 
   //local constructor
   //initializes local variables
@@ -813,7 +594,7 @@ function JSMSX(window, canvas, logbuf) {
   this.m3 = Array(65536);
   this.memoria[3] = this.m3;
   for (i = 0; i < 65536; i++) this.m3[i] = 255;
-  this.reset();
+  this.cpu.reset();
 
   this.ui.updateStatus('Starting VDP');
   this.vdp = new tms9918(this.canvas);
@@ -821,7 +602,7 @@ function JSMSX(window, canvas, logbuf) {
   this.ui.updateStatus('Starting PSG (No Sound)');
   this.psg = new psg8910();
 
-  this.ui.updateStatus('interrupt=' + this.interruptCounter + ',ticks=' + Math.floor(this.tstatesPerInterrupt) + ' cpu ticks/interrupt, cpu clock=3.58 MHz');
+  this.ui.updateStatus('interrupt=' + this.interruptCounter + ',ticks=' + Math.floor(this.cpu.tstatesPerInterrupt) + ' cpu ticks/interrupt, cpu clock=3.58 MHz');
   this.ui.updateStatus('jsMSX ready to go. Load ROMs and hit [start].');
 }
 
