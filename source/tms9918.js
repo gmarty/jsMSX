@@ -124,8 +124,8 @@ function tms9918(canvas) {
           i_9_ = (((i_4_ - this.tabNome) % i_0_) * i_1_ + (i_7_ - i_6_) * 256 + i_8_ + 2048 * i_5_);
           //i_9_ = ((i_4_ - this.tabNome) % i_0_ * i_1_ + (i_7_ - i_6_) * 256 + i_8_ + 2048 * i_5_);
           //if ((this.vidMem[i_7_] & 1 << 7 - i_8_) > 0) {
+          i_10_ = 0;
           if ((this.vidMem[i_7_] & (1 << (7 - i_8_))) > 0) {
-            i_10_ = 0;
             switch (this.screenAtual) {
               case 0:
                 i_10_ = (this.registros[7] & 0xf0) >>> 4;
@@ -137,18 +137,7 @@ function tms9918(canvas) {
                 i_10_ = ((this.vidMem[this.tabCor + i_7_ - this.tabCar] & 0xf0) >>> 4);
                 break;
             }
-            this.imagemTela[i_9_] = i_10_;
-            if (this.fastgfx) {
-              this.imagedata.data[i_9_ * 4 + 0] = this.cor[i_10_][0];//r
-              this.imagedata.data[i_9_ * 4 + 1] = this.cor[i_10_][1];//g
-              this.imagedata.data[i_9_ * 4 + 2] = this.cor[i_10_][2];//b
-              this.imagedata.data[i_9_ * 4 + 3] = 255;//a
-            } else {
-              this.canvas.fillStyle = 'rgb(' + this.cor[i_10_][0] + ',' + this.cor[i_10_][1] + ',' + this.cor[i_10_][2] + ')';
-              this.canvas.fillRect(((i_4_ - this.tabNome) % i_0_) * i_1_ + i_8_, i_5_ * 8 + i_7_, 1, 1);
-            }
           } else {
-            i_10_ = 0;
             switch (this.screenAtual) {
               case 0:
                 i_10_ = this.registros[7] & 0xf;
@@ -160,16 +149,16 @@ function tms9918(canvas) {
                 i_10_ = this.vidMem[this.tabCor + i_7_ - this.tabCar] & 0xf;
                 break;
             }
-            this.imagemTela[i_9_] = i_10_;
-            if (this.fastgfx) {
-              this.imagedata.data[i_9_ * 4 + 0] = this.cor[i_10_][0];//r
-              this.imagedata.data[i_9_ * 4 + 1] = this.cor[i_10_][1];//g
-              this.imagedata.data[i_9_ * 4 + 2] = this.cor[i_10_][2];//b
-              this.imagedata.data[i_9_ * 4 + 3] = 255;//a
-            } else {
-              this.canvas.fillStyle = 'rgb(' + this.cor[i_10_][0] + ',' + this.cor[i_10_][1] + ',' + this.cor[i_10_][2] + ')';
-              this.canvas.fillRect(((i_4_ - this.tabNome) % i_0_) * i_1_ + i_8_, i_5_ * 8 + i_7_, 1, 1);
-            }
+          }
+          this.imagemTela[i_9_] = i_10_;
+          if (this.fastgfx) {
+            this.imagedata.data[i_9_ * 4 + 0] = this.cor[i_10_][0];//r
+            this.imagedata.data[i_9_ * 4 + 1] = this.cor[i_10_][1];//g
+            this.imagedata.data[i_9_ * 4 + 2] = this.cor[i_10_][2];//b
+            this.imagedata.data[i_9_ * 4 + 3] = 255;//a
+          } else {
+            this.canvas.fillStyle = 'rgb(' + this.cor[i_10_][0] + ',' + this.cor[i_10_][1] + ',' + this.cor[i_10_][2] + ')';
+            this.canvas.fillRect(((i_4_ - this.tabNome) % i_0_) * i_1_ + i_8_, i_5_ * 8 + i_7_, 1, 1);
           }
         }
       }
@@ -211,8 +200,8 @@ function tms9918(canvas) {
           for (i_23_ = 0; i_23_ < 8; i_23_++) {//glyph row pixels
             i_24_ = (i_18_ + (i_22_ - i_21_) * 256 + i_23_ + 2048 * i_20_);
             //if ((this.vidMem[i_22_] & 1 << 7 - i_23_) > 0) {
+            i_25_ = 0;
             if ((this.vidMem[i_22_] & (1 << (7 - i_23_))) > 0) {
-              i_25_ = 0;
               switch (this.screenAtual) {
                 case 0:
                   i_25_ = (this.registros[7] & 0xf0) >>> 4;
@@ -223,21 +212,8 @@ function tms9918(canvas) {
                 case 2:
                   i_25_ = (this.vidMem[this.tabCor + i_22_ - this.tabCar] & 0xf0) >>> 4;
                   break;
-                default:
-                  i_25_ = 0;
-              }
-              this.imagemTela[i_24_] = i_25_;
-              if (this.fastgfx) {
-                this.imagedata.data[i_24_ * 4 + 0] = this.cor[i_25_][0];//r
-                this.imagedata.data[i_24_ * 4 + 1] = this.cor[i_25_][1];//g
-                this.imagedata.data[i_24_ * 4 + 2] = this.cor[i_25_][2];//b
-                this.imagedata.data[i_24_ * 4 + 3] = 255;//a
-              } else {
-                this.canvas.fillStyle = 'rgb(' + this.cor[i_25_][0] + ',' + this.cor[i_25_][1] + ',' + this.cor[i_25_][2] + ')';
-                this.canvas.fillRect(i_18_ + i_23_, i_19_ + (i_22_ - i_21_), 1, 1);
               }
             } else {
-              i_25_ = 0;
               switch (this.screenAtual) {
                 case 0:
                   i_25_ = this.registros[7] & 0xf;
@@ -248,20 +224,17 @@ function tms9918(canvas) {
                 case 2:
                   i_25_ = this.vidMem[this.tabCor + i_22_ - this.tabCar] & 0xf;
                   break;
-                default:
-                  i_25_ = 0;
               }
-              this.imagemTela[i_24_] = i_25_;
-              if (this.fastgfx) {
-                this.imagedata.data[i_24_ * 4 + 0] = this.cor[i_25_][0];//r
-                this.imagedata.data[i_24_ * 4 + 1] = this.cor[i_25_][1];//g
-                this.imagedata.data[i_24_ * 4 + 2] = this.cor[i_25_][2];//b
-                this.imagedata.data[i_24_ * 4 + 3] = 255;//a
-              } else {
-                this.canvas.fillStyle = 'rgb(' + this.cor[i_25_][0] + ',' + this.cor[i_25_][1] + ',' + this.cor[i_25_][2] + ')';
-                this.canvas.fillRect(i_18_ + i_23_, i_19_ + (i_22_ - i_21_), 1, 1);
-              }
-
+            }
+            this.imagemTela[i_24_] = i_25_;
+            if (this.fastgfx) {
+              this.imagedata.data[i_24_ * 4 + 0] = this.cor[i_25_][0];//r
+              this.imagedata.data[i_24_ * 4 + 1] = this.cor[i_25_][1];//g
+              this.imagedata.data[i_24_ * 4 + 2] = this.cor[i_25_][2];//b
+              this.imagedata.data[i_24_ * 4 + 3] = 255;//a
+            } else {
+              this.canvas.fillStyle = 'rgb(' + this.cor[i_25_][0] + ',' + this.cor[i_25_][1] + ',' + this.cor[i_25_][2] + ')';
+              this.canvas.fillRect(i_18_ + i_23_, i_19_ + (i_22_ - i_21_), 1, 1);
             }
           }
         }
