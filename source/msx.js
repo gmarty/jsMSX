@@ -94,7 +94,7 @@ function JSMSX(window, canvas, logbuf) {
   this.start = function() {
     var self = this;
 
-    this.exec_interval = setInterval(function() {
+    this.frameInterval = setInterval(function() {
       self.frame();
     }, 17); //60 intervals/sec
   };
@@ -129,7 +129,7 @@ function JSMSX(window, canvas, logbuf) {
   };
 
   this.stop = function() {
-    clearInterval(this.exec_interval);
+    clearInterval(this.frameInterval);
   };
 
   this.loadbiosrom = function(url, slot, canvasbiosrom) {
