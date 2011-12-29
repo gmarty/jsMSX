@@ -97,27 +97,35 @@ function tms9918(canvas) {
   };
 
   this.atualizaTudo = function() {
-    if (!this.fastgfx) {
-      this.canvas.fillStyle = 'rgb(0,0,0)';
-      this.canvas.fillRect(0, 0, 256, 192);
-    }
     var i = 0;
     var i_0_ = this.screenAtual == 0 ? 40 : 32;
     var i_1_ = this.screenAtual == 0 ? 6 : 8;
     var i_2_ = this.screenAtual == 0 ? 960 : 768;
     var i_3_ = -1;
-    for (var i_4_ = this.tabNome; i_4_ < this.tabNome + i_2_; i_4_++) {
+    var i_4_;
+    var i_5_;
+    var i_6_;
+    var i_7_;
+    var i_8_;
+    var i_9_;
+    var i_10_;
+
+    if (!this.fastgfx) {
+      this.canvas.fillStyle = 'rgb(0,0,0)';
+      this.canvas.fillRect(0, 0, 256, 192);
+    }
+    for (i_4_ = this.tabNome; i_4_ < this.tabNome + i_2_; i_4_++) {
       if (this.screenAtual == 2)
         i = Math.floor((i_4_ - this.tabNome) / 256);
-      var i_5_ = Math.floor((i_4_ - this.tabNome) / i_0_);  //row
-      var i_6_ = this.tabCar + this.vidMem[i_4_] * 8 + 2048 * i;//glyph
-      for (var i_7_ = i_6_; i_7_ < i_6_ + 8; i_7_++) {//glyph rows
-        for (var i_8_ = 0; i_8_ < 8; i_8_++) {//glyph row pixels
-          var i_9_ = (((i_4_ - this.tabNome) % i_0_) * i_1_ + (i_7_ - i_6_) * 256 + i_8_ + 2048 * i_5_);
-          //var i_9_ = ((i_4_ - this.tabNome) % i_0_ * i_1_ + (i_7_ - i_6_) * 256 + i_8_ + 2048 * i_5_);
+      i_5_ = Math.floor((i_4_ - this.tabNome) / i_0_);  //row
+      i_6_ = this.tabCar + this.vidMem[i_4_] * 8 + 2048 * i;//glyph
+      for (i_7_ = i_6_; i_7_ < i_6_ + 8; i_7_++) {//glyph rows
+        for (i_8_ = 0; i_8_ < 8; i_8_++) {//glyph row pixels
+          i_9_ = (((i_4_ - this.tabNome) % i_0_) * i_1_ + (i_7_ - i_6_) * 256 + i_8_ + 2048 * i_5_);
+          //i_9_ = ((i_4_ - this.tabNome) % i_0_ * i_1_ + (i_7_ - i_6_) * 256 + i_8_ + 2048 * i_5_);
           //if ((this.vidMem[i_7_] & 1 << 7 - i_8_) > 0) {
           if ((this.vidMem[i_7_] & (1 << (7 - i_8_))) > 0) {
-            var i_10_ = 0;
+            i_10_ = 0;
             switch (this.screenAtual) {
               case 0:
                 i_10_ = (this.registros[7] & 0xf0) >>> 4;
@@ -140,26 +148,26 @@ function tms9918(canvas) {
               this.canvas.fillRect(((i_4_ - this.tabNome) % i_0_) * i_1_ + i_8_, i_5_ * 8 + i_7_, 1, 1);
             }
           } else {
-            var i_11_ = 0;
+            i_10_ = 0;
             switch (this.screenAtual) {
               case 0:
-                i_11_ = this.registros[7] & 0xf;
+                i_10_ = this.registros[7] & 0xf;
                 break;
               case 1:
-                i_11_ = this.vidMem[this.tabCor + Math.floor((i_7_ - this.tabCar) / 64)] & 0xf;
+                i_10_ = this.vidMem[this.tabCor + Math.floor((i_7_ - this.tabCar) / 64)] & 0xf;
                 break;
               case 2:
-                i_11_ = this.vidMem[this.tabCor + i_7_ - this.tabCar] & 0xf;
+                i_10_ = this.vidMem[this.tabCor + i_7_ - this.tabCar] & 0xf;
                 break;
             }
-            this.imagemTela[i_9_] = i_11_;
+            this.imagemTela[i_9_] = i_10_;
             if (this.fastgfx) {
-              this.imagedata.data[i_9_ * 4 + 0] = this.cor[i_11_][0];//r
-              this.imagedata.data[i_9_ * 4 + 1] = this.cor[i_11_][1];//g
-              this.imagedata.data[i_9_ * 4 + 2] = this.cor[i_11_][2];//b
+              this.imagedata.data[i_9_ * 4 + 0] = this.cor[i_10_][0];//r
+              this.imagedata.data[i_9_ * 4 + 1] = this.cor[i_10_][1];//g
+              this.imagedata.data[i_9_ * 4 + 2] = this.cor[i_10_][2];//b
               this.imagedata.data[i_9_ * 4 + 3] = 255;//a
             } else {
-              this.canvas.fillStyle = 'rgb(' + this.cor[i_11_][0] + ',' + this.cor[i_11_][1] + ',' + this.cor[i_11_][2] + ')';
+              this.canvas.fillStyle = 'rgb(' + this.cor[i_10_][0] + ',' + this.cor[i_10_][1] + ',' + this.cor[i_10_][2] + ')';
               this.canvas.fillRect(((i_4_ - this.tabNome) % i_0_) * i_1_ + i_8_, i_5_ * 8 + i_7_, 1, 1);
             }
           }
@@ -167,8 +175,8 @@ function tms9918(canvas) {
       }
     }
     this.updateWholeScreen = false;
-    for (var i_12_ = 0; i_12_ < 960; i_12_++)
-      this.dirtyVidMem[i_12_] = -1;
+    for (i_4_ = 0; i_4_ < 960; i_4_++)
+      this.dirtyVidMem[i_4_] = -1;
     this.primeiro = -1;
     //memoriaTela.newPixels(0, 0, 256, 192);
   };
@@ -180,22 +188,31 @@ function tms9918(canvas) {
     var i_15_ = this.screenAtual == 0 ? 960 : 768;
     var i_16_ = -1;
     var i_17_ = 0;
+    var i_18_;
+    var i_19_;
+    var i_20_;
+    var i_21_;
+    var i_22_;
+    var i_23_;
+    var i_24_;
+    var i_25_;
+
     for (; this.primeiro > -1; this.primeiro = i_17_) {
       if (this.primeiro < i_15_) {
-        var i_18_ = this.primeiro % i_13_; //column
+        i_18_ = this.primeiro % i_13_; //column
         i_18_ *= i_14_;			   //in pixels
-        var i_19_ = Math.floor(this.primeiro / i_13_); //row
+        i_19_ = Math.floor(this.primeiro / i_13_); //row
         i_19_ *= 8;		           //in pixels
         if (this.screenAtual == 2)
           i = Math.floor(this.primeiro / 256);
-        var i_20_ = Math.floor(this.primeiro / i_13_); //row
-        var i_21_ = this.tabCar + this.vidMem[this.primeiro + this.tabNome] * 8 + 2048 * i;//glyph data
-        for (var i_22_ = i_21_; i_22_ < i_21_ + 8; i_22_++) {//glyph rows
-          for (var i_23_ = 0; i_23_ < 8; i_23_++) {//glyph row pixels
-            var i_24_ = (i_18_ + (i_22_ - i_21_) * 256 + i_23_ + 2048 * i_20_);
+        i_20_ = Math.floor(this.primeiro / i_13_); //row
+        i_21_ = this.tabCar + this.vidMem[this.primeiro + this.tabNome] * 8 + 2048 * i;//glyph data
+        for (i_22_ = i_21_; i_22_ < i_21_ + 8; i_22_++) {//glyph rows
+          for (i_23_ = 0; i_23_ < 8; i_23_++) {//glyph row pixels
+            i_24_ = (i_18_ + (i_22_ - i_21_) * 256 + i_23_ + 2048 * i_20_);
             //if ((this.vidMem[i_22_] & 1 << 7 - i_23_) > 0) {
             if ((this.vidMem[i_22_] & (1 << (7 - i_23_))) > 0) {
-              var i_25_ = 0;
+              i_25_ = 0;
               switch (this.screenAtual) {
                 case 0:
                   i_25_ = (this.registros[7] & 0xf0) >>> 4;
@@ -220,28 +237,28 @@ function tms9918(canvas) {
                 this.canvas.fillRect(i_18_ + i_23_, i_19_ + (i_22_ - i_21_), 1, 1);
               }
             } else {
-              var i_26_ = 0;
+              i_25_ = 0;
               switch (this.screenAtual) {
                 case 0:
-                  i_26_ = this.registros[7] & 0xf;
+                  i_25_ = this.registros[7] & 0xf;
                   break;
                 case 1:
-                  i_26_ = (this.vidMem[this.tabCor + Math.floor((i_22_ - this.tabCar) / 64)] & 0xf);
+                  i_25_ = (this.vidMem[this.tabCor + Math.floor((i_22_ - this.tabCar) / 64)] & 0xf);
                   break;
                 case 2:
-                  i_26_ = this.vidMem[this.tabCor + i_22_ - this.tabCar] & 0xf;
+                  i_25_ = this.vidMem[this.tabCor + i_22_ - this.tabCar] & 0xf;
                   break;
                 default:
-                  i_26_ = 0;
+                  i_25_ = 0;
               }
-              this.imagemTela[i_24_] = i_26_;
+              this.imagemTela[i_24_] = i_25_;
               if (this.fastgfx) {
-                this.imagedata.data[i_24_ * 4 + 0] = this.cor[i_26_][0];//r
-                this.imagedata.data[i_24_ * 4 + 1] = this.cor[i_26_][1];//g
-                this.imagedata.data[i_24_ * 4 + 2] = this.cor[i_26_][2];//b
+                this.imagedata.data[i_24_ * 4 + 0] = this.cor[i_25_][0];//r
+                this.imagedata.data[i_24_ * 4 + 1] = this.cor[i_25_][1];//g
+                this.imagedata.data[i_24_ * 4 + 2] = this.cor[i_25_][2];//b
                 this.imagedata.data[i_24_ * 4 + 3] = 255;//a
               } else {
-                this.canvas.fillStyle = 'rgb(' + this.cor[i_26_][0] + ',' + this.cor[i_26_][1] + ',' + this.cor[i_26_][2] + ')';
+                this.canvas.fillStyle = 'rgb(' + this.cor[i_25_][0] + ',' + this.cor[i_25_][1] + ',' + this.cor[i_25_][2] + ')';
                 this.canvas.fillRect(i_18_ + i_23_, i_19_ + (i_22_ - i_21_), 1, 1);
               }
 
@@ -261,6 +278,7 @@ function tms9918(canvas) {
     var i_29_ = this.tabCar;
     var i_30_ = this.screenAtual;
     var i_31_ = this.registros[7];
+
     if (!this.lidoByte) {
       this.byteLido = i;
       this.lidoByte ^= true;
@@ -366,17 +384,21 @@ function tms9918(canvas) {
 
   this.escrevePortaDados = function(i) {
     var bool = this.vidMem[this.regEnd] != i;
+    var i_32_;
+    var i_33_;
+    var i_34_;
+    var i_37_;
+    var i_38_;
+
     this.vidMem[this.regEnd++] = i;
     this.regEnd %= 16384;
     if (bool) {
-      var i_32_ = this.screenAtual == 2 ? 6144 : 2048;
-      var i_33_ = this.screenAtual == 0 ? 960 : 768;
-      var i_34_ = this.screenAtual == 2 ? 6144 : 32;
-      var i_35_ = this.screenAtual == 0 ? 40 : 32;
-      var i_36_ = this.screenAtual == 0 ? 6 : 8;
+      i_32_ = this.screenAtual == 2 ? 6144 : 2048;
+      i_33_ = this.screenAtual == 0 ? 960 : 768;
+      i_34_ = this.screenAtual == 2 ? 6144 : 32;
       if (this.regEnd > this.tabCar && this.regEnd <= this.tabCar + i_32_) {
-        var i_37_ = Math.floor((this.regEnd - this.tabCar - 1) / 8) % 256;
-        for (var i_38_ = this.tabNome; i_38_ < this.tabNome + i_33_; i_38_++) {
+        i_37_ = Math.floor((this.regEnd - this.tabCar - 1) / 8) % 256;
+        for (i_38_ = this.tabNome; i_38_ < this.tabNome + i_33_; i_38_++) {
           if (this.vidMem[i_38_] == i_37_) {
             if (this.primeiro == -1)
               this.primeiro = this.ultimo = i_38_ - this.tabNome;
@@ -398,30 +420,30 @@ function tms9918(canvas) {
       if (this.regEnd > this.tabCor && this.regEnd <= this.tabCor + i_34_ && this.screenAtual != 0) {
         switch (this.screenAtual) {
           case 1:
-            var i_39_ = (this.regEnd - this.tabCor - 1) * 8;
-            for (var i_40_ = this.tabNome; i_40_ < this.tabNome + 768; i_40_++) {
-              if (this.vidMem[i_40_] >= i_39_ && this.vidMem[i_40_] < i_39_ + 8) {
+            i_37_ = (this.regEnd - this.tabCor - 1) * 8;
+            for (i_38_ = this.tabNome; i_38_ < this.tabNome + 768; i_38_++) {
+              if (this.vidMem[i_38_] >= i_37_ && this.vidMem[i_38_] < i_37_ + 8) {
                 if (this.primeiro == -1) {
-                  this.primeiro = this.ultimo = i_40_ - this.tabNome;
-                } else if (this.dirtyVidMem[i_40_ - this.tabNome] == -1) {
-                  this.dirtyVidMem[this.ultimo] = i_40_ - this.tabNome;
-                  this.ultimo = i_40_ - this.tabNome;
+                  this.primeiro = this.ultimo = i_38_ - this.tabNome;
+                } else if (this.dirtyVidMem[i_38_ - this.tabNome] == -1) {
+                  this.dirtyVidMem[this.ultimo] = i_38_ - this.tabNome;
+                  this.ultimo = i_38_ - this.tabNome;
                 }
               }
             }
             break;
           case 2:
-            var i_41_ = Math.floor((this.regEnd - this.tabCor - 1) / 8);
-            var i_42_ = Math.floor(i_41_ / 256);
-            i_41_ %= 256;
-            var i_43_ = this.tabNome + i_42_ * 256;
-            for (var i_44_ = i_43_; i_44_ < i_43_ + 256; i_44_++) {
-              if (this.vidMem[i_44_] == i_41_) {
+            i_32_ = Math.floor((this.regEnd - this.tabCor - 1) / 8);
+            i_33_ = Math.floor(i_32_ / 256);
+            i_32_ %= 256;
+            i_34_ = this.tabNome + i_33_ * 256;
+            for (i_38_ = i_34_; i_38_ < i_34_ + 256; i_38_++) {
+              if (this.vidMem[i_38_] == i_32_) {
                 if (this.primeiro == -1) {
-                  this.primeiro = this.ultimo = i_44_ - this.tabNome;
-                } else if (this.dirtyVidMem[i_44_ - this.tabNome] == -1) {
-                  this.dirtyVidMem[this.ultimo] = i_44_ - this.tabNome;
-                  this.ultimo = i_44_ - this.tabNome;
+                  this.primeiro = this.ultimo = i_38_ - this.tabNome;
+                } else if (this.dirtyVidMem[i_38_ - this.tabNome] == -1) {
+                  this.dirtyVidMem[this.ultimo] = i_38_ - this.tabNome;
+                  this.ultimo = i_38_ - this.tabNome;
                 }
               }
             }
@@ -448,13 +470,21 @@ function tms9918(canvas) {
     var i = (this.registros[1] & 0x2) > 0 ? 4 : 1;
     var i_45_ = (this.registros[1] & 0x2) > 0 ? 16 : 8;
     var i_46_ = 0;
+    var i_47_;
+    var i_48_;
+    var i_49_;
+    var i_50_;
+    var i_51_;
+    var i_52_;
+    var i_53_;
+
     for (i_46_ = this.tabAtrSpt; this.vidMem[i_46_] != 208 && i_46_ < this.tabAtrSpt + 128; i_46_ += 4) {
       // empty
     }
     for (i_46_ -= 4; i_46_ >= this.tabAtrSpt; i_46_ -= 4) {
-      //var i_47_ = Math.floor((this.vidMem[i_46_] + 1) / 8);
+      //i_47_ = Math.floor((this.vidMem[i_46_] + 1) / 8);
       //i_47_ = i_47_ * 32 + Math.floor(this.vidMem[i_46_ + 1] / 8);
-      var i_47_ = (this.vidMem[i_46_] + 1) >> 3;
+      i_47_ = (this.vidMem[i_46_] + 1) >> 3;
       i_47_ = i_47_ * 32 + (this.vidMem[i_46_ + 1] >> 3);
       if (i_47_ < 768) {
         if (this.primeiro == -1) {
@@ -534,9 +564,9 @@ function tms9918(canvas) {
           }
         }
       }
-      for (var i_48_ = 0; i_48_ < i; i_48_++) {
-        var i_49_ = this.tabImgSpt + this.vidMem[i_46_ + 2] * 8 + 8 * i_48_;
-        var i_50_ = 0;
+      for (i_48_ = 0; i_48_ < i; i_48_++) {
+        i_49_ = this.tabImgSpt + this.vidMem[i_46_ + 2] * 8 + 8 * i_48_;
+        i_50_ = 0;
         switch (i_48_) {
           case 0:
             i_50_ = this.vidMem[i_46_ + 1] + (this.vidMem[i_46_] + 1) * 256;
@@ -550,13 +580,11 @@ function tms9918(canvas) {
           case 3:
             i_50_ = this.vidMem[i_46_ + 1] + 8 + (this.vidMem[i_46_] + 9) * 256;
             break;
-          default:
-            i_50_ = 0;
         }
         if (i_50_ >= 0 && i_50_ < 47104) {
-          var i_51_ = this.vidMem[i_46_ + 3] & 0xf;
-          for (var i_52_ = i_49_; i_52_ < i_49_ + 8; i_52_++) {
-            for (var i_53_ = 0; i_53_ < 8; i_53_++) {
+          i_51_ = this.vidMem[i_46_ + 3] & 0xf;
+          for (i_52_ = i_49_; i_52_ < i_49_ + 8; i_52_++) {
+            for (i_53_ = 0; i_53_ < 8; i_53_++) {
               //if ((this.vidMem[i_52_] & 1 << 7 - i_53_) > 0)
               if ((this.vidMem[i_52_] & (1 << (7 - i_53_))) > 0) {
                 this.imagemTela[i_50_ + i_53_ + (i_52_ - i_49_ << 8)] = i_51_;
