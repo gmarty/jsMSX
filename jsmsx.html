@@ -201,20 +201,18 @@ function msx_doublescreen() {
 }
 
 function msx_start() {
-  //msx.interrupt_start();
   window.onkeydown = msx.handleEvent;
   window.onkeyup = msx.handleEvent;
-  msx.execute_start();
+  msx.start();
   document.getElementById('start').disabled = true;
   document.getElementById('stop').disabled = false;
   document.getElementById('scale2x').disabled = true;
 }
 
 function msx_stop() {
-  //msx.interrupt_stop();
   window.onkeydown = null;
   window.onkeyup = null;
-  msx.execute_stop();
+  msx.stop();
   document.getElementById('start').disabled = false;
   document.getElementById('stop').disabled = true;
 }

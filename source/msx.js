@@ -91,21 +91,15 @@ function JSMSX(window, canvas, logbuf) {
     }
   };
 
-  this.interrupt_start = function() {
-    this.interval = setInterval(function() {
-      self.interrupt.apply(self);
+  this.start = function() {
+    var self = this;
+
+    this.exec_interval = setInterval(function() {
+      self.execute();
     }, 17); //60 intervals/sec
-  };
-  this.interrupt_stop = function() {
-    clearInterval(this.interval);
   };
 
-  this.execute_start = function() {
-    this.exec_interval = setInterval(function() {
-      self.execute.apply(self);
-    }, 17); //60 intervals/sec
-  };
-  this.execute_stop = function() {
+  this.stop = function() {
     clearInterval(this.exec_interval);
   };
 
