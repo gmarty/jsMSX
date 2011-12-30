@@ -26,35 +26,31 @@
 function JSMSX(window, canvas, logbuf) {
   var self = this;
   var i;
-  //var sleepHack = 5;
 
   this.window = window;
   this.canvas = canvas;
   this.logbuf = logbuf;
 
-  this.frameSkip = 0;
   this.vdp = null;
   this.psg = null;
+
   this.megarom = false;
   this.PPIPortA = 0;
   //this.PPIPortB = 255;
   this.PPIPortC = 0;
   this.PPIPortD = 0;
   this.pagMegaRom = [0, 1, 2, 3];
-  //this.tamPagMegarom = 8192;
   this.tipoMegarom = 0;
-  //this.controlPressionado = false;
-  //this.shiftPressionado = false;
   this.memoria = []; //int[][]
   this.podeEscrever = [];
-  this.pinta = true;
   this.cartSlot = 0;
   this.cart = []; //private int[][] cart;
+
+  this.frameSkip = 0;
+  this.pinta = true;
   this.interruptCounter = 0;
   this.resetAtNextInterrupt = false;
   this.pauseAtNextInterrupt = false;
-  //this.refreshNextInterrupt = true;
-  //this.DipSwitchSYNC = true;
 
   this.start = function() {
     var self = this;
@@ -80,17 +76,12 @@ function JSMSX(window, canvas, logbuf) {
     //this.ui.updateStatus('interrupt='+this.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
     this.interruptCounter++;
 
-    //this.DipSwitchSYNC = 1;
     if (this.pinta) {
       this.vdp.updateScreen();
       this.pinta = false;
     }
     if (this.interruptCounter % this.frameSkip == 0)
       this.vdp.montaUsandoMemoria();
-
-    //return this.superclass.interrupt();
-    //calls superclass' interrupt() in msx context/scope.
-    //return this.z80_interrupt();
   };
 
   this.stop = function() {
@@ -237,21 +228,6 @@ function JSMSX(window, canvas, logbuf) {
   //initializes local variables
   this.ui.updateStatus('Booting jsMSX');
 
-  this.podeEscrever = [false, false, false, true];
-  this.pinta = true;
-  this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
-  for (i = 0; i < 32; i++) {
-    //for (j=0; j<8192; j++) acart[j]=0;
-    this.cart[i] = Array(8192);
-  }
-  this.interruptCounter = 0;
-  this.frameSkip = 1;
-  //this.sleepHack = 5;
-  this.resetAtNextInterrupt = false;
-  this.pauseAtNextInterrupt = false;
-  //this.refreshNextInterrupt = true;
-  //this.DipSwitchSYNC = 0;
-
   this.ui.updateStatus('Starting RAM slots');
   this.memoria = Array(4); //4 primary slots
   this.m0 = Array(65536);
@@ -266,6 +242,18 @@ function JSMSX(window, canvas, logbuf) {
   this.m3 = Array(65536);
   this.memoria[3] = this.m3;
   for (i = 0; i < 65536; i++) this.m3[i] = 255;
+  this.podeEscrever = [false, false, false, true];
+  this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
+  for (i = 0; i < 32; i++) {
+    this.cart[i] = Array(8192);
+  }
+
+  this.frameSkip = 1;
+  this.pinta = true;
+  this.interruptCounter = 0;
+  this.resetAtNextInterrupt = false;
+  this.pauseAtNextInterrupt = false;
+
   this.cpu.reset();
 
   this.ui.updateStatus('Starting VDP');
@@ -279,9 +267,7 @@ function JSMSX(window, canvas, logbuf) {
 }
 
 var msx_loadurl = function(url) {
-  //alert(url);
   var io = new browserio();
   var data = io.load(url);
-  //alert(data);
   return data;
 };

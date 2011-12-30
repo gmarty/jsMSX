@@ -80,7 +80,7 @@ function Z80(msx, d) {
   this._IFF1 = true;
   this._IFF2 = true;
   this._IM = 2;
-  
+
   this.portos = Array(256);
 
   //static
@@ -401,7 +401,7 @@ function Z80(msx, d) {
 
     //var i_2_ = this.peekb(this._PC++);
     //if (this.showpc)
-    //this.vdp.imagedata.data[this._PC*4]+=247;
+    //this.msx.vdp.imagedata.data[this._PC*4]+=247;
 
     while (i < 0) {
       this._R += (1);
