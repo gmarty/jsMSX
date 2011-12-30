@@ -5439,7 +5439,7 @@ function Z80(msx, d) {
       case 168:
         return this.PPIPortA;
       case 169:
-        return this.msx.estadoTeclas[this.PPIPortC & 0xf];
+        return this.msx.keyboard.state[this.PPIPortC & 0xf];
       case 170:
         return this.PPIPortC;
       case 171:

@@ -22,8 +22,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @constructor
  */
-JSMSX.UI = function(log) {
+JSMSX.UI = function(msx, log) {
+  var self = this;
+  this.msx = msx;
   this.stat = log;
+
+  /*
+   * Keyboard
+   */
+  $(document).
+    bind('keydown', function(evt) {
+      self.msx.keyboard.keydown(evt);
+    }).
+    bind('keyup', function(evt) {
+      self.msx.keyboard.keyup(evt);
+    });
 };
 
 JSMSX.UI.prototype = {

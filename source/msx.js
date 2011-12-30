@@ -26,13 +26,13 @@
 function JSMSX(window, canvas, logbuf) {
   var self = this;
   var i;
-  var frameSkip = 0;
   //var sleepHack = 5;
 
   this.window = window;
   this.canvas = canvas;
   this.logbuf = logbuf;
 
+  this.frameSkip = 0;
   this.vdp = null;
   this.psg = null;
   this.megarom = false;
@@ -46,7 +46,6 @@ function JSMSX(window, canvas, logbuf) {
   this.portos = Array(256);
   //this.controlPressionado = false;
   //this.shiftPressionado = false;
-  this.estadoTeclas = [];
   this.memoria = []; //int[][]
   this.podeEscrever = [];
   this.pinta = true;
@@ -57,11 +56,6 @@ function JSMSX(window, canvas, logbuf) {
   this.pauseAtNextInterrupt = false;
   //this.refreshNextInterrupt = true;
   //this.DipSwitchSYNC = true;
-
-  this.handleEvent = function(e) {
-    //alert("You pressed: which="+e.which+",keyUniCode="+e.keyCode+",shift="+e.shiftKey+",charCode="+e.charCode+",tochar="+String.fromCharCode(e.which)+",type="+e.type);
-    return self.trataTecla.call(self, e.keyCode, e.type == 'keydown', e);
-  };
 
   this.start = function() {
     var self = this;
@@ -236,327 +230,9 @@ function JSMSX(window, canvas, logbuf) {
     }
   };
 
-  this.trataTecla = function(i, bool, e) {
-    switch (i) { //UNICODE VALUE
-      case 48: //0
-        this.estadoTeclas[0]
-        = bool ? this.estadoTeclas[0] & 0xfe : this.estadoTeclas[0] | 0x1;
-        break;
-      case 49: //1
-        this.estadoTeclas[0]
-        = bool ? this.estadoTeclas[0] & 0xfd : this.estadoTeclas[0] | 0x2;
-        break;
-      case 50: //2
-        this.estadoTeclas[0]
-        = bool ? this.estadoTeclas[0] & 0xfb : this.estadoTeclas[0] | 0x4;
-        break;
-      case 51: //3
-        this.estadoTeclas[0]
-        = bool ? this.estadoTeclas[0] & 0xf7 : this.estadoTeclas[0] | 0x8;
-        break;
-      case 52: //4
-        this.estadoTeclas[0]
-        = bool ? this.estadoTeclas[0] & 0xef : this.estadoTeclas[0] | 0x10;
-        break;
-      case 53: //5
-        this.estadoTeclas[0]
-        = bool ? this.estadoTeclas[0] & 0xdf : this.estadoTeclas[0] | 0x20;
-        break;
-      case 54: //6
-        this.estadoTeclas[0]
-        = bool ? this.estadoTeclas[0] & 0xbf : this.estadoTeclas[0] | 0x40;
-        break;
-      case 55: //7
-        this.estadoTeclas[0]
-        = bool ? this.estadoTeclas[0] & 0x7f : this.estadoTeclas[0] | 0x80;
-        break;
-      case 56: //8
-        this.estadoTeclas[1]
-        = bool ? this.estadoTeclas[1] & 0xfe : this.estadoTeclas[1] | 0x1;
-        break;
-      case 57: //9
-        this.estadoTeclas[1]
-        = bool ? this.estadoTeclas[1] & 0xfd : this.estadoTeclas[1] | 0x2;
-        break;
-      case 45: //-
-        this.estadoTeclas[1]
-        = bool ? this.estadoTeclas[1] & 0xfb : this.estadoTeclas[1] | 0x4;
-        break;
-      case 61: //^
-        this.estadoTeclas[1]
-        = bool ? this.estadoTeclas[1] & 0xf7 : this.estadoTeclas[1] | 0x8;
-        break;
-      case 92: //$
-        this.estadoTeclas[1]
-        = bool ? this.estadoTeclas[1] & 0xef : this.estadoTeclas[1] | 0x10;
-        break;
-      case 91: //@
-        this.estadoTeclas[1]
-        = bool ? this.estadoTeclas[1] & 0xdf : this.estadoTeclas[1] | 0x20;
-        break;
-      case 93: //(
-        this.estadoTeclas[1]
-        = bool ? this.estadoTeclas[1] & 0xbf : this.estadoTeclas[1] | 0x40;
-        break;
-      case 59: //;
-        this.estadoTeclas[1]
-        = bool ? this.estadoTeclas[1] & 0x7f : this.estadoTeclas[1] | 0x80;
-        break;
-      //case 34:
-      //case 39:
-      case 1013: //:
-        this.estadoTeclas[2]
-        = bool ? this.estadoTeclas[2] & 0xfe : this.estadoTeclas[2] | 0x1;
-        break;
-      case 48: //)
-        this.estadoTeclas[2]
-        = bool ? this.estadoTeclas[2] & 0xfd : this.estadoTeclas[2] | 0x2;
-        break;
-      case 188: //,
-        this.estadoTeclas[2]
-        = bool ? this.estadoTeclas[2] & 0xfb : this.estadoTeclas[2] | 0x4;
-        break;
-      case 190: //.
-        this.estadoTeclas[2]
-        = bool ? this.estadoTeclas[2] & 0xf7 : this.estadoTeclas[2] | 0x8;
-        break;
-      case 191: ///
-        this.estadoTeclas[2]
-        = bool ? this.estadoTeclas[2] & 0xef : this.estadoTeclas[2] | 0x10;
-        break;
-      case 109: //_
-        this.estadoTeclas[2]
-        = bool ? this.estadoTeclas[2] & 0xdf : this.estadoTeclas[2] | 0x20;
-        break;
-      case 65: //A
-        this.estadoTeclas[2]
-        = bool ? this.estadoTeclas[2] & 0xbf : this.estadoTeclas[2] | 0x40;
-        break;
-      case 66: //B
-        this.estadoTeclas[2]
-        = bool ? this.estadoTeclas[2] & 0x7f : this.estadoTeclas[2] | 0x80;
-        break;
-      case 67: //C
-        this.estadoTeclas[3]
-        = bool ? this.estadoTeclas[3] & 0xfe : this.estadoTeclas[3] | 0x1;
-        break;
-      case 68: //D
-        this.estadoTeclas[3]
-        = bool ? this.estadoTeclas[3] & 0xfd : this.estadoTeclas[3] | 0x2;
-        break;
-      case 69: //E
-        this.estadoTeclas[3]
-        = bool ? this.estadoTeclas[3] & 0xfb : this.estadoTeclas[3] | 0x4;
-        break;
-      case 70: //F
-        this.estadoTeclas[3]
-        = bool ? this.estadoTeclas[3] & 0xf7 : this.estadoTeclas[3] | 0x8;
-        break;
-      case 71: //G
-        this.estadoTeclas[3]
-        = bool ? this.estadoTeclas[3] & 0xef : this.estadoTeclas[3] | 0x10;
-        break;
-      case 72: //H
-        this.estadoTeclas[3]
-        = bool ? this.estadoTeclas[3] & 0xdf : this.estadoTeclas[3] | 0x20;
-        break;
-      case 73: //I
-        this.estadoTeclas[3]
-        = bool ? this.estadoTeclas[3] & 0xbf : this.estadoTeclas[3] | 0x40;
-        break;
-      case 74: //J
-        this.estadoTeclas[3]
-        = bool ? this.estadoTeclas[3] & 0x7f : this.estadoTeclas[3] | 0x80;
-        break;
-      case 75: //K
-        this.estadoTeclas[4]
-        = bool ? this.estadoTeclas[4] & 0xfe : this.estadoTeclas[4] | 0x1;
-        break;
-      case 76: //L
-        this.estadoTeclas[4]
-        = bool ? this.estadoTeclas[4] & 0xfd : this.estadoTeclas[4] | 0x2;
-        break;
-      case 77: //M
-        this.estadoTeclas[4]
-        = bool ? this.estadoTeclas[4] & 0xfb : this.estadoTeclas[4] | 0x4;
-        break;
-      case 78: //N
-        this.estadoTeclas[4]
-        = bool ? this.estadoTeclas[4] & 0xf7 : this.estadoTeclas[4] | 0x8;
-        break;
-      case 79: //O
-        this.estadoTeclas[4]
-        = bool ? this.estadoTeclas[4] & 0xef : this.estadoTeclas[4] | 0x10;
-        break;
-      case 80: //P
-        this.estadoTeclas[4]
-        = bool ? this.estadoTeclas[4] & 0xdf : this.estadoTeclas[4] | 0x20;
-        break;
-      case 81: //Q
-        this.estadoTeclas[4]
-        = bool ? this.estadoTeclas[4] & 0xbf : this.estadoTeclas[4] | 0x40;
-        break;
-      case 82: //R
-        this.estadoTeclas[4]
-        = bool ? this.estadoTeclas[4] & 0x7f : this.estadoTeclas[4] | 0x80;
-        break;
-      case 83: //S
-        this.estadoTeclas[5]
-        = bool ? this.estadoTeclas[5] & 0xfe : this.estadoTeclas[5] | 0x1;
-        break;
-      case 84: //T
-        this.estadoTeclas[5]
-        = bool ? this.estadoTeclas[5] & 0xfd : this.estadoTeclas[5] | 0x2;
-        break;
-      case 85: //U
-        this.estadoTeclas[5]
-        = bool ? this.estadoTeclas[5] & 0xfb : this.estadoTeclas[5] | 0x4;
-        break;
-      case 86: //V
-        this.estadoTeclas[5]
-        = bool ? this.estadoTeclas[5] & 0xf7 : this.estadoTeclas[5] | 0x8;
-        break;
-      case 87: //W
-        this.estadoTeclas[5]
-        = bool ? this.estadoTeclas[5] & 0xef : this.estadoTeclas[5] | 0x10;
-        break;
-      case 88: //X
-        this.estadoTeclas[5]
-        = bool ? this.estadoTeclas[5] & 0xdf : this.estadoTeclas[5] | 0x20;
-        break;
-      case 89: //Y
-        this.estadoTeclas[5]
-        = bool ? this.estadoTeclas[5] & 0xbf : this.estadoTeclas[5] | 0x40;
-        break;
-      case 90: //Z
-        this.estadoTeclas[5]
-        = bool ? this.estadoTeclas[5] & 0x7f : this.estadoTeclas[5] | 0x80;
-        break;
-      case 1017:
-        if (bool == true)
-          this.pauseAtNextInterrupt = this.pauseAtNextInterrupt ^ true;
-        break;
-      case 1019:
-        if (bool == true) {
-          frameSkip++;
-          frameSkip %= 20;
-        }
-        break;
-      case 1018:
-        if (bool == true) {
-          frameSkip--;
-          if (frameSkip < 1)
-            frameSkip = 1;
-        }
-        break;
-      case 16: //SHIFT
-        this.estadoTeclas[6]
-        = bool ? this.estadoTeclas[6] & 0xfe : this.estadoTeclas[6] | 0x1;
-        break;
-      case 17: //CTRL
-        this.estadoTeclas[6]
-        = bool ? this.estadoTeclas[6] & 0xfd : this.estadoTeclas[6] | 0x2;
-        break;
-      case 18: //GRAPH (ALT in PC)
-        this.estadoTeclas[6]
-        = bool ? this.estadoTeclas[6] & 0xfb : this.estadoTeclas[6] | 0x4;
-        break;
-      case 20: //CAP
-        this.estadoTeclas[6]
-        = bool ? this.estadoTeclas[6] & 0xf7 : this.estadoTeclas[6] | 0x8;
-        break;
-      case 118: //CODELOCK (F7 in PC)
-        this.estadoTeclas[6]
-        = bool ? this.estadoTeclas[6] & 0xef : this.estadoTeclas[6] | 0x10;
-        break;
-      case 112: //F1
-        this.estadoTeclas[6]
-        = bool ? this.estadoTeclas[6] & 0xdf : this.estadoTeclas[6] | 0x20;
-        break;
-      case 113: //F2
-        this.estadoTeclas[6]
-        = bool ? this.estadoTeclas[6] & 0xbf : this.estadoTeclas[6] | 0x40;
-        break;
-      case 114: //F3
-        this.estadoTeclas[6]
-        = bool ? this.estadoTeclas[6] & 0x7f : this.estadoTeclas[6] | 0x80;
-        break;
-      case 115: //F4
-        this.estadoTeclas[7]
-        = bool ? this.estadoTeclas[7] & 0xfe : this.estadoTeclas[7] | 0x1;
-        break;
-      case 116: //F5
-        this.estadoTeclas[7]
-        = bool ? this.estadoTeclas[7] & 0xfd : this.estadoTeclas[7] | 0x2;
-        break;
-      case 27: //ESC
-        this.estadoTeclas[7]
-        = bool ? this.estadoTeclas[7] & 0xfb : this.estadoTeclas[7] | 0x4;
-        break;
-      case 9: //TAB
-        this.estadoTeclas[7]
-        = bool ? this.estadoTeclas[7] & 0xf7 : this.estadoTeclas[7] | 0x8;
-        break;
-      case 19: //STOP
-        this.estadoTeclas[7]
-        = bool ? this.estadoTeclas[7] & 0xef : this.estadoTeclas[7] | 0x10;
-        break;
-      case 8: //BACKSPACE
-        this.estadoTeclas[7]
-        = bool ? this.estadoTeclas[7] & 0xdf : this.estadoTeclas[7] | 0x20;
-        break;
-      case 117: //SELECT (F6 in PC)
-        this.estadoTeclas[7]
-        = bool ? this.estadoTeclas[7] & 0xbf : this.estadoTeclas[7] | 0x40;
-        break;
-      case 13: //RETURN
-        this.estadoTeclas[7]
-        = bool ? this.estadoTeclas[7] & 0x7f : this.estadoTeclas[7] | 0x80;
-        break;
-      case 32: //SPACE
-        this.estadoTeclas[8]
-        = bool ? this.estadoTeclas[8] & 0xfe : this.estadoTeclas[8] | 0x1;
-        break;
-      case 36: //HOME
-        this.estadoTeclas[8]
-        = bool ? this.estadoTeclas[8] & 0xfd : this.estadoTeclas[8] | 0x2;
-        break;
-      case 45: //INSERT
-        this.estadoTeclas[8]
-        = bool ? this.estadoTeclas[8] & 0xfb : this.estadoTeclas[8] | 0x4;
-        break;
-      case 46: //DELETE
-        this.estadoTeclas[8]
-        = bool ? this.estadoTeclas[8] & 0xf7 : this.estadoTeclas[8] | 0x8;
-        break;
-      case 37: //LEFTARROW
-        this.estadoTeclas[8]
-        = bool ? this.estadoTeclas[8] & 0xef : this.estadoTeclas[8] | 0x10;
-        break;
-      case 38: //UPARROW
-        this.estadoTeclas[8]
-        = bool ? this.estadoTeclas[8] & 0xdf : this.estadoTeclas[8] | 0x20;
-        break;
-      case 40: //DOWNARROW
-        this.estadoTeclas[8]
-        = bool ? this.estadoTeclas[8] & 0xbf : this.estadoTeclas[8] | 0x40;
-        break;
-      case 39: //RIGHTARROW
-        this.estadoTeclas[8]
-        = bool ? this.estadoTeclas[8] & 0x7f : this.estadoTeclas[8] | 0x80;
-        break;
-
-      default: //browser should handle key event
-        return true;
-    }
-
-    e.returnValue = false;
-    //e.cancelBubble = true;
-    return false; //key event already handled
-  };
-
-  this.ui = new JSMSX.UI(logbuf);
+  this.ui = new JSMSX.UI(this, logbuf);
   this.cpu = new Z80(this, 3.58);
+  this.keyboard = new JSMSX.Keyboard(this);
 
   //local constructor
   //initializes local variables
@@ -564,7 +240,6 @@ function JSMSX(window, canvas, logbuf) {
 
   for (i = 0; i < 256; i++)
     this.portos[i] = -1;
-  this.estadoTeclas = [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255];
   this.podeEscrever = [false, false, false, true];
   this.pinta = true;
   this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
