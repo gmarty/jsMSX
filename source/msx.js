@@ -43,7 +43,6 @@ function JSMSX(window, canvas, logbuf) {
   this.pagMegaRom = [0, 1, 2, 3];
   //this.tamPagMegarom = 8192;
   this.tipoMegarom = 0;
-  this.portos = Array(256);
   //this.controlPressionado = false;
   //this.shiftPressionado = false;
   this.memoria = []; //int[][]
@@ -238,8 +237,6 @@ function JSMSX(window, canvas, logbuf) {
   //initializes local variables
   this.ui.updateStatus('Booting jsMSX');
 
-  for (i = 0; i < 256; i++)
-    this.portos[i] = -1;
   this.podeEscrever = [false, false, false, true];
   this.pinta = true;
   this.cart = Array(32); //2-dimensional array 32x8192 of cartridges

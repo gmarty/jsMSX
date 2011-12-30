@@ -80,6 +80,8 @@ function Z80(msx, d) {
   this._IFF1 = true;
   this._IFF2 = true;
   this._IM = 2;
+  
+  this.portos = Array(256);
 
   //static
   for (i = 0; i < 256; i++) {
@@ -4525,6 +4527,9 @@ function Z80(msx, d) {
     this.setIFF1(false);
     this.setIFF2(false);
     this.setIM(0);
+
+    for (var i = 0; i < 256; i++)
+      this.portos[i] = -1;
   };
 
   this.retornaHex = function(i) {
@@ -5486,7 +5491,7 @@ function Z80(msx, d) {
         this.msx.vdp.escrevePortaComandos(i_19_);
         break;
       default:
-        this.msx.portos[i] = i_19_;
+        this.portos[i] = i_19_;
     }
   };
 
