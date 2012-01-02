@@ -47,7 +47,7 @@ input#interrupts {width:auto;}
     <p>Please load the ROM images before starting the emulator:</p>
     <p>
       1. <input id="loadbiosrom" value="Load BIOS ROM" onclick="msx_loadbiosrom();" type="button">
-      <input id="urlbiosrom" size="100" value="roms/bios/openMSX/Gradiente/expert_1.0_basic-bios1.rom" type="text">
+      <input id="urlbiosrom" size="100" value="roms/bios/cbios/cbios_main_msx1.rom" type="text">
       <br>
       Other BIOS ROMs:<a href="http://www.msxarchive.nl/pub/msx/emulator/system_roms/openMSX/">http://www.msxarchive.nl/pub/msx/emulator/system_roms/openMSX/</a>
       <br>
@@ -72,8 +72,7 @@ msx = new JSMSX(window, mycanvasctx, mylogbuf);
 //just for demonstration purposes on webbrowsers
 //in which file i/o is not supported yet for this demo.
 //loads slot 0 with cbios 0.21 rom file [cbios.sourceforge.net]
-//for (var i=0; i<32768; i++) msx.memoria[0][i]=cbios_main_msx1_rom[i];
-for (var i = 0; i < 32768; i++) msx.memoria[0][i] = msx1_rom[i];
+for (var i = 0; i < 32768; i++) msx.memoria[0][i] = cbios_main_msx1_rom[i];
 for (var i = 16384; i < 49152; i++) msx.memoria[2][i] = goonies_rom[i - 16384];
 
 function msx_doublescreen() {
