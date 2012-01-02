@@ -83,6 +83,11 @@ function Z80(msx, d) {
 
   this.portos = Array(256);
 
+  this.PPIPortA = 0;
+  //this.PPIPortB = 255;
+  this.PPIPortC = 0;
+  this.PPIPortD = 0;
+
   //static
   for (i = 0; i < 256; i++) {
     bool = true;

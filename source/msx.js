@@ -35,10 +35,6 @@ function JSMSX(window, canvas, logbuf) {
   this.psg = null;
 
   this.megarom = false;
-  this.PPIPortA = 0;
-  //this.PPIPortB = 255;
-  this.PPIPortC = 0;
-  this.PPIPortD = 0;
   this.pagMegaRom = [0, 1, 2, 3];
   this.tipoMegarom = 0;
   this.memoria = []; //int[][]
@@ -88,125 +84,6 @@ function JSMSX(window, canvas, logbuf) {
     clearInterval(this.frameInterval);
   };
 
-  this.loadbiosrom = function(url, slot, canvasbiosrom) {
-    var biosrom = msx_loadurl(url);
-    var ctxbiosrom;
-    var imgdatabiosrom;
-    var dbr;
-    var biosromlength;
-    var charcode;
-    var i;
-
-    this.ui.updateStatus('Reading bios rom ' + url);
-    this.ui.updateStatus(biosrom.length + ' bytes read');
-
-    if (biosrom != '') {
-      canvasbiosrom.width = 256;
-      canvasbiosrom.height = biosrom.length / 256;
-      //alert(biosrom.length+','+canvasbiosrom.width+','+canvasbiosrom.height);
-      ctxbiosrom = canvasbiosrom.getContext('2d');
-      ctxbiosrom.fillStyle = 'rgb(0,0,0)';
-      ctxbiosrom.fillRect(0, 0, canvasbiosrom.width, canvasbiosrom.height);
-      if (ctxbiosrom.getImageData) {
-        imgdatabiosrom = ctxbiosrom.getImageData(0, 0, canvasbiosrom.width, canvasbiosrom.height);
-        dbr = imgdatabiosrom.data;
-      }
-      biosromlength = biosrom.length;
-      // MimeType('application/octet-stream; charset=x-user-defined')
-      for (i = 0; i < biosromlength; i++) {
-        charcode = biosrom.charCodeAt(i) & 0xff;
-        this.memoria[slot][i] = charcode;
-        if (dbr) {
-          dbr[i * 4] = charcode;
-          dbr[i * 4 + 1] = charcode;
-          dbr[i * 4 + 2] = charcode;
-        } else {
-          ctxbiosrom.fillStyle = 'rgb(' + charcode + ',' + charcode + ',' + charcode + ')';
-          ctxbiosrom.fillRect(i % canvasbiosrom.width, Math.floor(i / canvasbiosrom.width), 1, 1);
-        }
-      }
-      if (ctxbiosrom.putImageData) {
-        ctxbiosrom.putImageData(imgdatabiosrom, 0, 0);
-      }
-    }
-    return biosrom;
-  };
-
-  this.loadcartrom = function(url, cartslot, megaromtype, canvascartrom) {
-    var cartrom = msx_loadurl(url);
-    var ctxcartrom;
-    var imgdatacartrom;
-    var dbr;
-    var cartromlength;
-    var charcode;
-    var i;
-    var i_2_;
-
-    this.ui.updateStatus('Reading cart rom ' + url);
-    this.ui.updateStatus(cartrom.length + ' bytes read');
-
-    if (cartrom != '') {
-      canvascartrom.width = 256;
-      canvascartrom.height = cartrom.length / 256;
-      //alert(cartrom.length+','+canvascartrom.width+','+canvascartrom.height);
-      ctxcartrom = canvascartrom.getContext('2d');
-      ctxcartrom.fillStyle = 'rgb(0,0,0)';
-      ctxcartrom.fillRect(0, 0, canvascartrom.width, canvascartrom.height);
-      if (ctxcartrom.getImageData) {
-        imgdatacartrom = ctxcartrom.getImageData(0, 0, canvascartrom.width, canvascartrom.height);
-        dbr = imgdatacartrom.data;
-      } else {
-        dbr = Array(canvascartrom.width * canvascartrom.height * 4);
-      }
-      cartromlength = cartrom.length;
-      // MimeType('application/octet-stream; charset=x-user-defined')
-      for (i = 0; i < cartromlength; i++) {
-        charcode = cartrom.charCodeAt(i) & 0xff;
-        //this.memoria[slot][i]=charcode;
-        dbr[i * 4] = charcode;
-        dbr[i * 4 + 1] = charcode;
-        dbr[i * 4 + 2] = charcode;
-        if (!ctxcartrom.getImageData) {
-          ctxcartrom.fillStyle = 'rgb(' + charcode + ',' + charcode + ',' + charcode + ')';
-          ctxcartrom.fillRect(i % canvascartrom.width, Math.floor(i / canvascartrom.width), 1, 1);
-        }
-      }
-      if (ctxcartrom.putImageData) {
-        ctxcartrom.putImageData(imgdatacartrom, 0, 0);
-      }
-    }
-
-    //bool = false;
-
-    cartromlength = cartrom.length;
-
-    for (i = 0; i < cartromlength; i++) {
-      this.cart[Math.floor(i / 8192)][i % 8192] = dbr[i * 4] + 256 & 0xff;
-    }
-    if (cartromlength > 0)
-      i_2_ = (dbr[3 * 4] < 0 ? dbr[3 * 4] + 256 : dbr[3 * 4]) * 256 + (dbr[2 * 4] < 0 ? dbr[2 * 4] + 256 : dbr[2 * 4]);
-    if (i_2_ < 8192) {
-      i_2_ = 0;
-      this.PPIPortC = 250;
-    } else if (i_2_ < 16384)
-      i_2_ = 8192;
-    else if (i_2_ < 32768)
-      i_2_ = 16384;
-    else
-      i_2_ = 32768;
-    this.ui.updateStatus('Cart start address:' + i_2_);
-    if (cartromlength > 32768) {
-      cartromlength = 16384;
-      this.megarom = true;
-      this.preparaMemoriaMegarom(megaromtype);
-      this.ui.updateStatus('Megarom type ' + megaromtype);
-    }
-    for (i = 0; i < cartromlength; i++)
-      this.memoria[cartslot][i + i_2_] = dbr[i * 4] + 256 & 0xff;
-
-    return cartrom;
-  };
-
   this.preparaMemoriaMegarom = function(string) {
     if (string != null) {
       if (string == '0')
@@ -230,18 +107,14 @@ function JSMSX(window, canvas, logbuf) {
 
   this.ui.updateStatus('Starting RAM slots');
   this.memoria = Array(4); //4 primary slots
-  this.m0 = Array(65536);
-  this.memoria[0] = this.m0;
-  for (i = 0; i < 65536; i++) this.m0[i] = 255;
-  this.m1 = Array(65536);
-  this.memoria[1] = this.m1;
-  for (i = 0; i < 65536; i++) this.m1[i] = 255;
-  this.m2 = Array(65536);
-  this.memoria[2] = this.m2;
-  for (i = 0; i < 65536; i++) this.m2[i] = 255;
-  this.m3 = Array(65536);
-  this.memoria[3] = this.m3;
-  for (i = 0; i < 65536; i++) this.m3[i] = 255;
+  this.memoria[0] = Array(65536);
+  this.memoria[1] = Array(65536);
+  this.memoria[2] = Array(65536);
+  this.memoria[3] = Array(65536);
+  for (i = 0; i < 65536; i++) this.memoria[0][i] = 255;
+  for (i = 0; i < 65536; i++) this.memoria[1][i] = 255;
+  for (i = 0; i < 65536; i++) this.memoria[2][i] = 255;
+  for (i = 0; i < 65536; i++) this.memoria[3][i] = 255;
   this.podeEscrever = [false, false, false, true];
   this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
   for (i = 0; i < 32; i++) {
@@ -266,8 +139,45 @@ function JSMSX(window, canvas, logbuf) {
   this.ui.updateStatus('jsMSX ready to go. Load ROMs and hit [start].');
 }
 
-var msx_loadurl = function(url) {
-  var io = new browserio();
-  var data = io.load(url);
-  return data;
+JSMSX.prototype = {
+  loadBios: function(data, slot) {
+    for (var i = 0; i < data.length; i++) {
+      this.memoria[slot][i] = data.charCodeAt(i) & 0xff;
+    }
+  },
+
+  loadRom: function(data, slot, megaromtype) {
+    var cartromlength = data.length;
+    var dbr = [];
+    var i;
+    var i_2_;
+
+    for (i = 0; i < cartromlength; i++) {
+      dbr[i] = data.charCodeAt(i) & 0xff;
+      this.cart[Math.floor(i / 8192)][i % 8192] = dbr[i] + 256 & 0xff;
+    }
+
+    if (cartromlength > 0) {
+      i_2_ = (dbr[3] < 0 ? dbr[3] + 256 : dbr[3]) * 256 + (dbr[2] < 0 ? dbr[2] + 256 : dbr[2]);
+    }
+    if (i_2_ < 8192) {
+      i_2_ = 0;
+      this.cpu.PPIPortC = 250;
+    } else if (i_2_ < 16384)
+      i_2_ = 8192;
+    else if (i_2_ < 32768)
+      i_2_ = 16384;
+    else
+      i_2_ = 32768;
+    this.ui.updateStatus('Cart start address:' + i_2_);
+    if (cartromlength > 32768) {
+      cartromlength = 16384;
+      this.megarom = true;
+      this.preparaMemoriaMegarom(megaromtype);
+      this.ui.updateStatus('Megarom type ' + megaromtype);
+    }
+    for (i = 0; i < cartromlength; i++) {
+      this.memoria[slot][i + i_2_] = dbr[i] + 256 & 0xff;
+    }
+  }
 };
