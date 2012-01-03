@@ -31,6 +31,16 @@ function Z80(msx, d) {
   this.msx = msx;
 
   this.mem = []; //int[][]
+  this.podeEscrever = [false, false, false, true];
+
+  this.megarom = false;
+  this.pagMegaRom = [0, 1, 2, 3];
+  this.tipoMegarom = 0;
+  this.cartSlot = 0;
+  this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
+  for (i = 0; i < 32; i++) {
+    this.cart[i] = Array(8192);
+  }
 
   //this.steps = 0; //steps since reset
   this.showpc = false; //show _PC red pixel
@@ -4516,7 +4526,7 @@ function Z80(msx, d) {
     var i, j;
 
     // Main memory
-    this.mem = Array(4); //4 primary slots
+    this.mem = Array(4); // 4 primary slots
     for (i = 0; i < 4; i++) {
       for (j = 0; j < 65536; j++) {
         this.mem[j] = Array(65536);
@@ -5541,7 +5551,7 @@ function Z80(msx, d) {
   this.pokeb = function(i, i_25_) {
     var i_26_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
 
-    if (this.msx.podeEscrever[i_26_]) this.mem[i_26_][i] = i_25_ & 0xff;
+    if (this.podeEscrever[i_26_]) this.mem[i_26_][i] = i_25_ & 0xff;
     if (i == 65535) this.mem[i_26_][65535] = 255;
     if (!this.megarom) return;
 
@@ -5592,7 +5602,7 @@ function Z80(msx, d) {
   this.pokew = function(i, i_27_) {
     var i_28_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
 
-    if (this.msx.podeEscrever[i_28_]) {
+    if (this.podeEscrever[i_28_]) {
       this.mem[i_28_][i] = i_27_ & 0xff;
       if (++i < 65535) this.mem[i_28_][i] = i_27_ >> 8;
       if (i == 65535 || i == 65536) this.mem[i_28_][65535] = 255;
@@ -5667,6 +5677,19 @@ function Z80(msx, d) {
           }
           break;
       }
+    }
+  };
+
+  this.preparaMemoriaMegarom = function(string) {
+    if (string != null) {
+      if (string == '0')
+        this.tipoMegarom = 0;
+      else if (string == '1')
+        this.tipoMegarom = 1;
+      else if (string == '2')
+        this.tipoMegarom = 2;
+      else if (string == '3')
+        this.tipoMegarom = 3;
     }
   };
 }

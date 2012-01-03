@@ -28,16 +28,6 @@ function JSMSX(window, canvas, logbuf) {
   this.canvas = canvas;
   this.logbuf = logbuf;
 
-  this.megarom = false;
-  this.pagMegaRom = [0, 1, 2, 3];
-  this.tipoMegarom = 0;
-  this.podeEscrever = [false, false, false, true];
-  this.cartSlot = 0;
-  this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
-  for (var i = 0; i < 32; i++) {
-    this.cart[i] = Array(8192);
-  }
-
   this.frameSkip = null;
   this.pinta = null;
   this.interruptCounter = null;
@@ -100,19 +90,6 @@ JSMSX.prototype = {
     clearInterval(this.frameInterval);
   },
 
-  preparaMemoriaMegarom: function(string) {
-    if (string != null) {
-      if (string == '0')
-        this.tipoMegarom = 0;
-      else if (string == '1')
-        this.tipoMegarom = 1;
-      else if (string == '2')
-        this.tipoMegarom = 2;
-      else if (string == '3')
-        this.tipoMegarom = 3;
-    }
-  },
-
   loadBios: function(data, slot) {
     for (var i = 0; i < data.length; i++) {
       this.cpu.mem[slot][i] = data.charCodeAt(i) & 0xff;
@@ -127,7 +104,7 @@ JSMSX.prototype = {
 
     for (i = 0; i < cartromlength; i++) {
       dbr[i] = data.charCodeAt(i) & 0xff;
-      this.cart[Math.floor(i / 8192)][i % 8192] = dbr[i] + 256 & 0xff;
+      this.cpu.cart[Math.floor(i / 8192)][i % 8192] = dbr[i] + 256 & 0xff;
     }
 
     if (cartromlength > 0) {
@@ -145,8 +122,8 @@ JSMSX.prototype = {
     this.ui.updateStatus('Cart start address:' + i_2_);
     if (cartromlength > 32768) {
       cartromlength = 16384;
-      this.megarom = true;
-      this.preparaMemoriaMegarom(megaromtype);
+      this.cpu.megarom = true;
+      this.cpu.preparaMemoriaMegarom(megaromtype);
       this.ui.updateStatus('Megarom type ' + megaromtype);
     }
     for (i = 0; i < cartromlength; i++) {
