@@ -74,7 +74,7 @@ function tms9918(canvas) {
         [192, 192, 128], [32, 128, 32],
         [192, 64, 160], [160, 160, 160],
         [224, 224, 224]];
-  this.imagemTela = Array(49152);
+  this.imagemTela = Array(256 * 192);
 
   //TMS9918 CONSTRUCTOR
   this.canvas.fillStyle = 'rgb(' + this.cor[0][0] + ',' + this.cor[0][1] + ',' + this.cor[0][2] + ')';
