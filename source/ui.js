@@ -31,12 +31,12 @@ JSMSX.UI = function(msx, log) {
    * Keyboard
    */
   $(document).
-    bind('keydown', function(evt) {
-      self.msx.keyboard.keydown(evt);
-    }).
-    bind('keyup', function(evt) {
-      self.msx.keyboard.keyup(evt);
-    });
+      bind('keydown', function(evt) {
+        self.msx.keyboard.keydown(evt);
+      }).
+      bind('keyup', function(evt) {
+        self.msx.keyboard.keyup(evt);
+      });
 };
 
 JSMSX.UI.prototype = {
