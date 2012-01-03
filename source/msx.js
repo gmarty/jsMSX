@@ -37,7 +37,6 @@ function JSMSX(window, canvas, logbuf) {
   this.megarom = false;
   this.pagMegaRom = [0, 1, 2, 3];
   this.tipoMegarom = 0;
-  this.memoria = []; //int[][]
   this.podeEscrever = [];
   this.cartSlot = 0;
   this.cart = []; //private int[][] cart;
@@ -106,15 +105,6 @@ function JSMSX(window, canvas, logbuf) {
   this.ui.updateStatus('Booting jsMSX');
 
   this.ui.updateStatus('Starting RAM slots');
-  this.memoria = Array(4); //4 primary slots
-  this.memoria[0] = Array(65536);
-  this.memoria[1] = Array(65536);
-  this.memoria[2] = Array(65536);
-  this.memoria[3] = Array(65536);
-  for (i = 0; i < 65536; i++) this.memoria[0][i] = 255;
-  for (i = 0; i < 65536; i++) this.memoria[1][i] = 255;
-  for (i = 0; i < 65536; i++) this.memoria[2][i] = 255;
-  for (i = 0; i < 65536; i++) this.memoria[3][i] = 255;
   this.podeEscrever = [false, false, false, true];
   this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
   for (i = 0; i < 32; i++) {
@@ -142,7 +132,7 @@ function JSMSX(window, canvas, logbuf) {
 JSMSX.prototype = {
   loadBios: function(data, slot) {
     for (var i = 0; i < data.length; i++) {
-      this.memoria[slot][i] = data.charCodeAt(i) & 0xff;
+      this.cpu.mem[slot][i] = data.charCodeAt(i) & 0xff;
     }
   },
 
@@ -177,7 +167,7 @@ JSMSX.prototype = {
       this.ui.updateStatus('Megarom type ' + megaromtype);
     }
     for (i = 0; i < cartromlength; i++) {
-      this.memoria[slot][i + i_2_] = dbr[i] + 256 & 0xff;
+      this.cpu.mem[slot][i + i_2_] = dbr[i] + 256 & 0xff;
     }
   }
 };

@@ -30,6 +30,8 @@ function Z80(msx, d) {
 
   this.msx = msx;
 
+  this.mem = []; //int[][]
+
   //this.steps = 0; //steps since reset
   this.showpc = false; //show _PC red pixel
 
@@ -4511,6 +4513,17 @@ function Z80(msx, d) {
   };
 
   this.reset = function() {
+    var i, j;
+
+    // Main memory
+    this.mem = Array(4); //4 primary slots
+    for (i = 0; i < 4; i++) {
+      for (j = 0; j < 65536; j++) {
+        this.mem[j] = Array(65536);
+        this.mem[j][i] = 255;
+      }
+    }
+
     this._PC = (0);
     this._SP = (65520);
     this._A = (0);
@@ -4533,7 +4546,7 @@ function Z80(msx, d) {
     this.setIFF2(false);
     this.setIM(0);
 
-    for (var i = 0; i < 256; i++)
+    for (i = 0; i < 256; i++)
       this.portos[i] = -1;
   };
 
@@ -5502,34 +5515,34 @@ function Z80(msx, d) {
 
   this.peekb = function(i) {
     if (!this.megarom) {
-      return this.msx.memoria[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+      return this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     } else {
       if (((i & 0xc000) >> 14) == this.cartSlot && i <= 49151 && i >= 16384)
         return this.cart[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
       else
-        return this.msx.memoria[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+        return this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     }
   };
 
   this.peekw = function(i) {
     if (!this.megarom) {
-      return this.msx.memoria[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
-          this.msx.memoria[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+      return this.mem[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
+          this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     } else {
       if (((i & 0xc000) >> 14) == this.cartSlot && i <= 49151 && i >= 16384)
         return this.cart[this.pagMegaRom[((i + 1) >> 13) - 2]][(i + 1) % 8192] << 8 |
             this.cart[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
       else
-        return this.msx.memoria[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
-            this.msx.memoria[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+        return this.mem[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
+            this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     }
   };
 
   this.pokeb = function(i, i_25_) {
     var i_26_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
 
-    if (this.msx.podeEscrever[i_26_]) this.msx.memoria[i_26_][i] = i_25_ & 0xff;
-    if (i == 65535) this.msx.memoria[i_26_][65535] = 255;
+    if (this.msx.podeEscrever[i_26_]) this.mem[i_26_][i] = i_25_ & 0xff;
+    if (i == 65535) this.mem[i_26_][65535] = 255;
     if (!this.megarom) return;
 
     if (i_26_ == this.cartSlot) {
@@ -5580,9 +5593,9 @@ function Z80(msx, d) {
     var i_28_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
 
     if (this.msx.podeEscrever[i_28_]) {
-      this.msx.memoria[i_28_][i] = i_27_ & 0xff;
-      if (++i < 65535) this.msx.memoria[i_28_][i] = i_27_ >> 8;
-      if (i == 65535 || i == 65536) this.msx.memoria[i_28_][65535] = 255;
+      this.mem[i_28_][i] = i_27_ & 0xff;
+      if (++i < 65535) this.mem[i_28_][i] = i_27_ >> 8;
+      if (i == 65535 || i == 65536) this.mem[i_28_][65535] = 255;
     }
     if (!this.megarom) return;
 
