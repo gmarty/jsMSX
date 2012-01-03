@@ -61,12 +61,12 @@ input#interrupts {width:auto;}
     </div>
   </div>
 <script type="text/javascript">
-var msx;
 var mylogbuf = document.getElementById('logbuf');
 var mycanvas = document.getElementById('canvas');
 var mycanvasctx = mycanvas.getContext('2d');
 
-msx = new JSMSX(window, mycanvasctx, mylogbuf);
+var msx = new JSMSX(window, mycanvasctx, mylogbuf);
+msx.reset();
 
 //initializes msx with some bios roms
 //just for demonstration purposes on webbrowsers
@@ -104,7 +104,7 @@ function msx_stop() {
 }
 
 function msx_reset() {
-  msx.cpu.reset();
+  msx.reset();
   msx.interruptCounter = 0;
 }
 

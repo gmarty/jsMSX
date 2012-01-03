@@ -24,38 +24,55 @@
  * @constructor
  */
 function JSMSX(window, canvas, logbuf) {
-  var self = this;
-  var i;
-
   this.window = window;
   this.canvas = canvas;
   this.logbuf = logbuf;
 
-  this.vdp = null;
-  this.psg = null;
-
   this.megarom = false;
   this.pagMegaRom = [0, 1, 2, 3];
   this.tipoMegarom = 0;
-  this.podeEscrever = [];
+  this.podeEscrever = [false, false, false, true];
   this.cartSlot = 0;
-  this.cart = []; //private int[][] cart;
+  this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
+  for (var i = 0; i < 32; i++) {
+    this.cart[i] = Array(8192);
+  }
 
-  this.frameSkip = 0;
-  this.pinta = true;
-  this.interruptCounter = 0;
-  this.resetAtNextInterrupt = false;
-  this.pauseAtNextInterrupt = false;
+  this.frameSkip = null;
+  this.pinta = null;
+  this.interruptCounter = null;
+  this.resetAtNextInterrupt = null;
+  this.pauseAtNextInterrupt = null;
 
-  this.start = function() {
+  this.ui = new JSMSX.UI(this, logbuf);
+  this.cpu = new Z80(this, 3.58);
+  this.vdp = new tms9918(this.canvas);
+  this.psg = new psg8910();
+  this.keyboard = new JSMSX.Keyboard(this);
+
+  this.ui.updateStatus('Ready to load a ROM.');
+}
+
+JSMSX.prototype = {
+  reset: function() {
+    this.frameSkip = 1;
+    this.pinta = true;
+    this.interruptCounter = 0;
+    this.resetAtNextInterrupt = false;
+    this.pauseAtNextInterrupt = false;
+
+    this.cpu.reset();
+  },
+
+  start: function() {
     var self = this;
 
     this.frameInterval = setInterval(function() {
       self.frame();
     }, 17); //60 intervals/sec
-  };
+  },
 
-  this.frame = function() {
+  frame: function() {
     if (this.resetAtNextInterrupt) {
       this.resetAtNextInterrupt = false;
       this.cpu.reset();
@@ -77,13 +94,13 @@ function JSMSX(window, canvas, logbuf) {
     }
     if (this.interruptCounter % this.frameSkip == 0)
       this.vdp.montaUsandoMemoria();
-  };
+  },
 
-  this.stop = function() {
+  stop: function() {
     clearInterval(this.frameInterval);
-  };
+  },
 
-  this.preparaMemoriaMegarom = function(string) {
+  preparaMemoriaMegarom: function(string) {
     if (string != null) {
       if (string == '0')
         this.tipoMegarom = 0;
@@ -94,42 +111,8 @@ function JSMSX(window, canvas, logbuf) {
       else if (string == '3')
         this.tipoMegarom = 3;
     }
-  };
+  },
 
-  this.ui = new JSMSX.UI(this, logbuf);
-  this.cpu = new Z80(this, 3.58);
-  this.keyboard = new JSMSX.Keyboard(this);
-
-  //local constructor
-  //initializes local variables
-  this.ui.updateStatus('Booting jsMSX');
-
-  this.ui.updateStatus('Starting RAM slots');
-  this.podeEscrever = [false, false, false, true];
-  this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
-  for (i = 0; i < 32; i++) {
-    this.cart[i] = Array(8192);
-  }
-
-  this.frameSkip = 1;
-  this.pinta = true;
-  this.interruptCounter = 0;
-  this.resetAtNextInterrupt = false;
-  this.pauseAtNextInterrupt = false;
-
-  this.cpu.reset();
-
-  this.ui.updateStatus('Starting VDP');
-  this.vdp = new tms9918(this.canvas);
-
-  this.ui.updateStatus('Starting PSG (No Sound)');
-  this.psg = new psg8910();
-
-  this.ui.updateStatus('interrupt=' + this.interruptCounter + ',ticks=' + Math.floor(this.cpu.tstatesPerInterrupt) + ' cpu ticks/interrupt, cpu clock=3.58 MHz');
-  this.ui.updateStatus('jsMSX ready to go. Load ROMs and hit [start].');
-}
-
-JSMSX.prototype = {
   loadBios: function(data, slot) {
     for (var i = 0; i < data.length; i++) {
       this.cpu.mem[slot][i] = data.charCodeAt(i) & 0xff;
