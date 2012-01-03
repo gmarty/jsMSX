@@ -30,10 +30,6 @@ function tms9918(canvas) {
   //this.canvasctx = undefined;
   this.imagedata = undefined;
 
-  //can we use accelerated canvas gfx?
-  //known browsers that use fastgfx: Firefox 2+, what else?
-  this.fastgfx = this.canvas.getImageData;
-
   this.m_rgbRedPalette = [0, 0, 32, 96, 32, 64, -96, 64, -32, -32,
     -64, -64, 32, -64, -96, -32];
   this.m_rgbGreenPalette = [0, 0, -64, -32, 32, 96, 32, -64, 32,
@@ -81,10 +77,7 @@ function tms9918(canvas) {
   this.canvas.fillRect(0, 0, 256, 192);
 
   // builds the array containing the canvas bitmap (256*192*4 bytes (r,g,b,a) format each pixel)
-  if (this.fastgfx) {
-    this.imagedata = this.canvas.getImageData(0, 0, 256, 192);
-    //this.canvas.putImageData(this.imagedata,0,0);
-  }
+  this.imagedata = this.canvas.getImageData(0, 0, 256, 192);
 }
 
 tms9918.prototype = {
@@ -92,10 +85,8 @@ tms9918.prototype = {
     //canvasGraphics.drawImage(tela, 0, 0, null);
     //this.canvas.fillRect (0, 0, 256, 192);
 
-    if (this.fastgfx) {
-      this.canvas.fillRect(0, 0, 1, 1);//force canvas update in some browsers
-      this.canvas.putImageData(this.imagedata, 0, 0);
-    }
+    this.canvas.fillRect(0, 0, 1, 1);//force canvas update in some browsers
+    this.canvas.putImageData(this.imagedata, 0, 0);
   },
 
   atualizaTudo: function() {
@@ -112,10 +103,6 @@ tms9918.prototype = {
     var i_9_;
     var i_10_;
 
-    if (!this.fastgfx) {
-      this.canvas.fillStyle = 'rgb(0,0,0)';
-      this.canvas.fillRect(0, 0, 256, 192);
-    }
     for (i_4_ = this.tabNome; i_4_ < this.tabNome + i_2_; i_4_++) {
       if (this.screenAtual == 2)
         i = Math.floor((i_4_ - this.tabNome) / 256);
@@ -153,15 +140,11 @@ tms9918.prototype = {
             }
           }
           this.imagemTela[i_9_] = i_10_;
-          if (this.fastgfx) {
-            this.imagedata.data[i_9_ * 4 + 0] = this.cor[i_10_][0];//r
-            this.imagedata.data[i_9_ * 4 + 1] = this.cor[i_10_][1];//g
-            this.imagedata.data[i_9_ * 4 + 2] = this.cor[i_10_][2];//b
-            this.imagedata.data[i_9_ * 4 + 3] = 255;//a
-          } else {
-            this.canvas.fillStyle = 'rgb(' + this.cor[i_10_][0] + ',' + this.cor[i_10_][1] + ',' + this.cor[i_10_][2] + ')';
-            this.canvas.fillRect(((i_4_ - this.tabNome) % i_0_) * i_1_ + i_8_, i_5_ * 8 + i_7_, 1, 1);
-          }
+
+          this.imagedata.data[i_9_ * 4 + 0] = this.cor[i_10_][0];//r
+          this.imagedata.data[i_9_ * 4 + 1] = this.cor[i_10_][1];//g
+          this.imagedata.data[i_9_ * 4 + 2] = this.cor[i_10_][2];//b
+          this.imagedata.data[i_9_ * 4 + 3] = 255;//a
         }
       }
     }
@@ -229,15 +212,11 @@ tms9918.prototype = {
               }
             }
             this.imagemTela[i_24_] = i_25_;
-            if (this.fastgfx) {
-              this.imagedata.data[i_24_ * 4 + 0] = this.cor[i_25_][0];//r
-              this.imagedata.data[i_24_ * 4 + 1] = this.cor[i_25_][1];//g
-              this.imagedata.data[i_24_ * 4 + 2] = this.cor[i_25_][2];//b
-              this.imagedata.data[i_24_ * 4 + 3] = 255;//a
-            } else {
-              this.canvas.fillStyle = 'rgb(' + this.cor[i_25_][0] + ',' + this.cor[i_25_][1] + ',' + this.cor[i_25_][2] + ')';
-              this.canvas.fillRect(i_18_ + i_23_, i_19_ + (i_22_ - i_21_), 1, 1);
-            }
+
+            this.imagedata.data[i_24_ * 4 + 0] = this.cor[i_25_][0];//r
+            this.imagedata.data[i_24_ * 4 + 1] = this.cor[i_25_][1];//g
+            this.imagedata.data[i_24_ * 4 + 2] = this.cor[i_25_][2];//b
+            this.imagedata.data[i_24_ * 4 + 3] = 255;//a
           }
         }
         //memoriaTela.newPixels(i_18_, i_19_, i_14_, 8);
@@ -563,15 +542,11 @@ tms9918.prototype = {
               //if ((this.vidMem[i_52_] & 1 << 7 - i_53_) > 0)
               if ((this.vidMem[i_52_] & (1 << (7 - i_53_))) > 0) {
                 this.imagemTela[i_50_ + i_53_ + (i_52_ - i_49_ << 8)] = i_51_;
-                if (this.fastgfx) {
-                  this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 0] = this.cor[i_51_][0];//r
-                  this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 1] = this.cor[i_51_][1];//g
-                  this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 2] = this.cor[i_51_][2];//b
-                  this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 3] = 255;//a
-                } else {
-                  this.canvas.fillStyle = 'rgb(' + this.cor[i_51_][0] + ',' + this.cor[i_51_][1] + ',' + this.cor[i_51_][2] + ')';
-                  this.canvas.fillRect((i_50_ % 256) + i_53_, (i_50_ >> 8) + (i_52_ - i_49_), 1, 1);
-                }
+
+                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 0] = this.cor[i_51_][0];//r
+                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 1] = this.cor[i_51_][1];//g
+                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 2] = this.cor[i_51_][2];//b
+                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 3] = 255;//a
               }
             }
           }

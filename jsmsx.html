@@ -76,17 +76,10 @@ for (var i = 0; i < 32768; i++) msx.cpu.mem[0][i] = cbios_main_msx1_rom[i];
 for (var i = 16384; i < 49152; i++) msx.cpu.mem[2][i] = goonies_rom[i - 16384];
 
 function msx_doublescreen() {
-  var mycanvas = document.getElementById('canvas');
-  var mycanvasctx = mycanvas.getContext('2d');
-
-  //in case of not using direct canvas access
-  //(accel gfx), let's play with scaling
-  if (!mycanvasctx.getImageData) {
-    mycanvas.width = 512;
-    mycanvas.height = 384;
-    mycanvasctx.scale(2.0, 2.0); //makes screen twice as big
-    mycanvasctx.fillRect(0, 0, 256, 192);
-  }
+  $(mycanvas).animate({
+    width: '512px',
+    height: '384px'
+  });
   document.getElementById('scale2x').disabled = true;
 }
 
