@@ -35,7 +35,7 @@ function JSMSX(window, canvas, logbuf) {
   this.pauseAtNextInterrupt = null;
 
   this.ui = new JSMSX.UI(this, logbuf);
-  this.cpu = new Z80(this, 3.58);
+  this.cpu = new Z80(this);
   this.vdp = new tms9918(this.canvas);
   this.psg = new psg8910();
   this.keyboard = new JSMSX.Keyboard(this);

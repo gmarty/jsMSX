@@ -19,17 +19,22 @@
  */
 
 
+/**
+ * @const
+ */
+var T_STATES_PER_INTERRUPT = 59666.67; // 3.58 * 1000000 / 60
+
+
 
 /**
  * @constructor
  */
-function Z80(msx, d) {
+function Z80(msx) {
   var bool;
   var i;
   var i_0_;
 
   this.msx = msx;
-  this.tstatesPerInterrupt = (d * 1000000.0 / 60.0);
 
   this.megarom = false;
   this.pagMegaRom = [0, 1, 2, 3];
@@ -404,11 +409,11 @@ Z80.prototype = {
   },
 
   execute: function() {
-    //var i = -this.tstatesPerInterrupt;
+    //var i = -T_STATES_PER_INTERRUPT;
     //var ticks=1000;
     //var pcs = '';
 
-    var i = -(this.tstatesPerInterrupt - this.z80_interrupt());
+    var i = -(T_STATES_PER_INTERRUPT - this.z80_interrupt());
     var i_2_;
     var i_3_;
 
