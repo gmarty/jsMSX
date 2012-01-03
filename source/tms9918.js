@@ -85,8 +85,10 @@ function tms9918(canvas) {
     this.imagedata = this.canvas.getImageData(0, 0, 256, 192);
     //this.canvas.putImageData(this.imagedata,0,0);
   }
+}
 
-  this.updateScreen = function() {
+tms9918.prototype = {
+  updateScreen: function() {
     //canvasGraphics.drawImage(tela, 0, 0, null);
     //this.canvas.fillRect (0, 0, 256, 192);
 
@@ -94,9 +96,9 @@ function tms9918(canvas) {
       this.canvas.fillRect(0, 0, 1, 1);//force canvas update in some browsers
       this.canvas.putImageData(this.imagedata, 0, 0);
     }
-  };
+  },
 
-  this.atualizaTudo = function() {
+  atualizaTudo: function() {
     var i = 0;
     var i_0_ = this.screenAtual == 0 ? 40 : 32;
     var i_1_ = this.screenAtual == 0 ? 6 : 8;
@@ -168,9 +170,9 @@ function tms9918(canvas) {
       this.dirtyVidMem[i_4_] = -1;
     this.primeiro = -1;
     //memoriaTela.newPixels(0, 0, 256, 192);
-  };
+  },
 
-  this.desenhaOtimizado = function() {
+  desenhaOtimizado: function() {
     var i = 0;
     var i_13_ = this.screenAtual == 0 ? 40 : 32;
     var i_14_ = this.screenAtual == 0 ? 6 : 8;
@@ -243,9 +245,9 @@ function tms9918(canvas) {
       i_17_ = this.dirtyVidMem[this.primeiro];
       this.dirtyVidMem[this.primeiro] = -1;
     }
-  };
+  },
 
-  this.escrevePortaComandos = function(i) {
+  escrevePortaComandos: function(i) {
     var i_27_ = this.tabCor;
     var i_28_ = this.tabNome;
     var i_29_ = this.tabCar;
@@ -353,9 +355,9 @@ function tms9918(canvas) {
     if (i_27_ != this.tabCor || i_28_ != this.tabNome || i_29_ != this.tabCar
       || this.screenAtual != i_30_ || i_31_ != this.registros[7])
       this.updateWholeScreen = true;
-  };
+  },
 
-  this.escrevePortaDados = function(i) {
+  escrevePortaDados: function(i) {
     var bool = this.vidMem[this.regEnd] != i;
     var i_32_;
     var i_33_;
@@ -424,22 +426,22 @@ function tms9918(canvas) {
         }
       }
     }
-  };
+  },
 
-  this.lePortaComandos = function() {
+  lePortaComandos: function() {
     var i = this.regStatus;
     this.regStatus = 0;
     return i;
-  };
+  },
 
-  this.lePortaDados = function() {
+  lePortaDados: function() {
     var i = this.ByteReadBuff;
     this.ByteReadBuff = this.vidMem[this.regEnd++];
     this.regEnd %= 16384;
     return i;
-  };
+  },
 
-  this.montaSprites = function() {
+  montaSprites: function() {
     var i = (this.registros[1] & 0x2) > 0 ? 4 : 1;
     var i_45_ = (this.registros[1] & 0x2) > 0 ? 16 : 8;
     var i_46_ = 0;
@@ -577,9 +579,9 @@ function tms9918(canvas) {
       }
       //this.memoriaTela.newPixels(this.vidMem[i_46_ + 1], this.vidMem[i_46_] + 1, i_45_, i_45_);
     }
-  };
+  },
 
-  this.montaUsandoMemoria = function() {
+  montaUsandoMemoria: function() {
     if ((this.registros[1] & 0x40) > 0) {
       if (this.updateWholeScreen)
         this.atualizaTudo();
@@ -591,5 +593,5 @@ function tms9918(canvas) {
     }
     this.regStatus |= 0x80;
     this.updateScreen();
-  };
-}
+  }
+};

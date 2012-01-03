@@ -26,25 +26,23 @@
 function psg8910() {
   this.enderecoAtual = 0;
   this.registros = Array(16);
+}
 
-  this.escrevePortaDados = function(i) {
+psg8910.prototype = {
+  escrevePortaDados: function(i) {
     this.registros[this.enderecoAtual] = i;
     if (this.enderecoAtual == 7)
       this.registros[this.enderecoAtual] |= 0x80;
-  };
+  },
 
-  this.escrevePortaEndereco = function(i) {
+  escrevePortaEndereco: function(i) {
     if (i < 17)
       this.enderecoAtual = i;
-  };
+  },
 
-  this.lePortaDados = function() {
+  lePortaDados: function() {
     if (this.enderecoAtual != 14)
       return this.registros[this.enderecoAtual];
     return 255;
-  };
-
-  this.psg8910 = function() {
-    // empty
-  };
-}
+  }
+};
