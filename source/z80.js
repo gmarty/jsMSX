@@ -29,9 +29,7 @@ function Z80(msx, d) {
   var i_0_;
 
   this.msx = msx;
-
-  this.mem = []; //int[][]
-  this.podeEscrever = [false, false, false, true];
+  this.tstatesPerInterrupt = (d * 1000000.0 / 60.0);
 
   this.megarom = false;
   this.pagMegaRom = [0, 1, 2, 3];
@@ -42,10 +40,6 @@ function Z80(msx, d) {
     this.cart[i] = Array(8192);
   }
 
-  //this.steps = 0; //steps since reset
-  this.showpc = false; //show _PC red pixel
-
-  this.tstatesPerInterrupt = 0;
   //this.IM0 = 0;
   //this.IM1 = 1;
   //this.IM2 = 2;
@@ -109,30 +103,32 @@ function Z80(msx, d) {
     }
     this.parity[i] = bool;
   }
+}
 
-  //public Z80(double d) {
-  this.tstatesPerInterrupt = (d * 1000000.0 / 60.0);
-  //}
+Z80.prototype = {
+  mem: Array(4), // 4 primary slots
+  podeEscrever: [false, false, false, true],
+  showpc: false, //show _PC red pixel
 
-  this.bytef = function(i) { //returns i between -128 to +127
+  bytef: function(i) { //returns i between -128 to +127
     return ((i & 0x80) != 0) ? i - 256 : i;
-  };
+  },
 
   /*this.A = function() {
     return this._A;
   };*/
 
-  this.AF = function() {
+  AF: function() {
     return this._A << 8 | this.F();
-  };
+  },
 
   /*this.B = function() {
     return this._B;
   };*/
 
-  this.BC = function() {
+  BC: function() {
     return this._B << 8 | this._C;
-  };
+  },
 
   /*this.C = function() {
     return this._C;
@@ -146,113 +142,113 @@ function Z80(msx, d) {
     return this._D;
   };*/
 
-  this.DE = function() {
+  DE: function() {
     return this._D << 8 | this._E;
-  };
+  },
 
-  this.E = function() {
+  E: function() {
     return this._E;
-  };
+  },
 
-  this.F = function() {
+  F: function() {
     return ((this.fS ? 128 : 0) | (this.fZ ? 64 : 0) | (this.f5 ? 32 : 0)
       | (this.fH ? 16 : 0) | (this.f3 ? 8 : 0) | (this.fPV ? 4 : 0)
       | (this.fN ? 2 : 0) | (this.fC ? 1 : 0));
-  };
+  },
 
   /*this.H = function() {
     return this._H;
   };*/
 
-  this.HL = function() {
+  HL: function() {
     return this._H << 8 | this._L;
-  };
+  },
 
   /*this.Hset = function() {
     return this.fH;
   };*/
 
-  this.I = function() {
+  I: function() {
     return this._I;
-  };
+  },
 
   /*this.ID = function() {
     return this._ID;
   };*/
 
-  this.IDH = function() {
+  IDH: function() {
     return this._ID >> 8;
-  };
+  },
 
-  this.IDL = function() {
+  IDL: function() {
     return this._ID & 0xff;
-  };
+  },
 
-  this.ID_d = function() {
+  ID_d: function() {
     return this._ID + this.bytef(this.peekb(this._PC++)) & 0xffff;
-  };
+  },
 
-  this.IFF1 = function() {
+  IFF1: function() {
     return this._IFF1;
-  };
+  },
 
-  this.IFF2 = function() {
+  IFF2: function() {
     return this._IFF2;
-  };
+  },
 
-  this.IM = function() {
+  IM: function() {
     return this._IM;
-  };
+  },
 
-  this.IX = function() {
+  IX: function() {
     return this._IX;
-  };
+  },
 
-  this.IY = function() {
+  IY: function() {
     return this._IY;
-  };
+  },
 
-  this.L = function() {
+  L: function() {
     return this._L;
-  };
+  },
 
-  this.Nset = function() {
+  Nset: function() {
     return this.fN;
-  };
+  },
 
-  this.PC = function() {
+  PC: function() {
     return this._PC;
-  };
+  },
 
-  this.PVset = function() {
+  PVset: function() {
     return this.fPV;
-  };
+  },
 
-  this.R = function() {
+  R: function() {
     return this._R & 0x7f | this._R7;
-  };
+  },
 
-  this.R7 = function() {
+  R7: function() {
     return this._R7;
-  };
+  },
 
-  this.REFRESH = function(i) {
+  REFRESH: function(i) {
     this._R += i;
-  };
+  },
 
-  this.SP = function() {
+  SP: function() {
     return this._SP;
-  };
+  },
 
-  this.Sset = function() {
+  Sset: function() {
     return this.fS;
-  };
+  },
 
-  this.Zset = function() {
+  Zset: function() {
     return this.fZ;
-  };
+  },
 
-  this.adc16 = function(i, i_1_) {
+  adc16: function(i, i_1_) {
     var i_2_ = this.fC ? 1 : 0;
     var i_3_ = i + i_1_ + i_2_;
     var i_4_ = i_3_ & 0xffff;
@@ -265,9 +261,9 @@ function Z80(msx, d) {
     this.fH = (((i & 0xfff) + (i_1_ & 0xfff) + i_2_ & 0x1000) != 0);
     this.fN = (false);
     return i_4_;
-  };
+  },
 
-  this.adc_a = function(i) {
+  adc_a: function(i) {
     var i_5_ = this._A;
     var i_6_ = this.fC ? 1 : 0;
     var i_7_ = i_5_ + i + i_6_;
@@ -281,9 +277,9 @@ function Z80(msx, d) {
     this.fH = (((i_5_ & 0xf) + (i & 0xf) + i_6_ & 0x10) != 0);
     this.fN = (false);
     this._A = (i_8_);
-  };
+  },
 
-  this.add16 = function(i, i_9_) {
+  add16: function(i, i_9_) {
     var i_10_ = i + i_9_;
     var i_11_ = i_10_ & 0xffff;
     this.f3 = ((i_11_ & 0x800) != 0);
@@ -292,9 +288,9 @@ function Z80(msx, d) {
     this.fH = (((i & 0xfff) + (i_9_ & 0xfff) & 0x1000) != 0);
     this.fN = (false);
     return i_11_;
-  };
+  },
 
-  this.add_a = function(i) {
+  add_a: function(i) {
     var i_12_ = this._A;
     var i_13_ = i_12_ + i;
     var i_14_ = i_13_ & 0xff;
@@ -307,9 +303,9 @@ function Z80(msx, d) {
     this.fH = (((i_12_ & 0xf) + (i & 0xf) & 0x10) != 0);
     this.fN = (false);
     this._A = (i_14_);
-  };
+  },
 
-  this.and_a = function(i) {
+  and_a: function(i) {
     var i_15_ = this._A & i;
     this.fS = ((i_15_ & 0x80) != 0);
     this.f3 = ((i_15_ & 0x8) != 0);
@@ -320,9 +316,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (false);
     this._A = (i_15_);
-  };
+  },
 
-  this.bit = function(i, i_16_) {
+  bit: function(i, i_16_) {
     var bool = (i_16_ & i) != 0;
     this.fN = (false);
     this.fH = (true);
@@ -331,17 +327,17 @@ function Z80(msx, d) {
     this.fS = (i == 128 ? bool : false);
     this.fZ = (bool ^ true);
     this.fPV = (bool ^ true);
-  };
+  },
 
-  this.ccf = function() {
+  ccf: function() {
     var i = this._A;
     this.f3 = ((i & 0x8) != 0);
     this.f5 = ((i & 0x20) != 0);
     this.fN = (false);
     this.fC = (!this.fC);
-  };
+  },
 
-  this.cp_a = function(i) {
+  cp_a: function(i) {
     var i_17_ = this._A;
     var i_18_ = i_17_ - i;
     var i_19_ = i_18_ & 0xff;
@@ -353,18 +349,18 @@ function Z80(msx, d) {
     this.fC = ((i_18_ & 0x100) != 0);
     this.fH = (((i_17_ & 0xf) - (i & 0xf) & 0x10) != 0);
     this.fPV = (((i_17_ ^ i) & (i_17_ ^ i_19_) & 0x80) != 0);
-  };
+  },
 
-  this.cpl_a = function() {
+  cpl_a: function() {
     var i = this._A ^ 0xff;
     this.f3 = ((this._A & 0x8) != 0);
     this.f5 = ((this._A & 0x20) != 0);
     this.fH = (true);
     this.fN = (true);
     this._A = (i);
-  };
+  },
 
-  this.daa_a = function() {
+  daa_a: function() {
     var i = this._A;
     var i_20_ = 0;
     var bool = this.fC;
@@ -381,13 +377,13 @@ function Z80(msx, d) {
     i = this._A;
     this.fC = (bool);
     this.fPV = (this.parity[i]);
-  };
+  },
 
-  this.dec16 = function(i) {
+  dec16: function(i) {
     return i - 1 & 0xffff;
-  };
+  },
 
-  this.dec8 = function(i) {
+  dec8: function(i) {
     var bool = i == 128;
     var bool_21_ = ((i & 0xf) - 1 & 0x10) != 0;
     i = i - 1 & 0xff;
@@ -399,15 +395,15 @@ function Z80(msx, d) {
     this.fH = (bool_21_);
     this.fN = (true);
     return i;
-  };
+  },
 
-  this.ex_af_af = function() {
+  ex_af_af: function() {
     var i = this.AF();
     this.setAF(this._AF_);
     this._AF_ = i;
-  };
+  },
 
-  this.execute = function() {
+  execute: function() {
     //var i = -this.tstatesPerInterrupt;
     //var ticks=1000;
     //var pcs = '';
@@ -1608,9 +1604,9 @@ function Z80(msx, d) {
           i += 11;
       }
     }
-  };
+  },
 
-  this.execute_cb = function() {
+  execute_cb: function() {
     var i = this.HL();
     this._R += (1);
     switch (this.peekb(this._PC++)) {
@@ -2433,9 +2429,9 @@ function Z80(msx, d) {
       default:
         return 0;
     }
-  };
+  },
 
-  this.execute_ed = function(i) {
+  execute_ed: function(i) {
     var i_2_;
     var i_3_;
     this._R += (1);
@@ -2879,9 +2875,9 @@ function Z80(msx, d) {
       default:
         return 8;
     }
-  };
+  },
 
-  this.execute_id = function() {
+  execute_id: function() {
     var i;
     var i_2_;
     this._R += (1);
@@ -3326,9 +3322,9 @@ function Z80(msx, d) {
       default:
         return 0;
     }
-  };
+  },
 
-  this.execute_id_cb = function(i, i_58_) {
+  execute_id_cb: function(i, i_58_) {
     switch (i) {
       case 0:
         this._B = (i = this.rlc(this.peekb(i_58_)));
@@ -4155,9 +4151,9 @@ function Z80(msx, d) {
         this.pokeb(i_58_, i);
         break;
     }
-  };
+  },
 
-  this.exx = function() {
+  exx: function() {
     var i = this.HL();
     this.setHL(this._HL_);
     this._HL_ = i;
@@ -4167,9 +4163,9 @@ function Z80(msx, d) {
     i = this.BC();
     this.setBC(this._BC_);
     this._BC_ = i;
-  };
+  },
 
-  this.in_bc = function() {
+  in_bc: function() {
     var i = this.inb(this._C);
     this.fZ = (i == 0);
     this.fS = ((i & 0x80) != 0);
@@ -4179,18 +4175,18 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fH = (false);
     return i;
-  };
+  },
 
-  this.inb = function(i) {
-    this.ui.updateStatus('inb do Z80');
+  inb: function(i) {
+    this.msx.ui.updateStatus('inb do Z80');
     return 255;
-  };
+  },
 
-  this.inc16 = function(i) {
+  inc16: function(i) {
     return i + 1 & 0xffff;
-  };
+  },
 
-  this.inc8 = function(i) {
+  inc8: function(i) {
     var bool = i == 127;
     var bool_59_ = ((i & 0xf) + 1 & 0x10) != 0;
     i = i + 1 & 0xff;
@@ -4202,9 +4198,9 @@ function Z80(msx, d) {
     this.fH = (bool_59_);
     this.fN = (false);
     return i;
-  };
+  },
 
-  this.z80_interrupt = function() {
+  z80_interrupt: function() {
     if (!this.IFF1())
       return 0;
     switch (this.IM()) {
@@ -4225,13 +4221,13 @@ function Z80(msx, d) {
       default:
         return 0;
     }
-  };
+  },
 
-  this.interruptTriggered = function(i) {
+  interruptTriggered: function(i) {
     return (i >= 0);
-  };
+  },
 
-  this.ld_a_i = function() {
+  ld_a_i: function() {
     var i = this.I();
     this.fS = ((i & 0x80) != 0);
     this.f3 = ((i & 0x8) != 0);
@@ -4241,9 +4237,9 @@ function Z80(msx, d) {
     this.fH = (false);
     this.fN = (false);
     this._A = (i);
-  };
+  },
 
-  this.ld_a_r = function() {
+  ld_a_r: function() {
     var i = this.R();
     this.fS = ((i & 0x80) != 0);
     this.f3 = ((i & 0x8) != 0);
@@ -4253,44 +4249,44 @@ function Z80(msx, d) {
     this.fH = (false);
     this.fN = (false);
     this._A = (i);
-  };
+  },
 
-  this.setA = function(i) {
+  setA: function(i) {
     this._A = i & 0xff;
-  };
+  },
 
-  this.setAF = function(i) {
+  setAF: function(i) {
     this._A = (i >> 8);
     this.setF(i & 0xff);
-  };
+  },
 
-  this.setB = function(i) {
+  setB: function(i) {
     this._B = i & 0xff;
-  };
+  },
 
-  this.setBC = function(i) {
+  setBC: function(i) {
     this._B = (i >> 8);
     this._C = (i & 0xff);
-  };
+  },
 
-  this.setC = function(i) {
+  setC: function(i) {
     this._C = i & 0xff;
-  };
+  },
 
-  this.setD = function(i) {
+  setD: function(i) {
     this._D = i & 0xff;
-  };
+  },
 
-  this.setDE = function(i) {
+  setDE: function(i) {
     this._D = (i >> 8);
     this._E = (i & 0xff);
-  };
+  },
 
-  this.setE = function(i) {
+  setE: function(i) {
     this._E = i & 0xff;
-  };
+  },
 
-  this.setF = function(i) {
+  setF: function(i) {
     this.fS = (i & 0x80) != 0;
     this.fZ = (i & 0x40) != 0;
     this.f5 = (i & 0x20) != 0;
@@ -4299,75 +4295,75 @@ function Z80(msx, d) {
     this.fPV = (i & 0x4) != 0;
     this.fN = (i & 0x2) != 0;
     this.fC = (i & 0x1) != 0;
-  };
+  },
 
-  this.setH = function(i) {
+  setH: function(i) {
     this._H = i & 0xff;
-  };
+  },
 
-  this.setHL = function(i) {
+  setHL: function(i) {
     this._H = (i >> 8);
     this._L = (i & 0xff);
-  };
+  },
 
-  this.setI = function(i) {
+  setI: function(i) {
     this._I = i;
-  };
+  },
 
-  this.setID = function(i) {
+  setID: function(i) {
     this._ID = i;
-  };
+  },
 
-  this.setIDH = function(i) {
+  setIDH: function(i) {
     this._ID = i << 8 & 0xff00 | this._ID & 0xff;
-  };
+  },
 
-  this.setIDL = function(i) {
+  setIDL: function(i) {
     this._ID = this._ID & 0xff00 | i & 0xff;
-  };
+  },
 
-  this.setIFF1 = function(bool) {
+  setIFF1: function(bool) {
     this._IFF1 = bool;
-  };
+  },
 
-  this.setIFF2 = function(bool) {
+  setIFF2: function(bool) {
     this._IFF2 = bool;
-  };
+  },
 
-  this.setIM = function(i) {
+  setIM: function(i) {
     this._IM = i;
-  };
+  },
 
-  this.setIX = function(i) {
+  setIX: function(i) {
     this._IX = i;
-  };
+  },
 
-  this.setIY = function(i) {
+  setIY: function(i) {
     this._IY = i;
-  };
+  },
 
-  this.setL = function(i) {
+  setL: function(i) {
     this._L = i & 0xff;
-  };
+  },
 
-  this.setPC = function(i) {
+  setPC: function(i) {
     this._PC = i;
-  };
+  },
 
-  this.setR = function(i) {
+  setR: function(i) {
     this._R = i;
     this._R7 = i & 0x80;
-  };
+  },
 
-  this.setSP = function(i) {
+  setSP: function(i) {
     this._SP = i;
-  };
+  },
 
-  this.neg_a = function() {
+  neg_a: function() {
     var i = this._A;
     this._A = (0);
     this.sub_a(i);
-  };
+  },
 
   //** original nxtpcb() code:
   //var i = this._PC;
@@ -4380,9 +4376,9 @@ function Z80(msx, d) {
   //since everywhere PC is used, a check is also executed.(PROOF?***)
   //** optimization 3: every call to nxtpcb() replaced by
   //the return statement below.
-  this.nxtpcb = function() {
+  nxtpcb: function() {
     return this.peekb(this._PC++);
-  };
+  },
 
   //** original nxtpcw() code:
   //var i = this._PC;
@@ -4394,11 +4390,11 @@ function Z80(msx, d) {
   //but peekw() doesn't check overflow of _PC+1...
   //** optimization 2: no overflow check at all not even in the end
   //just like in nxtpcb() above
-  this.nxtpcw = function() {
+  nxtpcw: function() {
     return this.peekw((this._PC = this._PC + 2) - 2);
-  };
+  },
 
-  this.or_a = function(i) {
+  or_a: function(i) {
     var i_62_ = this._A | i;
     this.fS = ((i_62_ & 0x80) != 0);
     this.f3 = ((i_62_ & 0x8) != 0);
@@ -4409,40 +4405,40 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (false);
     this._A = (i_62_);
-  };
+  },
 
-  this.outb = function(i, i_63_, i_64_) {
+  outb: function(i, i_63_, i_64_) {
     // empty
-  };
+  },
 
-  this.peekb = function(i) {
+  peekb: function(i) {
     return 0;
-  };
+  },
 
-  this.peekw = function(i) {
+  peekw: function(i) {
     return 0;
-  };
+  },
 
-  this.pokeb = function(i, i_65_) {
+  pokeb: function(i, i_65_) {
     // empty
-  };
+  },
 
-  this.pokew = function(i, i_66_) {
+  pokew: function(i, i_66_) {
     // empty
-  };
+  },
 
-  this.poppc = function() {
+  poppc: function() {
     this._PC = (this.popw());
-  };
+  },
 
-  this.popw = function() {
+  popw: function() {
     var i = this._SP;
     var i_67_ = this.peekw(i++);
     this._SP = (++i & 0xffff);
     return i_67_;
-  };
+  },
 
-  this.printHex = function(i) {
+  printHex: function(i) {
     var i_68_;
     var i_69_;
     for (i_68_ = 1; i_68_ >= 0; i_68_--) {
@@ -4498,35 +4494,34 @@ function Z80(msx, d) {
           break;
       }
     }
-  };
+  },
 
-  this.pushpc = function() {
+  pushpc: function() {
     this.pushw(this._PC);
-  };
+  },
 
-  this.pushw = function(i) {
+  pushw: function(i) {
     var i_70_ = this._SP - 2 & 0xffff;
     this._SP = (i_70_);
     this.pokew(i_70_, i);
-  };
+  },
 
-  this.qdec8 = function(i) {
+  qdec8: function(i) {
     return i - 1 & 0xff;
-  };
+  },
 
-  this.qinc8 = function(i) {
+  qinc8: function(i) {
     return i + 1 & 0xff;
-  };
+  },
 
-  this.res = function(i, i_71_) {
+  res: function(i, i_71_) {
     return i_71_ & (i ^ 0xffffffff);
-  };
+  },
 
-  this.reset = function() {
+  reset: function() {
     var i, j;
 
     // Main memory
-    this.mem = Array(4); // 4 primary slots
     for (i = 0; i < 4; i++) {
       for (j = 0; j < 65536; j++) {
         this.mem[j] = Array(65536);
@@ -4558,9 +4553,9 @@ function Z80(msx, d) {
 
     for (i = 0; i < 256; i++)
       this.portos[i] = -1;
-  };
+  },
 
-  this.retornaHex = function(i) {
+  retornaHex: function(i) {
     var string = '';
     var i_72_;
     var i_73_;
@@ -4618,9 +4613,9 @@ function Z80(msx, d) {
       }
     }
     return string;
-  };
+  },
 
-  this.retornaInst = function(i) {
+  retornaInst: function(i) {
     switch (i) {
       case 0:
         return 'NOP';
@@ -5137,9 +5132,9 @@ function Z80(msx, d) {
       default:
         return 'Instrucao nao catalogada ' + this.retornaHex(i);
     }
-  };
+  },
 
-  this.rl = function(i) {
+  rl: function(i) {
     var bool = (i & 0x80) != 0;
     if (this.fC)
       i = i << 1 | 0x1;
@@ -5155,9 +5150,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (bool);
     return i;
-  };
+  },
 
-  this.rl_a = function() {
+  rl_a: function() {
     var i = this._A;
     var bool = (i & 0x80) != 0;
     if (this.fC)
@@ -5171,9 +5166,9 @@ function Z80(msx, d) {
     this.fH = (false);
     this.fC = (bool);
     this._A = (i);
-  };
+  },
 
-  this.rlc = function(i) {
+  rlc: function(i) {
     var bool = (i & 0x80) != 0;
     if (bool)
       i = i << 1 | 0x1;
@@ -5189,9 +5184,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (bool);
     return i;
-  };
+  },
 
-  this.rlc_a = function() {
+  rlc_a: function() {
     var i = this._A;
     var bool = (i & 0x80) != 0;
     if (bool)
@@ -5205,9 +5200,9 @@ function Z80(msx, d) {
     this.fH = (false);
     this.fC = (bool);
     this._A = (i);
-  };
+  },
 
-  this.rld_a = function() {
+  rld_a: function() {
     var i = this._A;
     var i_74_ = this.peekb(this.HL());
     var i_75_ = i_74_;
@@ -5222,9 +5217,9 @@ function Z80(msx, d) {
     this.fH = (false);
     this.fN = (false);
     this._A = (i);
-  };
+  },
 
-  this.rr = function(i) {
+  rr: function(i) {
     var bool = (i & 0x1) != 0;
     if (this.fC)
       i = i >> 1 | 0x80;
@@ -5239,9 +5234,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (bool);
     return i;
-  };
+  },
 
-  this.rr_a = function() {
+  rr_a: function() {
     var i = this._A;
     var bool = (i & 0x1) != 0;
     if (this.fC)
@@ -5254,9 +5249,9 @@ function Z80(msx, d) {
     this.fH = (false);
     this.fC = (bool);
     this._A = (i);
-  };
+  },
 
-  this.rrc = function(i) {
+  rrc: function(i) {
     var bool = (i & 0x1) != 0;
     if (bool)
       i = i >> 1 | 0x80;
@@ -5271,9 +5266,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (bool);
     return i;
-  };
+  },
 
-  this.rrc_a = function() {
+  rrc_a: function() {
     var i = this._A;
     var bool = (i & 0x1) != 0;
     if (bool)
@@ -5286,9 +5281,9 @@ function Z80(msx, d) {
     this.fH = (false);
     this.fC = (bool);
     this._A = (i);
-  };
+  },
 
-  this.rrd_a = function() {
+  rrd_a: function() {
     var i = this._A;
     var i_76_ = this.peekb(this.HL());
     var i_77_ = i_76_;
@@ -5303,9 +5298,9 @@ function Z80(msx, d) {
     this.fH = (false);
     this.fN = (false);
     this._A = (i);
-  };
+  },
 
-  this.sbc16 = function(i, i_78_) {
+  sbc16: function(i, i_78_) {
     var i_79_ = this.fC ? 1 : 0;
     var i_80_ = i - i_78_ - i_79_;
     var i_81_ = i_80_ & 0xffff;
@@ -5318,9 +5313,9 @@ function Z80(msx, d) {
     this.fH = (((i & 0xfff) - (i_78_ & 0xfff) - i_79_ & 0x1000) != 0);
     this.fN = (true);
     return i_81_;
-  };
+  },
 
-  this.sbc_a = function(i) {
+  sbc_a: function(i) {
     var i_82_ = this._A;
     var i_83_ = this.fC ? 1 : 0;
     var i_84_ = i_82_ - i - i_83_;
@@ -5334,54 +5329,54 @@ function Z80(msx, d) {
     this.fH = (((i_82_ & 0xf) - (i & 0xf) - i_83_ & 0x10) != 0);
     this.fN = (true);
     this._A = (i_85_);
-  };
+  },
 
-  this.scf = function() {
+  scf: function() {
     var i = this._A;
     this.f3 = ((i & 0x8) != 0);
     this.f5 = ((i & 0x20) != 0);
     this.fN = (false);
     this.fH = (false);
     this.fC = (true);
-  };
+  },
 
-  this.set = function(i, i_86_) {
+  set: function(i, i_86_) {
     return i_86_ | i;
-  };
+  },
 
-  this.setf3 = function(bool) {
+  setf3: function(bool) {
     this.f3 = bool;
-  };
+  },
 
-  this.setf5 = function(bool) {
+  setf5: function(bool) {
     this.f5 = bool;
-  };
+  },
 
-  this.setfC = function(bool) {
+  setfC: function(bool) {
     this.fC = bool;
-  };
+  },
 
-  this.setfH = function(bool) {
+  setfH: function(bool) {
     this.fH = bool;
-  };
+  },
 
-  this.setfN = function(bool) {
+  setfN: function(bool) {
     this.fN = bool;
-  };
+  },
 
-  this.setfPV = function(bool) {
+  setfPV: function(bool) {
     this.fPV = bool;
-  };
+  },
 
-  this.setfS = function(bool) {
+  setfS: function(bool) {
     this.fS = bool;
-  };
+  },
 
-  this.setfZ = function(bool) {
+  setfZ: function(bool) {
     this.fZ = bool;
-  };
+  },
 
-  this.sla = function(i) {
+  sla: function(i) {
     var bool = (i & 0x80) != 0;
     i = i << 1 & 0xff;
     this.fS = ((i & 0x80) != 0);
@@ -5393,9 +5388,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (bool);
     return i;
-  };
+  },
 
-  this.sls = function(i) {
+  sls: function(i) {
     var bool = (i & 0x80) != 0;
     i = (i << 1 | 0x1) & 0xff;
     this.fS = ((i & 0x80) != 0);
@@ -5407,9 +5402,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (bool);
     return i;
-  };
+  },
 
-  this.sra = function(i) {
+  sra: function(i) {
     var bool = (i & 0x1) != 0;
     i = i >> 1 | i & 0x80;
     this.fS = ((i & 0x80) != 0);
@@ -5421,9 +5416,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (bool);
     return i;
-  };
+  },
 
-  this.srl = function(i) {
+  srl: function(i) {
     var bool = (i & 0x1) != 0;
     i >>= 1;
     this.fS = ((i & 0x80) != 0);
@@ -5435,9 +5430,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (bool);
     return i;
-  };
+  },
 
-  this.sub_a = function(i) {
+  sub_a: function(i) {
     var i_87_ = this._A;
     var i_88_ = i_87_ - i;
     var i_89_ = i_88_ & 0xff;
@@ -5450,9 +5445,9 @@ function Z80(msx, d) {
     this.fH = (((i_87_ & 0xf) - (i & 0xf) & 0x10) != 0);
     this.fN = (true);
     this._A = (i_89_);
-  };
+  },
 
-  this.xor_a = function(i) {
+  xor_a: function(i) {
     var i_90_ = (this._A ^ i) & 0xff;
     this.fS = ((i_90_ & 0x80) != 0);
     this.f3 = ((i_90_ & 0x8) != 0);
@@ -5463,9 +5458,9 @@ function Z80(msx, d) {
     this.fN = (false);
     this.fC = (false);
     this._A = (i_90_);
-  };
+  },
 
-  this.inb = function(i) {
+  inb: function(i) {
     switch (i) {
       case 162:
         return this.msx.psg.lePortaDados();
@@ -5486,13 +5481,13 @@ function Z80(msx, d) {
           return this.portos[i];
         return 255;
     }
-  };
+  },
 
-  this.outb = function(i, i_19_, i_20_) {
+  outb: function(i, i_19_, i_20_) {
     switch (i) {
       case 142:
         this.megarom = true;
-        this.ui.updateStatus('Megarom mode');
+        this.msx.ui.updateStatus('Megarom mode');
         break;
       case 160:
         this.msx.psg.escrevePortaEndereco(i_19_);
@@ -5521,9 +5516,9 @@ function Z80(msx, d) {
       default:
         this.portos[i] = i_19_;
     }
-  };
+  },
 
-  this.peekb = function(i) {
+  peekb: function(i) {
     if (!this.megarom) {
       return this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     } else {
@@ -5532,9 +5527,9 @@ function Z80(msx, d) {
       else
         return this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     }
-  };
+  },
 
-  this.peekw = function(i) {
+  peekw: function(i) {
     if (!this.megarom) {
       return this.mem[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
           this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
@@ -5546,9 +5541,9 @@ function Z80(msx, d) {
         return this.mem[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
             this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     }
-  };
+  },
 
-  this.pokeb = function(i, i_25_) {
+  pokeb: function(i, i_25_) {
     var i_26_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
 
     if (this.podeEscrever[i_26_]) this.mem[i_26_][i] = i_25_ & 0xff;
@@ -5597,9 +5592,9 @@ function Z80(msx, d) {
           break;
       }
     }
-  };
+  },
 
-  this.pokew = function(i, i_27_) {
+  pokew: function(i, i_27_) {
     var i_28_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
 
     if (this.podeEscrever[i_28_]) {
@@ -5678,9 +5673,9 @@ function Z80(msx, d) {
           break;
       }
     }
-  };
+  },
 
-  this.preparaMemoriaMegarom = function(string) {
+  preparaMemoriaMegarom: function(string) {
     if (string != null) {
       if (string == '0')
         this.tipoMegarom = 0;
@@ -5691,5 +5686,5 @@ function Z80(msx, d) {
       else if (string == '3')
         this.tipoMegarom = 3;
     }
-  };
-}
+  }
+};
