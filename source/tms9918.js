@@ -25,22 +25,15 @@
  */
 function tms9918(canvas) {
   this.canvas = canvas;
-  //this.canvasctx = undefined;
-  this.imagedata = null;
 
-  this.m_rgbRedPalette = [0, 0, 32, 96, 32, 64, -96, 64, -32, -32,
-    -64, -64, 32, -64, -96, -32];
-  this.m_rgbGreenPalette = [0, 0, -64, -32, 32, 96, 32, -64, 32,
-    96, -64, -64, -128, 64, -96, -32];
-  this.m_rgbBluePalette = [0, 0, 32, 96, -32, -32, 32, -32, 32, 96,
-    32, -128, 32, -96, -96, -32];
+  //this.m_rgbRedPalette = [0, 0, 32, 96, 32, 64, -96, 64, -32, -32, -64, -64, 32, -64, -96, -32];
+  //this.m_rgbGreenPalette = [0, 0, -64, -32, 32, 96, 32, -64, 32, 96, -64, -64, -128, 64, -96, -32];
+  //this.m_rgbBluePalette = [0, 0, 32, 96, -32, -32, 32, -32, 32, 96, 32, -128, 32, -96, -96, -32];
+
+  this.imagedata = null;
   this.updateWholeScreen = null;
   this.regStatus = null;
   this.screenAtual = null;
-
-  this.registros = Array(8);
-  this.vidMem = Array(16384);//vram
-  this.dirtyVidMem = Array(960);//linked list of modified chars on scr
 
   this.primeiro = null;
   this.ultimo = null;
@@ -53,6 +46,10 @@ function tms9918(canvas) {
   this.byteLido = null;
   this.lidoByte = null;
   this.ByteReadBuff = null;
+
+  this.registros = Array(8);
+  this.vidMem = Array(16384);//vram
+  this.dirtyVidMem = Array(960);//linked list of modified chars on scr
 
   this.cor = [[0, 0, 0], [0, 0, 0], [32, 192, 32],
         [96, 224, 96], [32, 32, 224],
@@ -75,6 +72,18 @@ tms9918.prototype = {
     this.regStatus = 0;
     this.screenAtual = 0;
 
+    this.tabCor = 0;
+    this.tabNome = 0;
+    this.tabCar = 0;
+    this.tabAtrSpt = 0;
+    this.tabImgSpt = 0;
+    this.regEnd = 0;
+    this.byteLido = 0;
+    this.ByteReadBuff = 0;
+    this.lidoByte = false;
+    this.primeiro = -1;
+    this.ultimo = -1;
+
     for (i = 0; i < 8; i++) {
       this.registros[i] = 0;
     }
@@ -85,31 +94,20 @@ tms9918.prototype = {
       this.dirtyVidMem[i] = -1;
     }
 
-    this.primeiro = -1;
-    this.ultimo = -1;
-    this.tabCor = 0;
-    this.tabNome = 0;
-    this.tabCar = 0;
-    this.tabAtrSpt = 0;
-    this.tabImgSpt = 0;
-    this.regEnd = 0;
-    this.byteLido = 0;
-    this.lidoByte = false;
-    this.ByteReadBuff = 0;
-
     //TMS9918 CONSTRUCTOR
     this.canvas.fillStyle = 'rgb(' + this.cor[0][0] + ',' + this.cor[0][1] + ',' + this.cor[0][2] + ')';
     this.canvas.fillRect(0, 0, 256, 192);
 
     // builds the array containing the canvas bitmap (256*192*4 bytes (r,g,b,a) format each pixel)
     this.imagedata = this.canvas.getImageData(0, 0, 256, 192);
+
+    // Initialize alpha channel.
+    for (i = 3; i < this.imagedata.length - 3; i += 4) {
+      this.imagedata[i] = 0xff;
+    }
   },
 
   updateScreen: function() {
-    //canvasGraphics.drawImage(tela, 0, 0, null);
-    //this.canvas.fillRect (0, 0, 256, 192);
-
-    this.canvas.fillRect(0, 0, 1, 1);//force canvas update in some browsers
     this.canvas.putImageData(this.imagedata, 0, 0);
   },
 
@@ -168,7 +166,6 @@ tms9918.prototype = {
           this.imagedata.data[i_9_ * 4 + 0] = this.cor[i_10_][0];//r
           this.imagedata.data[i_9_ * 4 + 1] = this.cor[i_10_][1];//g
           this.imagedata.data[i_9_ * 4 + 2] = this.cor[i_10_][2];//b
-          this.imagedata.data[i_9_ * 4 + 3] = 255;//a
         }
       }
     }
@@ -240,7 +237,6 @@ tms9918.prototype = {
             this.imagedata.data[i_24_ * 4 + 0] = this.cor[i_25_][0];//r
             this.imagedata.data[i_24_ * 4 + 1] = this.cor[i_25_][1];//g
             this.imagedata.data[i_24_ * 4 + 2] = this.cor[i_25_][2];//b
-            this.imagedata.data[i_24_ * 4 + 3] = 255;//a
           }
         }
         //memoriaTela.newPixels(i_18_, i_19_, i_14_, 8);
@@ -570,7 +566,6 @@ tms9918.prototype = {
                 this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 0] = this.cor[i_51_][0];//r
                 this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 1] = this.cor[i_51_][1];//g
                 this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 2] = this.cor[i_51_][2];//b
-                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 3] = 255;//a
               }
             }
           }

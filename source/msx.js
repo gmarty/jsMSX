@@ -29,7 +29,6 @@ function JSMSX(window, canvas, logbuf) {
   this.logbuf = logbuf;
 
   this.frameSkip = null;
-  this.pinta = null;
   this.interruptCounter = null;
   this.resetAtNextInterrupt = null;
   this.pauseAtNextInterrupt = null;
@@ -46,7 +45,6 @@ function JSMSX(window, canvas, logbuf) {
 JSMSX.prototype = {
   reset: function() {
     this.frameSkip = 1;
-    this.pinta = true;
     this.interruptCounter = 0;
     this.resetAtNextInterrupt = false;
     this.pauseAtNextInterrupt = false;
@@ -79,10 +77,6 @@ JSMSX.prototype = {
     //this.ui.updateStatus('interrupt='+this.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
     this.interruptCounter++;
 
-    if (this.pinta) {
-      this.vdp.updateScreen();
-      this.pinta = false;
-    }
     if (this.interruptCounter % this.frameSkip == 0)
       this.vdp.montaUsandoMemoria();
   },
