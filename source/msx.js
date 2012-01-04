@@ -52,6 +52,7 @@ JSMSX.prototype = {
     this.pauseAtNextInterrupt = false;
 
     this.cpu.reset();
+    this.vdp.reset();
   },
 
   start: function() {

@@ -24,11 +24,9 @@
  * @constructor
  */
 function tms9918(canvas) {
-  var i;
-
   this.canvas = canvas;
   //this.canvasctx = undefined;
-  this.imagedata = undefined;
+  this.imagedata = null;
 
   this.m_rgbRedPalette = [0, 0, 32, 96, 32, 64, -96, 64, -32, -32,
     -64, -64, 32, -64, -96, -32];
@@ -36,32 +34,26 @@ function tms9918(canvas) {
     96, -64, -64, -128, 64, -96, -32];
   this.m_rgbBluePalette = [0, 0, 32, 96, -32, -32, 32, -32, 32, 96,
     32, -128, 32, -96, -96, -32];
-  this.updateWholeScreen = true;
-  this.regStatus = 0;
+  this.updateWholeScreen = null;
+  this.regStatus = null;
+  this.screenAtual = null;
+
   this.registros = Array(8);
-  for (i = 0; i < 8; i++) {
-    this.registros[i] = 0;
-  }
-  this.screenAtual = 0;
   this.vidMem = Array(16384);//vram
-  for (i = 0; i < 16384; i++) {
-    this.vidMem[i] = 0;
-  }
   this.dirtyVidMem = Array(960);//linked list of modified chars on scr
-  for (i = 0; i < 960; i++) {
-    this.dirtyVidMem[i] = -1;
-  }
-  this.primeiro = -1;
-  this.ultimo = -1;
-  this.tabCor = 0;
-  this.tabNome = 0;
-  this.tabCar = 0;
-  this.tabAtrSpt = 0;
-  this.tabImgSpt = 0;
-  this.regEnd = 0;
-  this.byteLido = 0;
-  this.lidoByte = false;
-  this.ByteReadBuff = 0;
+
+  this.primeiro = null;
+  this.ultimo = null;
+  this.tabCor = null;
+  this.tabNome = null;
+  this.tabCar = null;
+  this.tabAtrSpt = null;
+  this.tabImgSpt = null;
+  this.regEnd = null;
+  this.byteLido = null;
+  this.lidoByte = null;
+  this.ByteReadBuff = null;
+
   this.cor = [[0, 0, 0], [0, 0, 0], [32, 192, 32],
         [96, 224, 96], [32, 32, 224],
         [64, 96, 224], [160, 32, 32],
@@ -72,15 +64,47 @@ function tms9918(canvas) {
         [224, 224, 224]];
   this.imagemTela = Array(256 * 192);
 
-  //TMS9918 CONSTRUCTOR
-  this.canvas.fillStyle = 'rgb(' + this.cor[0][0] + ',' + this.cor[0][1] + ',' + this.cor[0][2] + ')';
-  this.canvas.fillRect(0, 0, 256, 192);
-
-  // builds the array containing the canvas bitmap (256*192*4 bytes (r,g,b,a) format each pixel)
-  this.imagedata = this.canvas.getImageData(0, 0, 256, 192);
+  this.reset();
 }
 
 tms9918.prototype = {
+  reset: function() {
+    var i;
+
+    this.updateWholeScreen = true;
+    this.regStatus = 0;
+    this.screenAtual = 0;
+
+    for (i = 0; i < 8; i++) {
+      this.registros[i] = 0;
+    }
+    for (i = 0; i < 16384; i++) {
+      this.vidMem[i] = 0;
+    }
+    for (i = 0; i < 960; i++) {
+      this.dirtyVidMem[i] = -1;
+    }
+
+    this.primeiro = -1;
+    this.ultimo = -1;
+    this.tabCor = 0;
+    this.tabNome = 0;
+    this.tabCar = 0;
+    this.tabAtrSpt = 0;
+    this.tabImgSpt = 0;
+    this.regEnd = 0;
+    this.byteLido = 0;
+    this.lidoByte = false;
+    this.ByteReadBuff = 0;
+
+    //TMS9918 CONSTRUCTOR
+    this.canvas.fillStyle = 'rgb(' + this.cor[0][0] + ',' + this.cor[0][1] + ',' + this.cor[0][2] + ')';
+    this.canvas.fillRect(0, 0, 256, 192);
+
+    // builds the array containing the canvas bitmap (256*192*4 bytes (r,g,b,a) format each pixel)
+    this.imagedata = this.canvas.getImageData(0, 0, 256, 192);
+  },
+
   updateScreen: function() {
     //canvasGraphics.drawImage(tela, 0, 0, null);
     //this.canvas.fillRect (0, 0, 256, 192);
