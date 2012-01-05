@@ -51,7 +51,6 @@ function JSMSX(window, canvas, logbuf) {
   this.canvas = canvas;
   this.logbuf = logbuf;
 
-  this.frameSkip = null;
   this.interruptCounter = null;
   this.resetAtNextInterrupt = null;
   this.pauseAtNextInterrupt = null;
@@ -70,7 +69,6 @@ JSMSX.prototype = {
   fpsFrameCount: 0,
 
   reset: function() {
-    this.frameSkip = 1;
     this.interruptCounter = 0;
     this.resetAtNextInterrupt = false;
     this.pauseAtNextInterrupt = false;
@@ -110,8 +108,7 @@ JSMSX.prototype = {
     this.interruptCounter++;
     this.fpsFrameCount++;
 
-    if (this.interruptCounter % this.frameSkip == 0)
-      this.vdp.montaUsandoMemoria();
+    this.vdp.montaUsandoMemoria();
   },
 
   printFps: function() {

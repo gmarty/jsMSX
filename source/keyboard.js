@@ -93,15 +93,6 @@ JSMSX.Keyboard.prototype = {
       case 1017:
         this.msx.pauseAtNextInterrupt = this.msx.pauseAtNextInterrupt ^ true;
         break;
-      case 1019:
-        this.msx.frameSkip++;
-        this.msx.frameSkip %= 20;
-        break;
-      case 1018:
-        this.msx.frameSkip--;
-        if (this.msx.frameSkip < 1)
-          this.msx.frameSkip = 1;
-        break;
       case 16: this.state[6] &= 0xfe; break;   // SHIFT
       case 17: this.state[6] &= 0xfd; break;   // CTRL
       case 18: this.state[6] &= 0xfb; break;   // GRAPH (ALT in PC)
@@ -188,8 +179,6 @@ JSMSX.Keyboard.prototype = {
       case 89: this.state[5] |= 0x40; break;   // Y
       case 90: this.state[5] |= 0x80; break;   // Z
       //case 1017:
-      //case 1019:
-      //case 1018:
       case 16: this.state[6] |= 0x1; break;    // SHIFT
       case 17: this.state[6] |= 0x2; break;    // CTRL
       case 18: this.state[6] |= 0x4; break;    // GRAPH (ALT in PC)
