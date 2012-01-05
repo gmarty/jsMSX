@@ -19,6 +19,12 @@
  */
 
 
+/**
+ * @define {boolean}
+ */
+var DEBUG = true;
+
+
 
 /**
  * @constructor
@@ -69,7 +75,7 @@ JSMSX.prototype = {
 
     this.cpu.execute();
 
-    if (this.vdp.imagedata)
+    if (DEBUG)
       this.vdp.imagedata.data[this.interruptCounter * 4 + 1] = 255;//green line
 
     document.getElementById('interrupts').value = this.interruptCounter;
