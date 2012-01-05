@@ -25,6 +25,23 @@
 var DEBUG = true;
 
 
+/**
+ * The frequency in ms at which each frame is displayed, calculated this way:
+ * frameTime = 1sec. / frame_number_per_second
+ *
+ * @const
+ */
+var frameTime = 17 /*Math.round(1000 / 60)*/;
+
+
+/**
+ * The frequency in ms at which the fps is displayed.
+ *
+ * @define {number}
+ */
+var fpsInterval = 500;
+
+
 
 /**
  * @constructor
@@ -49,6 +66,9 @@ function JSMSX(window, canvas, logbuf) {
 }
 
 JSMSX.prototype = {
+  lastFpsTime: null,
+  fpsFrameCount: 0,
+
   reset: function() {
     this.frameSkip = 1;
     this.interruptCounter = 0;
@@ -64,7 +84,13 @@ JSMSX.prototype = {
 
     this.frameInterval = setInterval(function() {
       self.frame();
-    }, 17); //60 intervals/sec
+    }, frameTime);
+
+    this.resetFps();
+    this.printFps();
+    this.fpsInterval = setInterval(function() {
+      self.printFps();
+    }, fpsInterval);
   },
 
   frame: function() {
@@ -82,13 +108,36 @@ JSMSX.prototype = {
     //if (this.interruptCounter%600==0)
     //this.ui.updateStatus('interrupt='+this.interruptCounter+',ticks='+this.tstatesPerInterrupt+' cpu ticks/interrupt');
     this.interruptCounter++;
+    this.fpsFrameCount++;
 
     if (this.interruptCounter % this.frameSkip == 0)
       this.vdp.montaUsandoMemoria();
   },
 
+  printFps: function() {
+    var now = +new Date(),
+        s = 'Running';
+
+    if (this.lastFpsTime) {
+      s += ': '
+        + (this.fpsFrameCount / ((now - this.lastFpsTime) / 1000)).toFixed(2)
+        + ' (/ '
+        + (1000 / frameTime).toFixed(2)
+        + ') FPS';
+    }
+    this.ui.updateStatus(s);
+    this.fpsFrameCount = 0;
+    this.lastFpsTime = now;
+  },
+
+  resetFps: function() {
+    this.lastFpsTime = null;
+    this.fpsFrameCount = 0;
+  },
+
   stop: function() {
     clearInterval(this.frameInterval);
+    clearInterval(this.fpsInterval);
   },
 
   loadBios: function(data, slot) {
