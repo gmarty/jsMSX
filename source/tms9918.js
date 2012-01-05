@@ -95,14 +95,14 @@ tms9918.prototype = {
     }
 
     //TMS9918 CONSTRUCTOR
-    this.canvas.fillStyle = 'rgb(' + this.cor[0][0] + ',' + this.cor[0][1] + ',' + this.cor[0][2] + ')';
+    this.canvas.fillStyle = 'rgb(' + this.cor[0].join(',') + ')';
     this.canvas.fillRect(0, 0, 256, 192);
 
     // builds the array containing the canvas bitmap (256*192*4 bytes (r,g,b,a) format each pixel)
     this.imagedata = this.canvas.getImageData(0, 0, 256, 192);
 
     // Initialize alpha channel.
-    for (i = 3; i < this.imagedata.length - 3; i += 4) {
+    for (i = 3; i < (256 * 192 * 4) - 3; i += 4) {
       this.imagedata[i] = 0xff;
     }
   },
