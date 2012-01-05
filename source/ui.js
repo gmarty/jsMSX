@@ -41,6 +41,6 @@ JSMSX.UI = function(msx, log) {
 
 JSMSX.UI.prototype = {
   updateStatus: function(s) {
-    this.stat.textContent += s + '\n';
+    this.stat.textContent = s + '\n';
   }
 };
