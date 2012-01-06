@@ -51,7 +51,7 @@ function tms9918(canvas) {
   this.vidMem = Array(16384);//vram
   this.dirtyVidMem = Array(960);//linked list of modified chars on scr
 
-  this.cor = [[0, 0, 0], [0, 0, 0], [32, 192, 32],
+  this.palette = [[0, 0, 0], [0, 0, 0], [32, 192, 32],
         [96, 224, 96], [32, 32, 224],
         [64, 96, 224], [160, 32, 32],
         [64, 192, 224], [224, 32, 32],
@@ -95,7 +95,7 @@ tms9918.prototype = {
     }
 
     //TMS9918 CONSTRUCTOR
-    this.canvas.fillStyle = 'rgb(' + this.cor[0].join(',') + ')';
+    this.canvas.fillStyle = 'rgb(' + this.palette[0].join(',') + ')';
     this.canvas.fillRect(0, 0, 256, 192);
 
     // builds the array containing the canvas bitmap (256*192*4 bytes (r,g,b,a) format each pixel)
@@ -163,9 +163,9 @@ tms9918.prototype = {
           }
           this.imagemTela[i_9_] = i_10_;
 
-          this.imagedata.data[i_9_ * 4 + 0] = this.cor[i_10_][0];//r
-          this.imagedata.data[i_9_ * 4 + 1] = this.cor[i_10_][1];//g
-          this.imagedata.data[i_9_ * 4 + 2] = this.cor[i_10_][2];//b
+          this.imagedata.data[i_9_ * 4 + 0] = this.palette[i_10_][0];//r
+          this.imagedata.data[i_9_ * 4 + 1] = this.palette[i_10_][1];//g
+          this.imagedata.data[i_9_ * 4 + 2] = this.palette[i_10_][2];//b
         }
       }
     }
@@ -234,9 +234,9 @@ tms9918.prototype = {
             }
             this.imagemTela[i_24_] = i_25_;
 
-            this.imagedata.data[i_24_ * 4 + 0] = this.cor[i_25_][0];//r
-            this.imagedata.data[i_24_ * 4 + 1] = this.cor[i_25_][1];//g
-            this.imagedata.data[i_24_ * 4 + 2] = this.cor[i_25_][2];//b
+            this.imagedata.data[i_24_ * 4 + 0] = this.palette[i_25_][0];//r
+            this.imagedata.data[i_24_ * 4 + 1] = this.palette[i_25_][1];//g
+            this.imagedata.data[i_24_ * 4 + 2] = this.palette[i_25_][2];//b
           }
         }
         //memoriaTela.newPixels(i_18_, i_19_, i_14_, 8);
@@ -563,9 +563,9 @@ tms9918.prototype = {
               if ((this.vidMem[i_52_] & (1 << (7 - i_53_))) > 0) {
                 this.imagemTela[i_50_ + i_53_ + (i_52_ - i_49_ << 8)] = i_51_;
 
-                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 0] = this.cor[i_51_][0];//r
-                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 1] = this.cor[i_51_][1];//g
-                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 2] = this.cor[i_51_][2];//b
+                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 0] = this.palette[i_51_][0];//r
+                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 1] = this.palette[i_51_][1];//g
+                this.imagedata.data[(i_50_ + i_53_ + (i_52_ - i_49_ << 8)) * 4 + 2] = this.palette[i_51_][2];//b
               }
             }
           }
