@@ -72,8 +72,8 @@ msx.reset();
 //just for demonstration purposes on webbrowsers
 //in which file i/o is not supported yet for this demo.
 //loads slot 0 with cbios 0.21 rom file [cbios.sourceforge.net]
-for (var i = 0; i < 32768; i++) msx.cpu.mem[0][i] = cbios_main_msx1_rom[i];
-for (var i = 16384; i < 49152; i++) msx.cpu.mem[2][i] = goonies_rom[i - 16384];
+for (var i = 0; i < 32768; i++) msx.cpu.memReadMap[0][i] = cbios_main_msx1_rom[i];
+for (var i = 16384; i < 49152; i++) msx.cpu.memReadMap[2][i] = goonies_rom[i - 16384];
 
 function msx_doublescreen() {
   $(mycanvas).animate({

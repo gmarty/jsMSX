@@ -97,7 +97,7 @@ JSMSX.prototype = {
       this.cpu.reset();
     }
 
-    this.cpu.execute();
+    this.cpu.run();
 
     if (DEBUG)
       this.vdp.imagedata.data[this.interruptCounter * 4 + 1] = 255;//green line
@@ -139,7 +139,7 @@ JSMSX.prototype = {
 
   loadBios: function(data, slot) {
     for (var i = 0; i < data.length; i++) {
-      this.cpu.mem[slot][i] = data.charCodeAt(i) & 0xff;
+      this.cpu.memReadMap[slot][i] = data.charCodeAt(i) & 0xff;
     }
   },
 
@@ -151,7 +151,7 @@ JSMSX.prototype = {
 
     for (i = 0; i < cartromlength; i++) {
       dbr[i] = data.charCodeAt(i) & 0xff;
-      this.cpu.cart[Math.floor(i / 8192)][i % 8192] = dbr[i] + 256 & 0xff;
+      this.cpu.rom[Math.floor(i / 8192)][i % 8192] = dbr[i] + 256 & 0xff;
     }
 
     if (cartromlength > 0) {
@@ -174,7 +174,7 @@ JSMSX.prototype = {
       this.ui.updateStatus('Megarom type ' + megaromtype);
     }
     for (i = 0; i < cartromlength; i++) {
-      this.cpu.mem[slot][i + i_2_] = dbr[i] + 256 & 0xff;
+      this.cpu.memReadMap[slot][i + i_2_] = dbr[i] + 256 & 0xff;
     }
   }
 };

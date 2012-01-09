@@ -40,9 +40,9 @@ function Z80(msx) {
   this.pagMegaRom = [0, 1, 2, 3];
   this.tipoMegarom = 0;
   this.cartSlot = 0;
-  this.cart = Array(32); //2-dimensional array 32x8192 of cartridges
+  this.rom = Array(32); //2-dimensional array 32x8192 of cartridges
   for (i = 0; i < 32; i++) {
-    this.cart[i] = Array(8192);
+    this.rom[i] = Array(8192);
   }
 
   //this.IM0 = 0;
@@ -111,7 +111,7 @@ function Z80(msx) {
 }
 
 Z80.prototype = {
-  mem: Array(4), // 4 primary slots
+  memReadMap: Array(4), // 4 primary slots
   podeEscrever: [false, false, false, true],
   showpc: false, //show _PC red pixel
 
@@ -408,7 +408,7 @@ Z80.prototype = {
     this._AF_ = i;
   },
 
-  execute: function() {
+  run: function() {
     //var i = -T_STATES_PER_INTERRUPT;
     //var ticks=1000;
     //var pcs = '';
@@ -416,16 +416,17 @@ Z80.prototype = {
     var i = -(T_STATES_PER_INTERRUPT - this.z80_interrupt());
     var i_2_;
     var i_3_;
+    var opcode;
 
-    //var i_2_ = this.peekb(this._PC++);
+    //var opcode = this.peekb(this._PC++);
     //if (this.showpc)
     //this.msx.vdp.imagedata.data[this._PC*4]+=247;
 
     while (i < 0) {
       this._R += (1);
-      i_2_ = this.peekb(this._PC++);
+      opcode = this.peekb(this._PC++);
 
-      switch (i_2_) {
+      switch (opcode) {
         case 0:
           i += 4;
           break;
@@ -4529,8 +4530,8 @@ Z80.prototype = {
     // Main memory
     for (i = 0; i < 4; i++) {
       for (j = 0; j < 65536; j++) {
-        this.mem[j] = Array(65536);
-        this.mem[j][i] = 255;
+        this.memReadMap[j] = Array(65536);
+        this.memReadMap[j][i] = 255;
       }
     }
 
@@ -5525,34 +5526,34 @@ Z80.prototype = {
 
   peekb: function(i) {
     if (!this.megarom) {
-      return this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+      return this.memReadMap[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     } else {
       if (((i & 0xc000) >> 14) == this.cartSlot && i <= 49151 && i >= 16384)
-        return this.cart[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
+        return this.rom[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
       else
-        return this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+        return this.memReadMap[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     }
   },
 
   peekw: function(i) {
     if (!this.megarom) {
-      return this.mem[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
-          this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+      return this.memReadMap[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
+          this.memReadMap[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     } else {
       if (((i & 0xc000) >> 14) == this.cartSlot && i <= 49151 && i >= 16384)
-        return this.cart[this.pagMegaRom[((i + 1) >> 13) - 2]][(i + 1) % 8192] << 8 |
-            this.cart[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
+        return this.rom[this.pagMegaRom[((i + 1) >> 13) - 2]][(i + 1) % 8192] << 8 |
+            this.rom[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
       else
-        return this.mem[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
-            this.mem[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+        return this.memReadMap[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
+            this.memReadMap[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
     }
   },
 
   pokeb: function(i, i_25_) {
     var i_26_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
 
-    if (this.podeEscrever[i_26_]) this.mem[i_26_][i] = i_25_ & 0xff;
-    if (i == 65535) this.mem[i_26_][65535] = 255;
+    if (this.podeEscrever[i_26_]) this.memReadMap[i_26_][i] = i_25_ & 0xff;
+    if (i == 65535) this.memReadMap[i_26_][65535] = 255;
     if (!this.megarom) return;
 
     if (i_26_ == this.cartSlot) {
@@ -5603,9 +5604,9 @@ Z80.prototype = {
     var i_28_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
 
     if (this.podeEscrever[i_28_]) {
-      this.mem[i_28_][i] = i_27_ & 0xff;
-      if (++i < 65535) this.mem[i_28_][i] = i_27_ >> 8;
-      if (i == 65535 || i == 65536) this.mem[i_28_][65535] = 255;
+      this.memReadMap[i_28_][i] = i_27_ & 0xff;
+      if (++i < 65535) this.memReadMap[i_28_][i] = i_27_ >> 8;
+      if (i == 65535 || i == 65536) this.memReadMap[i_28_][65535] = 255;
     }
     if (!this.megarom) return;
 
