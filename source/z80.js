@@ -4408,26 +4408,6 @@ Z80.prototype = {
     this._A = (i_62_);
   },
 
-  outb: function(i, i_63_, i_64_) {
-    // empty
-  },
-
-  readMem: function(i) {
-    return 0;
-  },
-
-  readMemWord: function(i) {
-    return 0;
-  },
-
-  writeMem: function(i, i_65_) {
-    // empty
-  },
-
-  writeMemWord: function(i, i_66_) {
-    // empty
-  },
-
   poppc: function() {
     this._PC = (this.popw());
   },
@@ -4437,64 +4417,6 @@ Z80.prototype = {
     var i_67_ = this.readMemWord(i++);
     this._SP = (++i & 0xffff);
     return i_67_;
-  },
-
-  printHex: function(i) {
-    var i_68_;
-    var i_69_;
-    for (i_68_ = 1; i_68_ >= 0; i_68_--) {
-      i_69_ = i >> i_68_ * 4 & 0xf;
-      switch (i_69_) {
-        case 10:
-          console.log('a');
-          break;
-        case 11:
-          console.log('b');
-          break;
-        case 12:
-          console.log('c');
-          break;
-        case 13:
-          console.log('d');
-          break;
-        case 14:
-          console.log('e');
-          break;
-        case 15:
-          console.log('f');
-          break;
-        case 0:
-          console.log('0');
-          break;
-        case 1:
-          console.log('1');
-          break;
-        case 2:
-          console.log('2');
-          break;
-        case 3:
-          console.log('3');
-          break;
-        case 4:
-          console.log('4');
-          break;
-        case 5:
-          console.log('5');
-          break;
-        case 6:
-          console.log('6');
-          break;
-        case 7:
-          console.log('7');
-          break;
-        case 8:
-          console.log('8');
-          break;
-        case 9:
-          console.log('9');
-          break;
-      }
-    }
   },
 
   pushpc: function() {
@@ -4554,66 +4476,6 @@ Z80.prototype = {
 
     for (i = 0; i < 256; i++)
       this.portos[i] = -1;
-  },
-
-  retornaHex: function(i) {
-    var string = '';
-    var i_72_;
-    var i_73_;
-    for (i_72_ = 1; i_72_ >= 0; i_72_--) {
-      i_73_ = i >> i_72_ * 4 & 0xf;
-      switch (i_73_) {
-        case 10:
-          string += 'a';
-          break;
-        case 11:
-          string += 'b';
-          break;
-        case 12:
-          string += 'c';
-          break;
-        case 13:
-          string += 'd';
-          break;
-        case 14:
-          string += 'e';
-          break;
-        case 15:
-          string += 'f';
-          break;
-        case 0:
-          string += '0';
-          break;
-        case 1:
-          string += '1';
-          break;
-        case 2:
-          string += '2';
-          break;
-        case 3:
-          string += '3';
-          break;
-        case 4:
-          string += '4';
-          break;
-        case 5:
-          string += '5';
-          break;
-        case 6:
-          string += '6';
-          break;
-        case 7:
-          string += '7';
-          break;
-        case 8:
-          string += '8';
-          break;
-        case 9:
-          string += '9';
-          break;
-      }
-    }
-    return string;
   },
 
   retornaInst: function(i) {
@@ -5131,7 +4993,7 @@ Z80.prototype = {
       case 255:
         return 'RST 56';
       default:
-        return 'Instrucao nao catalogada ' + this.retornaHex(i);
+        return 'Instrucao nao catalogada 0x' + (i).toString(16);
     }
   },
 
