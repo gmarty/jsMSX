@@ -4448,9 +4448,9 @@ Z80.prototype = {
 
     // Main memory
     for (i = 0; i < 4; i++) {
+      this.memReadMap[i] = Array(65536);
       for (j = 0; j < 65536; j++) {
-        this.memReadMap[j] = Array(65536);
-        this.memReadMap[j][i] = 255;
+        this.memReadMap[i][j] = 255;
       }
     }
 
