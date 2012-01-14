@@ -190,7 +190,7 @@ Z80.prototype = {
   },
 
   ID_d: function() {
-    return this._ID + this.bytef(this.peekb(this._PC++)) & 0xffff;
+    return this._ID + this.bytef(this.readMem(this._PC++)) & 0xffff;
   },
 
   IFF1: function() {
@@ -418,13 +418,13 @@ Z80.prototype = {
     var i_3_;
     var opcode;
 
-    //var opcode = this.peekb(this._PC++);
+    //var opcode = this.readMem(this._PC++);
     //if (this.showpc)
     //this.msx.vdp.imagedata.data[this._PC*4]+=247;
 
     while (i < 0) {
       this._R += (1);
-      opcode = this.peekb(this._PC++);
+      opcode = this.readMem(this._PC++);
 
       switch (opcode) {
         case 0:
@@ -437,7 +437,7 @@ Z80.prototype = {
         case 16: {
           this._B = (i_3_ = this.qdec8(this._B));
           if (i_3_ != 0) {
-            i_2_ = this.bytef(this.peekb(this._PC++));
+            i_2_ = this.bytef(this.readMem(this._PC++));
             this._PC = (this._PC + i_2_ & 0xffff);
             i += 13;
           } else {
@@ -447,14 +447,14 @@ Z80.prototype = {
           break;
         }
         case 24: {
-          i_2_ = this.bytef(this.peekb(this._PC++));
+          i_2_ = this.bytef(this.readMem(this._PC++));
           this._PC = (this._PC + i_2_ & 0xffff);
           i += 12;
           break;
         }
         case 32:
           if (!this.fZ) {
-            i_2_ = this.bytef(this.peekb(this._PC++));
+            i_2_ = this.bytef(this.readMem(this._PC++));
             this._PC = (this._PC + i_2_ & 0xffff);
             i += 12;
           } else {
@@ -464,7 +464,7 @@ Z80.prototype = {
           break;
         case 40:
           if (this.fZ) {
-            i_2_ = this.bytef(this.peekb(this._PC++));
+            i_2_ = this.bytef(this.readMem(this._PC++));
             this._PC = (this._PC + i_2_ & 0xffff);
             i += 12;
           } else {
@@ -474,7 +474,7 @@ Z80.prototype = {
           break;
         case 48:
           if (!this.fC) {
-            i_2_ = this.bytef(this.peekb(this._PC++));
+            i_2_ = this.bytef(this.readMem(this._PC++));
             this._PC = (this._PC + i_2_ & 0xffff);
             i += 12;
           } else {
@@ -484,7 +484,7 @@ Z80.prototype = {
           break;
         case 56:
           if (this.fC) {
-            i_2_ = this.bytef(this.peekb(this._PC++));
+            i_2_ = this.bytef(this.readMem(this._PC++));
             this._PC = (this._PC + i_2_ & 0xffff);
             i += 12;
           } else {
@@ -493,7 +493,7 @@ Z80.prototype = {
           }
           break;
         case 1:
-          this.setBC(this.peekw((this._PC = this._PC + 2) - 2));
+          this.setBC(this.readMemWord((this._PC = this._PC + 2) - 2));
           i += 10;
           break;
         case 9:
@@ -501,7 +501,7 @@ Z80.prototype = {
           i += 11;
           break;
         case 17:
-          this.setDE(this.peekw((this._PC = this._PC + 2) - 2));
+          this.setDE(this.readMemWord((this._PC = this._PC + 2) - 2));
           i += 10;
           break;
         case 25:
@@ -509,7 +509,7 @@ Z80.prototype = {
           i += 11;
           break;
         case 33:
-          this.setHL(this.peekw((this._PC = this._PC + 2) - 2));
+          this.setHL(this.readMemWord((this._PC = this._PC + 2) - 2));
           i += 10;
           break;
         case 41: {
@@ -519,7 +519,7 @@ Z80.prototype = {
           break;
         }
         case 49:
-          this._SP = (this.peekw((this._PC = this._PC + 2) - 2));
+          this._SP = (this.readMemWord((this._PC = this._PC + 2) - 2));
           i += 10;
           break;
         case 57:
@@ -527,35 +527,35 @@ Z80.prototype = {
           i += 11;
           break;
         case 2:
-          this.pokeb(this.BC(), this._A);
+          this.writeMem(this.BC(), this._A);
           i += 7;
           break;
         case 10:
-          this._A = (this.peekb(this.BC()));
+          this._A = (this.readMem(this.BC()));
           i += 7;
           break;
         case 18:
-          this.pokeb(this.DE(), this._A);
+          this.writeMem(this.DE(), this._A);
           i += 7;
           break;
         case 26:
-          this._A = (this.peekb(this.DE()));
+          this._A = (this.readMem(this.DE()));
           i += 7;
           break;
         case 34:
-          this.pokew(this.peekw((this._PC = this._PC + 2) - 2), this.HL());
+          this.writeMemWord(this.readMemWord((this._PC = this._PC + 2) - 2), this.HL());
           i += 16;
           break;
         case 42:
-          this.setHL(this.peekw(this.peekw((this._PC = this._PC + 2) - 2)));
+          this.setHL(this.readMemWord(this.readMemWord((this._PC = this._PC + 2) - 2)));
           i += 16;
           break;
         case 50:
-          this.pokeb(this.peekw((this._PC = this._PC + 2) - 2), this._A);
+          this.writeMem(this.readMemWord((this._PC = this._PC + 2) - 2), this._A);
           i += 13;
           break;
         case 58:
-          this._A = (this.peekb(this.peekw((this._PC = this._PC + 2) - 2)));
+          this._A = (this.readMem(this.readMemWord((this._PC = this._PC + 2) - 2)));
           i += 13;
           break;
         case 3:
@@ -616,7 +616,7 @@ Z80.prototype = {
           break;
         case 52: {
           i_2_ = this.HL();
-          this.pokeb(i_2_, this.inc8(this.peekb(i_2_)));
+          this.writeMem(i_2_, this.inc8(this.readMem(i_2_)));
           i += 11;
           break;
         }
@@ -650,7 +650,7 @@ Z80.prototype = {
           break;
         case 53: {
           i_2_ = this.HL();
-          this.pokeb(i_2_, this.dec8(this.peekb(i_2_)));
+          this.writeMem(i_2_, this.dec8(this.readMem(i_2_)));
           i += 11;
           break;
         }
@@ -659,35 +659,35 @@ Z80.prototype = {
           i += 4;
           break;
         case 6:
-          this._B = (this.peekb(this._PC++));
+          this._B = (this.readMem(this._PC++));
           i += 7;
           break;
         case 14:
-          this._C = (this.peekb(this._PC++));
+          this._C = (this.readMem(this._PC++));
           i += 7;
           break;
         case 22:
-          this._D = (this.peekb(this._PC++));
+          this._D = (this.readMem(this._PC++));
           i += 7;
           break;
         case 30:
-          this._E = (this.peekb(this._PC++));
+          this._E = (this.readMem(this._PC++));
           i += 7;
           break;
         case 38:
-          this._H = (this.peekb(this._PC++));
+          this._H = (this.readMem(this._PC++));
           i += 7;
           break;
         case 46:
-          this._L = (this.peekb(this._PC++));
+          this._L = (this.readMem(this._PC++));
           i += 7;
           break;
         case 54:
-          this.pokeb(this.HL(), this.peekb(this._PC++));
+          this.writeMem(this.HL(), this.readMem(this._PC++));
           i += 10;
           break;
         case 62:
-          this._A = (this.peekb(this._PC++));
+          this._A = (this.readMem(this._PC++));
           i += 7;
           break;
         case 7:
@@ -746,7 +746,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 70:
-          this._B = (this.peekb(this.HL()));
+          this._B = (this.readMem(this.HL()));
           i += 7;
           break;
         case 71:
@@ -777,7 +777,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 78:
-          this._C = (this.peekb(this.HL()));
+          this._C = (this.readMem(this.HL()));
           i += 7;
           break;
         case 79:
@@ -808,7 +808,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 86:
-          this._D = (this.peekb(this.HL()));
+          this._D = (this.readMem(this.HL()));
           i += 7;
           break;
         case 87:
@@ -839,7 +839,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 94:
-          this._E = (this.peekb(this.HL()));
+          this._E = (this.readMem(this.HL()));
           i += 7;
           break;
         case 95:
@@ -870,7 +870,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 102:
-          this._H = (this.peekb(this.HL()));
+          this._H = (this.readMem(this.HL()));
           i += 7;
           break;
         case 103:
@@ -901,7 +901,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 110:
-          this._L = (this.peekb(this.HL()));
+          this._L = (this.readMem(this.HL()));
           i += 7;
           break;
         case 111:
@@ -909,27 +909,27 @@ Z80.prototype = {
           i += 4;
           break;
         case 112:
-          this.pokeb(this.HL(), this._B);
+          this.writeMem(this.HL(), this._B);
           i += 7;
           break;
         case 113:
-          this.pokeb(this.HL(), this._C);
+          this.writeMem(this.HL(), this._C);
           i += 7;
           break;
         case 114:
-          this.pokeb(this.HL(), this._D);
+          this.writeMem(this.HL(), this._D);
           i += 7;
           break;
         case 115:
-          this.pokeb(this.HL(), this._E);
+          this.writeMem(this.HL(), this._E);
           i += 7;
           break;
         case 116:
-          this.pokeb(this.HL(), this._H);
+          this.writeMem(this.HL(), this._H);
           i += 7;
           break;
         case 117:
-          this.pokeb(this.HL(), this._L);
+          this.writeMem(this.HL(), this._L);
           i += 7;
           break;
         case 118: {
@@ -939,7 +939,7 @@ Z80.prototype = {
           break;
         }
         case 119:
-          this.pokeb(this.HL(), this._A);
+          this.writeMem(this.HL(), this._A);
           i += 7;
           break;
         case 120:
@@ -967,7 +967,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 126:
-          this._A = (this.peekb(this.HL()));
+          this._A = (this.readMem(this.HL()));
           i += 7;
           break;
         case 127:
@@ -998,7 +998,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 134:
-          this.add_a(this.peekb(this.HL()));
+          this.add_a(this.readMem(this.HL()));
           i += 7;
           break;
         case 135:
@@ -1030,7 +1030,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 142:
-          this.adc_a(this.peekb(this.HL()));
+          this.adc_a(this.readMem(this.HL()));
           i += 7;
           break;
         case 143:
@@ -1062,7 +1062,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 150:
-          this.sub_a(this.peekb(this.HL()));
+          this.sub_a(this.readMem(this.HL()));
           i += 7;
           break;
         case 151:
@@ -1094,7 +1094,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 158:
-          this.sbc_a(this.peekb(this.HL()));
+          this.sbc_a(this.readMem(this.HL()));
           i += 7;
           break;
         case 159:
@@ -1126,7 +1126,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 166:
-          this.and_a(this.peekb(this.HL()));
+          this.and_a(this.readMem(this.HL()));
           i += 7;
           break;
         case 167:
@@ -1158,7 +1158,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 174:
-          this.xor_a(this.peekb(this.HL()));
+          this.xor_a(this.readMem(this.HL()));
           i += 7;
           break;
         case 175:
@@ -1190,7 +1190,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 182:
-          this.or_a(this.peekb(this.HL()));
+          this.or_a(this.readMem(this.HL()));
           i += 7;
           break;
         case 183:
@@ -1222,7 +1222,7 @@ Z80.prototype = {
           i += 4;
           break;
         case 190:
-          this.cp_a(this.peekb(this.HL()));
+          this.cp_a(this.readMem(this.HL()));
           i += 7;
           break;
         case 191:
@@ -1319,80 +1319,80 @@ Z80.prototype = {
           break;
         case 194:
           if (!this.fZ)
-            this._PC = (this.peekw((this._PC = this._PC + 2) - 2));
+            this._PC = (this.readMemWord((this._PC = this._PC + 2) - 2));
           else
             this._PC = (this._PC + 2 & 0xffff);
           i += 10;
           break;
         case 202:
           if (this.fZ)
-            this._PC = (this.peekw((this._PC = this._PC + 2) - 2));
+            this._PC = (this.readMemWord((this._PC = this._PC + 2) - 2));
           else
             this._PC = (this._PC + 2 & 0xffff);
           i += 10;
           break;
         case 210:
           if (!this.fC)
-            this._PC = (this.peekw((this._PC = this._PC + 2) - 2));
+            this._PC = (this.readMemWord((this._PC = this._PC + 2) - 2));
           else
             this._PC = (this._PC + 2 & 0xffff);
           i += 10;
           break;
         case 218:
           if (this.fC)
-            this._PC = (this.peekw((this._PC = this._PC + 2) - 2));
+            this._PC = (this.readMemWord((this._PC = this._PC + 2) - 2));
           else
             this._PC = (this._PC + 2 & 0xffff);
           i += 10;
           break;
         case 226:
           if (!this.fPV)
-            this._PC = (this.peekw((this._PC = this._PC + 2) - 2));
+            this._PC = (this.readMemWord((this._PC = this._PC + 2) - 2));
           else
             this._PC = (this._PC + 2 & 0xffff);
           i += 10;
           break;
         case 234:
           if (this.fPV)
-            this._PC = (this.peekw((this._PC = this._PC + 2) - 2));
+            this._PC = (this.readMemWord((this._PC = this._PC + 2) - 2));
           else
             this._PC = (this._PC + 2 & 0xffff);
           i += 10;
           break;
         case 242:
           if (!this.fS)
-            this._PC = (this.peekw((this._PC = this._PC + 2) - 2));
+            this._PC = (this.readMemWord((this._PC = this._PC + 2) - 2));
           else
             this._PC = (this._PC + 2 & 0xffff);
           i += 10;
           break;
         case 250:
           if (this.fS)
-            this._PC = (this.peekw((this._PC = this._PC + 2) - 2));
+            this._PC = (this.readMemWord((this._PC = this._PC + 2) - 2));
           else
             this._PC = (this._PC + 2 & 0xffff);
           i += 10;
           break;
         case 195:
-          this._PC = (this.peekw(this._PC));
+          this._PC = (this.readMemWord(this._PC));
           i += 10;
           break;
         case 203:
           i += this.execute_cb();
           break;
         case 211:
-          this.outb(this.peekb(this._PC++), this._A, i);
+          this.outb(this.readMem(this._PC++), this._A, i);
           i += 11;
           break;
         case 219:
-          this._A = (this.inb(this.peekb(this._PC++)));
+          this._A = (this.inb(this.readMem(this._PC++)));
           i += 11;
           break;
         case 227: {
           i_3_ = this.HL();
           i_2_ = this._SP;
-          this.setHL(this.peekw(i_2_));
-          this.pokew(i_2_, i_3_);
+          this.setHL(this.readMemWord(i_2_));
+          this.writeMemWord(i_2_, i_3_);
           i += 19;
           break;
         }
@@ -1415,7 +1415,7 @@ Z80.prototype = {
           break;
         case 196:
           if (!this.fZ) {
-            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.readMemWord((this._PC = this._PC + 2) - 2);
             this.pushpc();
             this._PC = (i_2_);
             i += 17;
@@ -1426,7 +1426,7 @@ Z80.prototype = {
           break;
         case 204:
           if (this.fZ) {
-            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.readMemWord((this._PC = this._PC + 2) - 2);
             this.pushpc();
             this._PC = (i_2_);
             i += 17;
@@ -1437,7 +1437,7 @@ Z80.prototype = {
           break;
         case 212:
           if (!this.fC) {
-            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.readMemWord((this._PC = this._PC + 2) - 2);
             this.pushpc();
             this._PC = (i_2_);
             i += 17;
@@ -1448,7 +1448,7 @@ Z80.prototype = {
           break;
         case 220:
           if (this.fC) {
-            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.readMemWord((this._PC = this._PC + 2) - 2);
             this.pushpc();
             this._PC = (i_2_);
             i += 17;
@@ -1459,7 +1459,7 @@ Z80.prototype = {
           break;
         case 228:
           if (!this.fPV) {
-            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.readMemWord((this._PC = this._PC + 2) - 2);
             this.pushpc();
             this._PC = (i_2_);
             i += 17;
@@ -1470,7 +1470,7 @@ Z80.prototype = {
           break;
         case 236:
           if (this.fPV) {
-            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.readMemWord((this._PC = this._PC + 2) - 2);
             this.pushpc();
             this._PC = (i_2_);
             i += 17;
@@ -1481,7 +1481,7 @@ Z80.prototype = {
           break;
         case 244:
           if (!this.fS) {
-            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.readMemWord((this._PC = this._PC + 2) - 2);
             this.pushpc();
             this._PC = (i_2_);
             i += 17;
@@ -1492,7 +1492,7 @@ Z80.prototype = {
           break;
         case 252:
           if (this.fS) {
-            i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
+            i_2_ = this.readMemWord((this._PC = this._PC + 2) - 2);
             this.pushpc();
             this._PC = (i_2_);
             i += 17;
@@ -1506,7 +1506,7 @@ Z80.prototype = {
           i += 11;
           break;
         case 205: {
-          i_2_ = this.peekw((this._PC = this._PC + 2) - 2);
+          i_2_ = this.readMemWord((this._PC = this._PC + 2) - 2);
           this.pushpc();
           this._PC = (i_2_);
           i += 17;
@@ -1538,35 +1538,35 @@ Z80.prototype = {
           this.setIY(this._ID);
           break;
         case 198:
-          this.add_a(this.peekb(this._PC++));
+          this.add_a(this.readMem(this._PC++));
           i += 7;
           break;
         case 206:
-          this.adc_a(this.peekb(this._PC++));
+          this.adc_a(this.readMem(this._PC++));
           i += 7;
           break;
         case 214:
-          this.sub_a(this.peekb(this._PC++));
+          this.sub_a(this.readMem(this._PC++));
           i += 7;
           break;
         case 222:
-          this.sbc_a(this.peekb(this._PC++));
+          this.sbc_a(this.readMem(this._PC++));
           i += 7;
           break;
         case 230:
-          this.and_a(this.peekb(this._PC++));
+          this.and_a(this.readMem(this._PC++));
           i += 7;
           break;
         case 238:
-          this.xor_a(this.peekb(this._PC++));
+          this.xor_a(this.readMem(this._PC++));
           i += 7;
           break;
         case 246:
-          this.or_a(this.peekb(this._PC++));
+          this.or_a(this.readMem(this._PC++));
           i += 7;
           break;
         case 254:
-          this.cp_a(this.peekb(this._PC++));
+          this.cp_a(this.readMem(this._PC++));
           i += 7;
           break;
         case 199:
@@ -1615,7 +1615,7 @@ Z80.prototype = {
   execute_cb: function() {
     var i = this.HL();
     this._R += (1);
-    switch (this.peekb(this._PC++)) {
+    switch (this.readMem(this._PC++)) {
       case 0:
         this._B = (this.rlc(this._B));
         return 8;
@@ -1636,7 +1636,7 @@ Z80.prototype = {
         return 8;
       case 6: {
         //i = this.HL();
-        this.pokeb(i, this.rlc(this.peekb(i)));
+        this.writeMem(i, this.rlc(this.readMem(i)));
         return 15;
       }
       case 7:
@@ -1662,7 +1662,7 @@ Z80.prototype = {
         return 8;
       case 14: {
         //i = this.HL();
-        this.pokeb(i, this.rrc(this.peekb(i)));
+        this.writeMem(i, this.rrc(this.readMem(i)));
         return 15;
       }
       case 15:
@@ -1688,7 +1688,7 @@ Z80.prototype = {
         return 8;
       case 22: {
         //i = this.HL();
-        this.pokeb(i, this.rl(this.peekb(i)));
+        this.writeMem(i, this.rl(this.readMem(i)));
         return 15;
       }
       case 23:
@@ -1714,7 +1714,7 @@ Z80.prototype = {
         return 8;
       case 30: {
         //i = this.HL();
-        this.pokeb(i, this.rr(this.peekb(i)));
+        this.writeMem(i, this.rr(this.readMem(i)));
         return 15;
       }
       case 31:
@@ -1740,7 +1740,7 @@ Z80.prototype = {
         return 8;
       case 38: {
         //i = this.HL();
-        this.pokeb(i, this.sla(this.peekb(i)));
+        this.writeMem(i, this.sla(this.readMem(i)));
         return 15;
       }
       case 39:
@@ -1766,7 +1766,7 @@ Z80.prototype = {
         return 8;
       case 46: {
         //i = this.HL();
-        this.pokeb(i, this.sra(this.peekb(i)));
+        this.writeMem(i, this.sra(this.readMem(i)));
         return 15;
       }
       case 47:
@@ -1792,7 +1792,7 @@ Z80.prototype = {
         return 8;
       case 54: {
         //i = this.HL();
-        this.pokeb(i, this.sls(this.peekb(i)));
+        this.writeMem(i, this.sls(this.readMem(i)));
         return 15;
       }
       case 55:
@@ -1818,7 +1818,7 @@ Z80.prototype = {
         return 8;
       case 62: {
         //i = this.HL();
-        this.pokeb(i, this.srl(this.peekb(i)));
+        this.writeMem(i, this.srl(this.readMem(i)));
         return 15;
       }
       case 63:
@@ -1843,7 +1843,7 @@ Z80.prototype = {
         this.bit(1, this._L);
         return 8;
       case 70:
-        this.bit(1, this.peekb(this.HL()));
+        this.bit(1, this.readMem(this.HL()));
         return 12;
       case 71:
         this.bit(1, this._A);
@@ -1867,7 +1867,7 @@ Z80.prototype = {
         this.bit(2, this._L);
         return 8;
       case 78:
-        this.bit(2, this.peekb(this.HL()));
+        this.bit(2, this.readMem(this.HL()));
         return 12;
       case 79:
         this.bit(2, this._A);
@@ -1891,7 +1891,7 @@ Z80.prototype = {
         this.bit(4, this._L);
         return 8;
       case 86:
-        this.bit(4, this.peekb(this.HL()));
+        this.bit(4, this.readMem(this.HL()));
         return 12;
       case 87:
         this.bit(4, this._A);
@@ -1915,7 +1915,7 @@ Z80.prototype = {
         this.bit(8, this._L);
         return 8;
       case 94:
-        this.bit(8, this.peekb(this.HL()));
+        this.bit(8, this.readMem(this.HL()));
         return 12;
       case 95:
         this.bit(8, this._A);
@@ -1939,7 +1939,7 @@ Z80.prototype = {
         this.bit(16, this._L);
         return 8;
       case 102:
-        this.bit(16, this.peekb(this.HL()));
+        this.bit(16, this.readMem(this.HL()));
         return 12;
       case 103:
         this.bit(16, this._A);
@@ -1963,7 +1963,7 @@ Z80.prototype = {
         this.bit(32, this._L);
         return 8;
       case 110:
-        this.bit(32, this.peekb(this.HL()));
+        this.bit(32, this.readMem(this.HL()));
         return 12;
       case 111:
         this.bit(32, this._A);
@@ -1987,7 +1987,7 @@ Z80.prototype = {
         this.bit(64, this._L);
         return 8;
       case 118:
-        this.bit(64, this.peekb(this.HL()));
+        this.bit(64, this.readMem(this.HL()));
         return 12;
       case 119:
         this.bit(64, this._A);
@@ -2011,7 +2011,7 @@ Z80.prototype = {
         this.bit(128, this._L);
         return 8;
       case 126:
-        this.bit(128, this.peekb(this.HL()));
+        this.bit(128, this.readMem(this.HL()));
         return 12;
       case 127:
         this.bit(128, this._A);
@@ -2036,7 +2036,7 @@ Z80.prototype = {
         return 8;
       case 134: {
         //i = this.HL();
-        this.pokeb(i, this.res(1, this.peekb(i)));
+        this.writeMem(i, this.res(1, this.readMem(i)));
         return 15;
       }
       case 135:
@@ -2062,7 +2062,7 @@ Z80.prototype = {
         return 8;
       case 142: {
         //i = this.HL();
-        this.pokeb(i, this.res(2, this.peekb(i)));
+        this.writeMem(i, this.res(2, this.readMem(i)));
         return 15;
       }
       case 143:
@@ -2088,7 +2088,7 @@ Z80.prototype = {
         return 8;
       case 150: {
         //i = this.HL();
-        this.pokeb(i, this.res(4, this.peekb(i)));
+        this.writeMem(i, this.res(4, this.readMem(i)));
         return 15;
       }
       case 151:
@@ -2114,7 +2114,7 @@ Z80.prototype = {
         return 8;
       case 158: {
         //i = this.HL();
-        this.pokeb(i, this.res(8, this.peekb(i)));
+        this.writeMem(i, this.res(8, this.readMem(i)));
         return 15;
       }
       case 159:
@@ -2140,7 +2140,7 @@ Z80.prototype = {
         return 8;
       case 166: {
         //i = this.HL();
-        this.pokeb(i, this.res(16, this.peekb(i)));
+        this.writeMem(i, this.res(16, this.readMem(i)));
         return 15;
       }
       case 167:
@@ -2166,7 +2166,7 @@ Z80.prototype = {
         return 8;
       case 174: {
         //i = this.HL();
-        this.pokeb(i, this.res(32, this.peekb(i)));
+        this.writeMem(i, this.res(32, this.readMem(i)));
         return 15;
       }
       case 175:
@@ -2192,7 +2192,7 @@ Z80.prototype = {
         return 8;
       case 182: {
         //i = this.HL();
-        this.pokeb(i, this.res(64, this.peekb(i)));
+        this.writeMem(i, this.res(64, this.readMem(i)));
         return 15;
       }
       case 183:
@@ -2218,7 +2218,7 @@ Z80.prototype = {
         return 8;
       case 190: {
         //i = this.HL();
-        this.pokeb(i, this.res(128, this.peekb(i)));
+        this.writeMem(i, this.res(128, this.readMem(i)));
         return 15;
       }
       case 191:
@@ -2244,7 +2244,7 @@ Z80.prototype = {
         return 8;
       case 198: {
         //i = this.HL();
-        this.pokeb(i, this.set(1, this.peekb(i)));
+        this.writeMem(i, this.set(1, this.readMem(i)));
         return 15;
       }
       case 199:
@@ -2270,7 +2270,7 @@ Z80.prototype = {
         return 8;
       case 206: {
         //i = this.HL();
-        this.pokeb(i, this.set(2, this.peekb(i)));
+        this.writeMem(i, this.set(2, this.readMem(i)));
         return 15;
       }
       case 207:
@@ -2296,7 +2296,7 @@ Z80.prototype = {
         return 8;
       case 214: {
         //i = this.HL();
-        this.pokeb(i, this.set(4, this.peekb(i)));
+        this.writeMem(i, this.set(4, this.readMem(i)));
         return 15;
       }
       case 215:
@@ -2322,7 +2322,7 @@ Z80.prototype = {
         return 8;
       case 222: {
         //i = this.HL();
-        this.pokeb(i, this.set(8, this.peekb(i)));
+        this.writeMem(i, this.set(8, this.readMem(i)));
         return 15;
       }
       case 223:
@@ -2348,7 +2348,7 @@ Z80.prototype = {
         return 8;
       case 230: {
         //i = this.HL();
-        this.pokeb(i, this.set(16, this.peekb(i)));
+        this.writeMem(i, this.set(16, this.readMem(i)));
         return 15;
       }
       case 231:
@@ -2374,7 +2374,7 @@ Z80.prototype = {
         return 8;
       case 238: {
         //i = this.HL();
-        this.pokeb(i, this.set(32, this.peekb(i)));
+        this.writeMem(i, this.set(32, this.readMem(i)));
         return 15;
       }
       case 239:
@@ -2400,7 +2400,7 @@ Z80.prototype = {
         return 8;
       case 246: {
         //i = this.HL();
-        this.pokeb(i, this.set(64, this.peekb(i)));
+        this.writeMem(i, this.set(64, this.readMem(i)));
         return 15;
       }
       case 247:
@@ -2426,7 +2426,7 @@ Z80.prototype = {
         return 8;
       case 254: {
         //i = this.HL();
-        this.pokeb(i, this.set(128, this.peekb(i)));
+        this.writeMem(i, this.set(128, this.readMem(i)));
         return 15;
       }
       case 255:
@@ -2441,7 +2441,7 @@ Z80.prototype = {
     var i_2_;
     var i_3_;
     this._R += (1);
-    switch (this.peekb(this._PC++)) {
+    switch (this.readMem(this._PC++)) {
       case 0:
       case 1:
       case 2:
@@ -2629,28 +2629,28 @@ Z80.prototype = {
         this.setHL(this.adc16(this.HL(), this._SP));
         return 15;
       case 67:
-        this.pokew(this.peekw((this._PC = this._PC + 2) - 2), this.BC());
+        this.writeMemWord(this.readMemWord((this._PC = this._PC + 2) - 2), this.BC());
         return 20;
       case 75:
-        this.setBC(this.peekw(this.peekw((this._PC = this._PC + 2) - 2)));
+        this.setBC(this.readMemWord(this.readMemWord((this._PC = this._PC + 2) - 2)));
         return 20;
       case 83:
-        this.pokew(this.peekw((this._PC = this._PC + 2) - 2), this.DE());
+        this.writeMemWord(this.readMemWord((this._PC = this._PC + 2) - 2), this.DE());
         return 20;
       case 91:
-        this.setDE(this.peekw(this.peekw((this._PC = this._PC + 2) - 2)));
+        this.setDE(this.readMemWord(this.readMemWord((this._PC = this._PC + 2) - 2)));
         return 20;
       case 99:
-        this.pokew(this.peekw((this._PC = this._PC + 2) - 2), this.HL());
+        this.writeMemWord(this.readMemWord((this._PC = this._PC + 2) - 2), this.HL());
         return 20;
       case 107:
-        this.setHL(this.peekw(this.peekw((this._PC = this._PC + 2) - 2)));
+        this.setHL(this.readMemWord(this.readMemWord((this._PC = this._PC + 2) - 2)));
         return 20;
       case 115:
-        this.pokew(this.peekw((this._PC = this._PC + 2) - 2), this._SP);
+        this.writeMemWord(this.readMemWord((this._PC = this._PC + 2) - 2), this._SP);
         return 20;
       case 123:
-        this._SP = (this.peekw(this.peekw((this._PC = this._PC + 2) - 2)));
+        this._SP = (this.readMemWord(this.readMemWord((this._PC = this._PC + 2) - 2)));
         return 20;
       case 68:
       case 76:
@@ -2708,7 +2708,7 @@ Z80.prototype = {
         this.rld_a();
         return 18;
       case 160:
-        this.pokeb(this.DE(), this.peekb(this.HL()));
+        this.writeMem(this.DE(), this.readMem(this.HL()));
         this.setDE(this.inc16(this.DE()));
         this.setHL(this.inc16(this.HL()));
         this.setBC(this.dec16(this.BC()));
@@ -2718,7 +2718,7 @@ Z80.prototype = {
         return 16;
       case 161: {
         i_2_ = this.fC;
-        this.cp_a(this.peekb(this.HL()));
+        this.cp_a(this.readMem(this.HL()));
         this.setHL(this.inc16(this.HL()));
         this.setBC(this.dec16(this.BC()));
         this.fPV = (this.BC() != 0);
@@ -2726,17 +2726,17 @@ Z80.prototype = {
         return 16;
       }
       case 162:
-        this.pokeb(this.HL(), this.inb(this._C));
+        this.writeMem(this.HL(), this.inb(this._C));
         this._B = (this.dec8(this._B));
         this.setHL(this.inc16(this.HL()));
         return 16;
       case 163:
         this._B = (this.dec8(this._B));
-        this.outb(this._C, this.peekb(this.HL()), i);
+        this.outb(this._C, this.readMem(this.HL()), i);
         this.setHL(this.inc16(this.HL()));
         return 16;
       case 168:
-        this.pokeb(this.DE(), this.peekb(this.HL()));
+        this.writeMem(this.DE(), this.readMem(this.HL()));
         this.setDE(this.dec16(this.DE()));
         this.setHL(this.dec16(this.HL()));
         this.setBC(this.dec16(this.BC()));
@@ -2746,25 +2746,25 @@ Z80.prototype = {
         return 16;
       case 169: {
         //var bool = this.fC;
-        this.cp_a(this.peekb(this.HL()));
+        this.cp_a(this.readMem(this.HL()));
         this.setHL(this.dec16(this.HL()));
         this.setBC(this.dec16(this.BC()));
         this.fPV = (this.BC() != 0);
         return 16;
       }
       case 170:
-        this.pokeb(this.HL(), this.inb(this._C));
+        this.writeMem(this.HL(), this.inb(this._C));
         this._B = (this.dec8(this._B));
         this.setHL(this.dec16(this.HL()));
         return 16;
       case 171:
         this._B = (this.dec8(this._B));
-        this.outb(this._C, this.peekb(this.HL()), i);
+        this.outb(this._C, this.readMem(this.HL()), i);
         this.setHL(this.dec16(this.HL()));
         return 16;
       case 176: {
         //var bool = false;
-        this.pokeb(this.DE(), this.peekb(this.HL()));
+        this.writeMem(this.DE(), this.readMem(this.HL()));
         this.setHL(this.inc16(this.HL()));
         this.setDE(this.inc16(this.DE()));
         this.setBC(this.dec16(this.BC()));
@@ -2785,7 +2785,7 @@ Z80.prototype = {
       }
       case 177: {
         i_2_ = this.fC;
-        this.cp_a(this.peekb(this.HL()));
+        this.cp_a(this.readMem(this.HL()));
         this.setHL(this.inc16(this.HL()));
         this.setBC(this.dec16(this.BC()));
         i_3_ = this.BC() != 0;
@@ -2800,7 +2800,7 @@ Z80.prototype = {
       case 178: {
         //var bool = false;
         i_2_ = 0;
-        this.pokeb(this.HL(), this.inb(this._C));
+        this.writeMem(this.HL(), this.inb(this._C));
         this._B = (i_2_ = this.dec8(this._B));
         this.setHL(this.inc16(this.HL()));
         if (i_2_ != 0) {
@@ -2813,7 +2813,7 @@ Z80.prototype = {
         //var bool = false;
         i_2_ = 0;
         this._B = (i_2_ = this.dec8(this._B));
-        this.outb(this._C, this.peekb(this.HL()), i);
+        this.outb(this._C, this.readMem(this.HL()), i);
         this.setHL(this.inc16(this.HL()));
         if (i_2_ != 0) {
           this._PC = (this._PC - 2 & 0xffff);
@@ -2825,7 +2825,7 @@ Z80.prototype = {
         //var bool = false;
         i_2_ = 21;
         this._R += (4);
-        this.pokeb(this.DE(), this.peekb(this.HL()));
+        this.writeMem(this.DE(), this.readMem(this.HL()));
         this.setDE(this.dec16(this.DE()));
         this.setHL(this.dec16(this.HL()));
         this.setBC(this.dec16(this.BC()));
@@ -2844,7 +2844,7 @@ Z80.prototype = {
       }
       case 185: {
         i_2_ = this.fC;
-        this.cp_a(this.peekb(this.HL()));
+        this.cp_a(this.readMem(this.HL()));
         this.setHL(this.dec16(this.HL()));
         this.setBC(this.dec16(this.BC()));
         i_3_ = this.BC() != 0;
@@ -2858,7 +2858,7 @@ Z80.prototype = {
       }
       case 186: {
         i_2_ = 0;
-        this.pokeb(this.HL(), this.inb(this.BC() & 0xff));
+        this.writeMem(this.HL(), this.inb(this.BC() & 0xff));
         this._B = (i_2_ = this.dec8(this._B));
         this.setHL(this.dec16(this.HL()));
         if (i_2_ != 0) {
@@ -2870,7 +2870,7 @@ Z80.prototype = {
       case 187: {
         i_2_ = 0;
         this._B = (i_2_ = this.dec8(this._B));
-        this.outb(this._C, this.peekb(this.HL()), i);
+        this.outb(this._C, this.readMem(this.HL()), i);
         this.setHL(this.dec16(this.HL()));
         if (i_2_ != 0) {
           this._PC = (this._PC - 2 & 0xffff);
@@ -2887,7 +2887,7 @@ Z80.prototype = {
     var i;
     var i_2_;
     this._R += (1);
-    switch (this.peekb(this._PC++)) {
+    switch (this.readMem(this._PC++)) {
       case 0:
       case 1:
       case 2:
@@ -3069,13 +3069,13 @@ Z80.prototype = {
         this.setID(this.add16(this._ID, this._SP));
         return 15;
       case 33:
-        this.setID(this.peekw((this._PC = this._PC + 2) - 2));
+        this.setID(this.readMemWord((this._PC = this._PC + 2) - 2));
         return 14;
       case 34:
-        this.pokew(this.peekw((this._PC = this._PC + 2) - 2), this._ID);
+        this.writeMemWord(this.readMemWord((this._PC = this._PC + 2) - 2), this._ID);
         return 20;
       case 42:
-        this.setID(this.peekw(this.peekw((this._PC = this._PC + 2) - 2)));
+        this.setID(this.readMemWord(this.readMemWord((this._PC = this._PC + 2) - 2)));
         return 20;
       case 35:
         this.setID(this.inc16(this._ID));
@@ -3091,7 +3091,7 @@ Z80.prototype = {
         return 8;
       case 52: {
         i = this.ID_d();
-        this.pokeb(i, this.inc8(this.peekb(i)));
+        this.writeMem(i, this.inc8(this.readMem(i)));
         return 23;
       }
       case 37:
@@ -3102,18 +3102,18 @@ Z80.prototype = {
         return 8;
       case 53: {
         i = this.ID_d();
-        this.pokeb(i, this.dec8(this.peekb(i)));
+        this.writeMem(i, this.dec8(this.readMem(i)));
         return 23;
       }
       case 38:
-        this.setIDH(this.peekb(this._PC++));
+        this.setIDH(this.readMem(this._PC++));
         return 11;
       case 46:
         this.setIDL(this.nxtpcb());
         return 11;
       case 54: {
         i = this.ID_d();
-        this.pokeb(i, this.peekb(this._PC++));
+        this.writeMem(i, this.readMem(this._PC++));
         return 19;
       }
       case 68:
@@ -3123,7 +3123,7 @@ Z80.prototype = {
         this._B = (this.IDL());
         return 8;
       case 70:
-        this._B = (this.peekb(this.ID_d()));
+        this._B = (this.readMem(this.ID_d()));
         return 19;
       case 76:
         this._C = (this.IDH());
@@ -3132,7 +3132,7 @@ Z80.prototype = {
         this._C = (this.IDL());
         return 8;
       case 78:
-        this._C = (this.peekb(this.ID_d()));
+        this._C = (this.readMem(this.ID_d()));
         return 19;
       case 84:
         this._D = (this.IDH());
@@ -3141,7 +3141,7 @@ Z80.prototype = {
         this._D = (this.IDL());
         return 8;
       case 86:
-        this._D = (this.peekb(this.ID_d()));
+        this._D = (this.readMem(this.ID_d()));
         return 19;
       case 92:
         this._E = (this.IDH());
@@ -3150,7 +3150,7 @@ Z80.prototype = {
         this._E = (this.IDL());
         return 8;
       case 94:
-        this._E = (this.peekb(this.ID_d()));
+        this._E = (this.readMem(this.ID_d()));
         return 19;
       case 96:
         this.setIDH(this._B);
@@ -3170,7 +3170,7 @@ Z80.prototype = {
         this.setIDH(this.IDL());
         return 8;
       case 102:
-        this._H = (this.peekb(this.ID_d()));
+        this._H = (this.readMem(this.ID_d()));
         return 19;
       case 103:
         this.setIDH(this._A);
@@ -3193,31 +3193,31 @@ Z80.prototype = {
       case 109:
         return 8;
       case 110:
-        this._L = (this.peekb(this.ID_d()));
+        this._L = (this.readMem(this.ID_d()));
         return 19;
       case 111:
         this.setIDL(this._A);
         return 8;
       case 112:
-        this.pokeb(this.ID_d(), this._B);
+        this.writeMem(this.ID_d(), this._B);
         return 19;
       case 113:
-        this.pokeb(this.ID_d(), this._C);
+        this.writeMem(this.ID_d(), this._C);
         return 19;
       case 114:
-        this.pokeb(this.ID_d(), this._D);
+        this.writeMem(this.ID_d(), this._D);
         return 19;
       case 115:
-        this.pokeb(this.ID_d(), this._E);
+        this.writeMem(this.ID_d(), this._E);
         return 19;
       case 116:
-        this.pokeb(this.ID_d(), this._H);
+        this.writeMem(this.ID_d(), this._H);
         return 19;
       case 117:
-        this.pokeb(this.ID_d(), this._L);
+        this.writeMem(this.ID_d(), this._L);
         return 19;
       case 119:
-        this.pokeb(this.ID_d(), this._A);
+        this.writeMem(this.ID_d(), this._A);
         return 19;
       case 124:
         this._A = (this.IDH());
@@ -3226,7 +3226,7 @@ Z80.prototype = {
         this._A = (this.IDL());
         return 8;
       case 126:
-        this._A = (this.peekb(this.ID_d()));
+        this._A = (this.readMem(this.ID_d()));
         return 19;
       case 132:
         this.add_a(this.IDH());
@@ -3235,7 +3235,7 @@ Z80.prototype = {
         this.add_a(this.IDL());
         return 8;
       case 134:
-        this.add_a(this.peekb(this.ID_d()));
+        this.add_a(this.readMem(this.ID_d()));
         return 19;
       case 140:
         this.adc_a(this.IDH());
@@ -3244,7 +3244,7 @@ Z80.prototype = {
         this.adc_a(this.IDL());
         return 8;
       case 142:
-        this.adc_a(this.peekb(this.ID_d()));
+        this.adc_a(this.readMem(this.ID_d()));
         return 19;
       case 148:
         this.sub_a(this.IDH());
@@ -3253,7 +3253,7 @@ Z80.prototype = {
         this.sub_a(this.IDL());
         return 8;
       case 150:
-        this.sub_a(this.peekb(this.ID_d()));
+        this.sub_a(this.readMem(this.ID_d()));
         return 19;
       case 156:
         this.sbc_a(this.IDH());
@@ -3262,7 +3262,7 @@ Z80.prototype = {
         this.sbc_a(this.IDL());
         return 8;
       case 158:
-        this.sbc_a(this.peekb(this.ID_d()));
+        this.sbc_a(this.readMem(this.ID_d()));
         return 19;
       case 164:
         this.and_a(this.IDH());
@@ -3271,7 +3271,7 @@ Z80.prototype = {
         this.and_a(this.IDL());
         return 8;
       case 166:
-        this.and_a(this.peekb(this.ID_d()));
+        this.and_a(this.readMem(this.ID_d()));
         return 19;
       case 172:
         this.xor_a(this.IDH());
@@ -3280,7 +3280,7 @@ Z80.prototype = {
         this.xor_a(this.IDL());
         return 8;
       case 174:
-        this.xor_a(this.peekb(this.ID_d()));
+        this.xor_a(this.readMem(this.ID_d()));
         return 19;
       case 180:
         this.or_a(this.IDH());
@@ -3289,7 +3289,7 @@ Z80.prototype = {
         this.or_a(this.IDL());
         return 8;
       case 182:
-        this.or_a(this.peekb(this.ID_d()));
+        this.or_a(this.readMem(this.ID_d()));
         return 19;
       case 188:
         this.cp_a(this.IDH());
@@ -3298,7 +3298,7 @@ Z80.prototype = {
         this.cp_a(this.IDL());
         return 8;
       case 190:
-        this.cp_a(this.peekb(this.ID_d()));
+        this.cp_a(this.readMem(this.ID_d()));
         return 19;
       case 225:
         this.setID(this.popw());
@@ -3311,15 +3311,15 @@ Z80.prototype = {
         return 10;
       case 203: {
         i = this.ID_d();
-        i_2_ = this.peekb(this._PC++);
+        i_2_ = this.readMem(this._PC++);
         this.execute_id_cb(i_2_, i);
         return (i_2_ & 0xc0) == 64 ? 20 : 23;
       }
       case 227: {
         i = this._ID;
         i_2_ = this._SP;
-        this.setID(this.peekw(i_2_));
-        this.pokew(i_2_, i);
+        this.setID(this.readMemWord(i_2_));
+        this.writeMemWord(i_2_, i);
         return 23;
       }
       case 229:
@@ -3333,252 +3333,252 @@ Z80.prototype = {
   execute_id_cb: function(i, i_58_) {
     switch (i) {
       case 0:
-        this._B = (i = this.rlc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.rlc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 1:
-        this._C = (i = this.rlc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.rlc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 2:
-        this._D = (i = this.rlc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.rlc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 3:
-        this._E = (i = this.rlc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.rlc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 4:
-        this._H = (i = this.rlc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.rlc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 5:
-        this._L = (i = this.rlc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.rlc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 6:
-        this.pokeb(i_58_, this.rlc(this.peekb(i_58_)));
+        this.writeMem(i_58_, this.rlc(this.readMem(i_58_)));
         break;
       case 7:
-        this._A = (i = this.rlc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.rlc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 8:
-        this._B = (i = this.rrc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.rrc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 9:
-        this._C = (i = this.rrc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.rrc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 10:
-        this._D = (i = this.rrc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.rrc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 11:
-        this._E = (i = this.rrc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.rrc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 12:
-        this._H = (i = this.rrc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.rrc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 13:
-        this._L = (i = this.rrc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.rrc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 14:
-        this.pokeb(i_58_, this.rrc(this.peekb(i_58_)));
+        this.writeMem(i_58_, this.rrc(this.readMem(i_58_)));
         break;
       case 15:
-        this._A = (i = this.rrc(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.rrc(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 16:
-        this._B = (i = this.rl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.rl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 17:
-        this._C = (i = this.rl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.rl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 18:
-        this._D = (i = this.rl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.rl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 19:
-        this._E = (i = this.rl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.rl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 20:
-        this._H = (i = this.rl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.rl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 21:
-        this._L = (i = this.rl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.rl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 22:
-        this.pokeb(i_58_, this.rl(this.peekb(i_58_)));
+        this.writeMem(i_58_, this.rl(this.readMem(i_58_)));
         break;
       case 23:
-        this._A = (i = this.rl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.rl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 24:
-        this._B = (i = this.rr(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.rr(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 25:
-        this._C = (i = this.rr(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.rr(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 26:
-        this._D = (i = this.rr(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.rr(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 27:
-        this._E = (i = this.rr(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.rr(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 28:
-        this._H = (i = this.rr(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.rr(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 29:
-        this._L = (i = this.rr(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.rr(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 30:
-        this.pokeb(i_58_, this.rr(this.peekb(i_58_)));
+        this.writeMem(i_58_, this.rr(this.readMem(i_58_)));
         break;
       case 31:
-        this._A = (i = this.rr(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.rr(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 32:
-        this._B = (i = this.sla(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.sla(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 33:
-        this._C = (i = this.sla(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.sla(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 34:
-        this._D = (i = this.sla(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.sla(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 35:
-        this._E = (i = this.sla(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.sla(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 36:
-        this._H = (i = this.sla(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.sla(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 37:
-        this._L = (i = this.sla(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.sla(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 38:
-        this.pokeb(i_58_, this.sla(this.peekb(i_58_)));
+        this.writeMem(i_58_, this.sla(this.readMem(i_58_)));
         break;
       case 39:
-        this._A = (i = this.sla(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.sla(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 40:
-        this._B = (i = this.sra(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.sra(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 41:
-        this._C = (i = this.sra(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.sra(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 42:
-        this._D = (i = this.sra(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.sra(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 43:
-        this._E = (i = this.sra(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.sra(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 44:
-        this._H = (i = this.sra(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.sra(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 45:
-        this._L = (i = this.sra(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.sra(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 46:
-        this.pokeb(i_58_, this.sra(this.peekb(i_58_)));
+        this.writeMem(i_58_, this.sra(this.readMem(i_58_)));
         break;
       case 47:
-        this._A = (i = this.sra(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.sra(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 48:
-        this._B = (i = this.sls(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.sls(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 49:
-        this._C = (i = this.sls(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.sls(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 50:
-        this._D = (i = this.sls(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.sls(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 51:
-        this._E = (i = this.sls(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.sls(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 52:
-        this._H = (i = this.sls(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.sls(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 53:
-        this._L = (i = this.sls(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.sls(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 54:
-        this.pokeb(i_58_, this.sls(this.peekb(i_58_)));
+        this.writeMem(i_58_, this.sls(this.readMem(i_58_)));
         break;
       case 55:
-        this._A = (i = this.sls(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.sls(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 56:
-        this._B = (i = this.srl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.srl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 57:
-        this._C = (i = this.srl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.srl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 58:
-        this._D = (i = this.srl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.srl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 59:
-        this._E = (i = this.srl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.srl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 60:
-        this._H = (i = this.srl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.srl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 61:
-        this._L = (i = this.srl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.srl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 62:
-        this.pokeb(i_58_, this.srl(this.peekb(i_58_)));
+        this.writeMem(i_58_, this.srl(this.readMem(i_58_)));
         break;
       case 63:
-        this._A = (i = this.srl(this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.srl(this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 64:
       case 65:
@@ -3588,7 +3588,7 @@ Z80.prototype = {
       case 69:
       case 70:
       case 71:
-        this.bit(1, this.peekb(i_58_));
+        this.bit(1, this.readMem(i_58_));
         break;
       case 72:
       case 73:
@@ -3598,7 +3598,7 @@ Z80.prototype = {
       case 77:
       case 78:
       case 79:
-        this.bit(2, this.peekb(i_58_));
+        this.bit(2, this.readMem(i_58_));
         break;
       case 80:
       case 81:
@@ -3608,7 +3608,7 @@ Z80.prototype = {
       case 85:
       case 86:
       case 87:
-        this.bit(4, this.peekb(i_58_));
+        this.bit(4, this.readMem(i_58_));
         break;
       case 88:
       case 89:
@@ -3618,7 +3618,7 @@ Z80.prototype = {
       case 93:
       case 94:
       case 95:
-        this.bit(8, this.peekb(i_58_));
+        this.bit(8, this.readMem(i_58_));
         break;
       case 96:
       case 97:
@@ -3628,7 +3628,7 @@ Z80.prototype = {
       case 101:
       case 102:
       case 103:
-        this.bit(16, this.peekb(i_58_));
+        this.bit(16, this.readMem(i_58_));
         break;
       case 104:
       case 105:
@@ -3638,7 +3638,7 @@ Z80.prototype = {
       case 109:
       case 110:
       case 111:
-        this.bit(32, this.peekb(i_58_));
+        this.bit(32, this.readMem(i_58_));
         break;
       case 112:
       case 113:
@@ -3648,7 +3648,7 @@ Z80.prototype = {
       case 117:
       case 118:
       case 119:
-        this.bit(64, this.peekb(i_58_));
+        this.bit(64, this.readMem(i_58_));
         break;
       case 120:
       case 121:
@@ -3658,503 +3658,503 @@ Z80.prototype = {
       case 125:
       case 126:
       case 127:
-        this.bit(128, this.peekb(i_58_));
+        this.bit(128, this.readMem(i_58_));
         break;
       case 128:
-        this._B = (i = this.res(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.res(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 129:
-        this._C = (i = this.res(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.res(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 130:
-        this._D = (i = this.res(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.res(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 131:
-        this._E = (i = this.res(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.res(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 132:
-        this._H = (i = this.res(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.res(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 133:
-        this._L = (i = this.res(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.res(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 134:
-        this.pokeb(i_58_, this.res(1, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.res(1, this.readMem(i_58_)));
         break;
       case 135:
-        this._A = (i = this.res(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.res(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 136:
-        this._B = (i = this.res(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.res(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 137:
-        this._C = (i = this.res(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.res(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 138:
-        this._D = (i = this.res(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.res(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 139:
-        this._E = (i = this.res(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.res(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 140:
-        this._H = (i = this.res(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.res(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 141:
-        this._L = (i = this.res(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.res(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 142:
-        this.pokeb(i_58_, this.res(2, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.res(2, this.readMem(i_58_)));
         break;
       case 143:
-        this._A = (i = this.res(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.res(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 144:
-        this._B = (i = this.res(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.res(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 145:
-        this._C = (i = this.res(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.res(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 146:
-        this._D = (i = this.res(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.res(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 147:
-        this._E = (i = this.res(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.res(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 148:
-        this._H = (i = this.res(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.res(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 149:
-        this._L = (i = this.res(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.res(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 150:
-        this.pokeb(i_58_, this.res(4, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.res(4, this.readMem(i_58_)));
         break;
       case 151:
-        this._A = (i = this.res(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.res(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 152:
-        this._B = (i = this.res(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.res(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 153:
-        this._C = (i = this.res(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.res(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 154:
-        this._D = (i = this.res(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.res(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 155:
-        this._E = (i = this.res(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.res(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 156:
-        this._H = (i = this.res(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.res(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 157:
-        this._L = (i = this.res(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.res(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 158:
-        this.pokeb(i_58_, this.res(8, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.res(8, this.readMem(i_58_)));
         break;
       case 159:
-        this._A = (i = this.res(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.res(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 160:
-        this._B = (i = this.res(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.res(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 161:
-        this._C = (i = this.res(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.res(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 162:
-        this._D = (i = this.res(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.res(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 163:
-        this._E = (i = this.res(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.res(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 164:
-        this._H = (i = this.res(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.res(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 165:
-        this._L = (i = this.res(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.res(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 166:
-        this.pokeb(i_58_, this.res(16, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.res(16, this.readMem(i_58_)));
         break;
       case 167:
-        this._A = (i = this.res(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.res(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 168:
-        this._B = (i = this.res(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.res(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 169:
-        this._C = (i = this.res(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.res(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 170:
-        this._D = (i = this.res(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.res(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 171:
-        this._E = (i = this.res(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.res(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 172:
-        this._H = (i = this.res(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.res(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 173:
-        this._L = (i = this.res(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.res(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 174:
-        this.pokeb(i_58_, this.res(32, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.res(32, this.readMem(i_58_)));
         break;
       case 175:
-        this._A = (i = this.res(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.res(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 176:
-        this._B = (i = this.res(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.res(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 177:
-        this._C = (i = this.res(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.res(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 178:
-        this._D = (i = this.res(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.res(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 179:
-        this._E = (i = this.res(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.res(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 180:
-        this._H = (i = this.res(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.res(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 181:
-        this._L = (i = this.res(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.res(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 182:
-        this.pokeb(i_58_, this.res(64, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.res(64, this.readMem(i_58_)));
         break;
       case 183:
-        this._A = (i = this.res(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.res(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 184:
-        this._B = (i = this.res(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.res(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 185:
-        this._C = (i = this.res(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.res(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 186:
-        this._D = (i = this.res(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.res(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 187:
-        this._E = (i = this.res(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.res(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 188:
-        this._H = (i = this.res(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.res(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 189:
-        this._L = (i = this.res(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.res(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 190:
-        this.pokeb(i_58_, this.res(128, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.res(128, this.readMem(i_58_)));
         break;
       case 191:
-        this._A = (i = this.res(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.res(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 192:
-        this._B = (i = this.set(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.set(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 193:
-        this._C = (i = this.set(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.set(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 194:
-        this._D = (i = this.set(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.set(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 195:
-        this._E = (i = this.set(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.set(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 196:
-        this._H = (i = this.set(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.set(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 197:
-        this._L = (i = this.set(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.set(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 198:
-        this.pokeb(i_58_, this.set(1, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.set(1, this.readMem(i_58_)));
         break;
       case 199:
-        this._A = (i = this.set(1, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.set(1, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 200:
-        this._B = (i = this.set(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.set(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 201:
-        this._C = (i = this.set(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.set(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 202:
-        this._D = (i = this.set(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.set(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 203:
-        this._E = (i = this.set(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.set(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 204:
-        this._H = (i = this.set(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.set(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 205:
-        this._L = (i = this.set(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.set(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 206:
-        this.pokeb(i_58_, this.set(2, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.set(2, this.readMem(i_58_)));
         break;
       case 207:
-        this._A = (i = this.set(2, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.set(2, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 208:
-        this._B = (i = this.set(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.set(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 209:
-        this._C = (i = this.set(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.set(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 210:
-        this._D = (i = this.set(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.set(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 211:
-        this._E = (i = this.set(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.set(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 212:
-        this._H = (i = this.set(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.set(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 213:
-        this._L = (i = this.set(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.set(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 214:
-        this.pokeb(i_58_, this.set(4, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.set(4, this.readMem(i_58_)));
         break;
       case 215:
-        this._A = (i = this.set(4, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.set(4, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 216:
-        this._B = (i = this.set(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.set(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 217:
-        this._C = (i = this.set(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.set(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 218:
-        this._D = (i = this.set(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.set(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 219:
-        this._E = (i = this.set(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.set(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 220:
-        this._H = (i = this.set(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.set(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 221:
-        this._L = (i = this.set(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.set(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 222:
-        this.pokeb(i_58_, this.set(8, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.set(8, this.readMem(i_58_)));
         break;
       case 223:
-        this._A = (i = this.set(8, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.set(8, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 224:
-        this._B = (i = this.set(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.set(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 225:
-        this._C = (i = this.set(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.set(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 226:
-        this._D = (i = this.set(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.set(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 227:
-        this._E = (i = this.set(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.set(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 228:
-        this._H = (i = this.set(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.set(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 229:
-        this._L = (i = this.set(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.set(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 230:
-        this.pokeb(i_58_, this.set(16, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.set(16, this.readMem(i_58_)));
         break;
       case 231:
-        this._A = (i = this.set(16, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.set(16, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 232:
-        this._B = (i = this.set(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.set(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 233:
-        this._C = (i = this.set(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.set(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 234:
-        this._D = (i = this.set(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.set(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 235:
-        this._E = (i = this.set(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.set(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 236:
-        this._H = (i = this.set(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.set(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 237:
-        this._L = (i = this.set(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.set(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 238:
-        this.pokeb(i_58_, this.set(32, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.set(32, this.readMem(i_58_)));
         break;
       case 239:
-        this._A = (i = this.set(32, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.set(32, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 240:
-        this._B = (i = this.set(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.set(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 241:
-        this._C = (i = this.set(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.set(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 242:
-        this._D = (i = this.set(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.set(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 243:
-        this._E = (i = this.set(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.set(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 244:
-        this._H = (i = this.set(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.set(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 245:
-        this._L = (i = this.set(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.set(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 246:
-        this.pokeb(i_58_, this.set(64, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.set(64, this.readMem(i_58_)));
         break;
       case 247:
-        this._A = (i = this.set(64, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.set(64, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 248:
-        this._B = (i = this.set(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._B = (i = this.set(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 249:
-        this._C = (i = this.set(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._C = (i = this.set(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 250:
-        this._D = (i = this.set(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._D = (i = this.set(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 251:
-        this._E = (i = this.set(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._E = (i = this.set(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 252:
-        this._H = (i = this.set(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._H = (i = this.set(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 253:
-        this._L = (i = this.set(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._L = (i = this.set(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
       case 254:
-        this.pokeb(i_58_, this.set(128, this.peekb(i_58_)));
+        this.writeMem(i_58_, this.set(128, this.readMem(i_58_)));
         break;
       case 255:
-        this._A = (i = this.set(128, this.peekb(i_58_)));
-        this.pokeb(i_58_, i);
+        this._A = (i = this.set(128, this.readMem(i_58_)));
+        this.writeMem(i_58_, i);
         break;
     }
   },
@@ -4181,11 +4181,6 @@ Z80.prototype = {
     this.fN = (false);
     this.fH = (false);
     return i;
-  },
-
-  inb: function(i) {
-    this.msx.ui.updateStatus('inb do Z80');
-    return 255;
   },
 
   inc16: function(i) {
@@ -4221,7 +4216,7 @@ Z80.prototype = {
         this.pushpc();
         this.setIFF1(false);
         this.setIFF2(false);
-        this._PC = (this.peekw(this.I() << 8 | 0xff));
+        this._PC = (this.readMemWord(this.I() << 8 | 0xff));
         return 19;
       }
       default:
@@ -4373,31 +4368,31 @@ Z80.prototype = {
 
   //** original nxtpcb() code:
   //var i = this._PC;
-  //var i_60_ = this.peekb(i);
+  //var i_60_ = this.readMem(i);
   //this._PC = (++i & 0xffff);
   //return i_60_;
   //** optimization 1:
-  //return this.peekb(this._PC++) | 0&(this._PC&=0xffff);
+  //return this.readMem(this._PC++) | 0&(this._PC&=0xffff);
   //** optimization 2: it seems that the overflow check is unnecessary
   //since everywhere PC is used, a check is also executed.(PROOF?***)
   //** optimization 3: every call to nxtpcb() replaced by
   //the return statement below.
   nxtpcb: function() {
-    return this.peekb(this._PC++);
+    return this.readMem(this._PC++);
   },
 
   //** original nxtpcw() code:
   //var i = this._PC;
-  //var i_61_ = this.peekb(i);
-  //i_61_ |= this.peekb(++i & 0xffff) << 8;
+  //var i_61_ = this.readMem(i);
+  //i_61_ |= this.readMem(++i & 0xffff) << 8;
   //this._PC = (++i & 0xffff);
   //return i_61_;
-  //** optimization 1: call peekw() just once,instead peekb() twice...
-  //but peekw() doesn't check overflow of _PC+1...
+  //** optimization 1: call readMemWord() just once,instead readMem() twice...
+  //but readMemWord() doesn't check overflow of _PC+1...
   //** optimization 2: no overflow check at all not even in the end
   //just like in nxtpcb() above
   nxtpcw: function() {
-    return this.peekw((this._PC = this._PC + 2) - 2);
+    return this.readMemWord((this._PC = this._PC + 2) - 2);
   },
 
   or_a: function(i) {
@@ -4417,19 +4412,19 @@ Z80.prototype = {
     // empty
   },
 
-  peekb: function(i) {
+  readMem: function(i) {
     return 0;
   },
 
-  peekw: function(i) {
+  readMemWord: function(i) {
     return 0;
   },
 
-  pokeb: function(i, i_65_) {
+  writeMem: function(i, i_65_) {
     // empty
   },
 
-  pokew: function(i, i_66_) {
+  writeMemWord: function(i, i_66_) {
     // empty
   },
 
@@ -4439,7 +4434,7 @@ Z80.prototype = {
 
   popw: function() {
     var i = this._SP;
-    var i_67_ = this.peekw(i++);
+    var i_67_ = this.readMemWord(i++);
     this._SP = (++i & 0xffff);
     return i_67_;
   },
@@ -4509,7 +4504,7 @@ Z80.prototype = {
   pushw: function(i) {
     var i_70_ = this._SP - 2 & 0xffff;
     this._SP = (i_70_);
-    this.pokew(i_70_, i);
+    this.writeMemWord(i_70_, i);
   },
 
   qdec8: function(i) {
@@ -5210,11 +5205,11 @@ Z80.prototype = {
 
   rld_a: function() {
     var i = this._A;
-    var i_74_ = this.peekb(this.HL());
+    var i_74_ = this.readMem(this.HL());
     var i_75_ = i_74_;
     i_74_ = i_74_ << 4 | i & 0xf;
     i = i & 0xf0 | i_75_ >> 4;
-    this.pokeb(this.HL(), i_74_ & 0xff);
+    this.writeMem(this.HL(), i_74_ & 0xff);
     this.fS = ((i & 0x80) != 0);
     this.f3 = ((i & 0x8) != 0);
     this.f5 = ((i & 0x20) != 0);
@@ -5291,11 +5286,11 @@ Z80.prototype = {
 
   rrd_a: function() {
     var i = this._A;
-    var i_76_ = this.peekb(this.HL());
+    var i_76_ = this.readMem(this.HL());
     var i_77_ = i_76_;
     i_76_ = i_76_ >> 4 | i << 4;
     i = i & 0xf0 | i_77_ & 0xf;
-    this.pokeb(this.HL(), i_76_);
+    this.writeMem(this.HL(), i_76_);
     this.fS = ((i & 0x80) != 0);
     this.f3 = ((i & 0x8) != 0);
     this.f5 = ((i & 0x20) != 0);
@@ -5524,75 +5519,93 @@ Z80.prototype = {
     }
   },
 
-  peekb: function(i) {
+  /**
+   * Read from a memory location.
+   *
+   * @param {number} address Memory location.
+   * @return {number} Value from memory location.
+   */
+  readMem: function(address) {
     if (!this.megarom) {
-      return this.memReadMap[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+      return this.memReadMap[0x3 & (this.PPIPortA >> ((address & 0xc000) >> 13))][address];
     } else {
-      if (((i & 0xc000) >> 14) == this.cartSlot && i <= 49151 && i >= 16384)
-        return this.rom[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
+      if (((address & 0xc000) >> 14) == this.cartSlot && address <= 49151 && address >= 16384)
+        return this.rom[this.pagMegaRom[(address >> 13) - 2]][address % 8192];
       else
-        return this.memReadMap[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+        return this.memReadMap[0x3 & (this.PPIPortA >> ((address & 0xc000) >> 13))][address];
     }
   },
 
-  peekw: function(i) {
+  /**
+   * Read a word (two bytes) from a memory location.
+   *
+   * @param {number} address Memory address.
+   * @return {number} Value from memory location.
+   */
+  readMemWord: function(address) {
     if (!this.megarom) {
-      return this.memReadMap[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
-          this.memReadMap[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+      return this.memReadMap[0x3 & (this.PPIPortA >> (((address + 1) & 0xc000) >> 13))][address + 1] << 8 |
+          this.memReadMap[0x3 & (this.PPIPortA >> ((address & 0xc000) >> 13))][address];
     } else {
-      if (((i & 0xc000) >> 14) == this.cartSlot && i <= 49151 && i >= 16384)
-        return this.rom[this.pagMegaRom[((i + 1) >> 13) - 2]][(i + 1) % 8192] << 8 |
-            this.rom[this.pagMegaRom[(i >> 13) - 2]][i % 8192];
+      if (((address & 0xc000) >> 14) == this.cartSlot && address <= 49151 && address >= 16384)
+        return this.rom[this.pagMegaRom[((address + 1) >> 13) - 2]][(address + 1) % 8192] << 8 |
+            this.rom[this.pagMegaRom[(address >> 13) - 2]][address % 8192];
       else
-        return this.memReadMap[0x3 & (this.PPIPortA >> (((i + 1) & 0xc000) >> 13))][i + 1] << 8 |
-            this.memReadMap[0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13))][i];
+        return this.memReadMap[0x3 & (this.PPIPortA >> (((address + 1) & 0xc000) >> 13))][address + 1] << 8 |
+            this.memReadMap[0x3 & (this.PPIPortA >> ((address & 0xc000) >> 13))][address];
     }
   },
 
-  pokeb: function(i, i_25_) {
-    var i_26_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
+  /**
+   * Write to a memory location.
+   *
+   * @param {number} address Memory address.
+   * @param {number} value Value to write.
+   */
+  writeMem: function(address, value) {
+    var i = 0x3 & (this.PPIPortA >> ((address & 0xc000) >> 13));
 
-    if (this.podeEscrever[i_26_]) this.memReadMap[i_26_][i] = i_25_ & 0xff;
-    if (i == 65535) this.memReadMap[i_26_][65535] = 255;
+    if (this.podeEscrever[i]) this.memReadMap[i][address] = value & 0xff;
+    if (address == 65535) this.memReadMap[i][65535] = 255;
     if (!this.megarom) return;
 
-    if (i_26_ == this.cartSlot) {
+    if (i == this.cartSlot) {
       switch (this.tipoMegarom) {
         case 0:
-          if (i == 16384 || i == 20480)
-            this.pagMegaRom[0] = i_25_ & 0xff;
-          else if (i == 24576 || i == 28672)
-            this.pagMegaRom[1] = i_25_ & 0xff;
-          else if (i == 32768 || i == 36864)
-            this.pagMegaRom[2] = i_25_ & 0xff;
-          else if (i == 40960 || i == 45056)
-            this.pagMegaRom[3] = i_25_ & 0xff;
+          if (address == 16384 || address == 20480)
+            this.pagMegaRom[0] = value & 0xff;
+          else if (address == 24576 || address == 28672)
+            this.pagMegaRom[1] = value & 0xff;
+          else if (address == 32768 || address == 36864)
+            this.pagMegaRom[2] = value & 0xff;
+          else if (address == 40960 || address == 45056)
+            this.pagMegaRom[3] = value & 0xff;
           break;
         case 1:
-          if (i == 16384 || i == 20480) {
-            this.pagMegaRom[0] = i_25_ & 0xff;
+          if (address == 16384 || address == 20480) {
+            this.pagMegaRom[0] = value & 0xff;
             this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i == 32768 || i == 36864) {
-            this.pagMegaRom[2] = i_25_ & 0xff;
+          } else if (address == 32768 || address == 36864) {
+            this.pagMegaRom[2] = value & 0xff;
             this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
           }
           break;
         case 2:
-          if (i >= 24576 && i <= 26623)
-            this.pagMegaRom[0] = i_25_ & 0xff;
-          else if (i >= 26624 && i <= 28671)
-            this.pagMegaRom[1] = i_25_ & 0xff;
-          else if (i >= 28672 && i <= 30719)
-            this.pagMegaRom[2] = i_25_ & 0xff;
-          else if (i >= 30720 && i <= 32767)
-            this.pagMegaRom[3] = i_25_ & 0xff;
+          if (address >= 24576 && address <= 26623)
+            this.pagMegaRom[0] = value & 0xff;
+          else if (address >= 26624 && address <= 28671)
+            this.pagMegaRom[1] = value & 0xff;
+          else if (address >= 28672 && address <= 30719)
+            this.pagMegaRom[2] = value & 0xff;
+          else if (address >= 30720 && address <= 32767)
+            this.pagMegaRom[3] = value & 0xff;
           break;
         case 3:
-          if (i >= 24576 && i <= 26623) {
-            this.pagMegaRom[0] = i_25_ & 0xff;
+          if (address >= 24576 && address <= 26623) {
+            this.pagMegaRom[0] = value & 0xff;
             this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i >= 28672 && i <= 30719) {
-            this.pagMegaRom[2] = i_25_ & 0xff;
+          } else if (address >= 28672 && address <= 30719) {
+            this.pagMegaRom[2] = value & 0xff;
             this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
           }
           break;
@@ -5600,80 +5613,86 @@ Z80.prototype = {
     }
   },
 
-  pokew: function(i, i_27_) {
-    var i_28_ = 0x3 & (this.PPIPortA >> ((i & 0xc000) >> 13));
+  /**
+   * Write a word (two bytes) to a memory location.
+   *
+   * @param {number} address Memory address.
+   * @param {number} value Value to write.
+   */
+  writeMemWord: function(address, value) {
+    var i = 0x3 & (this.PPIPortA >> ((address & 0xc000) >> 13));
 
-    if (this.podeEscrever[i_28_]) {
-      this.memReadMap[i_28_][i] = i_27_ & 0xff;
-      if (++i < 65535) this.memReadMap[i_28_][i] = i_27_ >> 8;
-      if (i == 65535 || i == 65536) this.memReadMap[i_28_][65535] = 255;
+    if (this.podeEscrever[i]) {
+      this.memReadMap[i][address] = value & 0xff;
+      if (++address < 65535) this.memReadMap[i][address] = value >> 8;
+      if (address == 65535 || address == 65536) this.memReadMap[i][65535] = 255;
     }
     if (!this.megarom) return;
 
-    if (i_28_ == this.cartSlot) {
+    if (i == this.cartSlot) {
       switch (this.tipoMegarom) {
         case 0:
-          if (i == 16384 || i == 20480)
-            this.pagMegaRom[0] = i_27_ & 0xff;
-          else if (i == 24576 || i == 28672)
-            this.pagMegaRom[1] = i_27_ & 0xff;
-          else if (i == 32768 || i == 36864)
-            this.pagMegaRom[2] = i_27_ & 0xff;
-          else if (i == 40960 || i == 45056)
-            this.pagMegaRom[3] = i_27_ & 0xff;
-          else if (i == 24575 || i == 28671)
-            this.pagMegaRom[1] = i_27_ & 0xff;
-          else if (i == 32767 || i == 36863)
-            this.pagMegaRom[2] = i_27_ & 0xff;
-          else if (i == 40959 || i == 45055)
-            this.pagMegaRom[3] = i_27_ & 0xff;
+          if (address == 16384 || address == 20480)
+            this.pagMegaRom[0] = value & 0xff;
+          else if (address == 24576 || address == 28672)
+            this.pagMegaRom[1] = value & 0xff;
+          else if (address == 32768 || address == 36864)
+            this.pagMegaRom[2] = value & 0xff;
+          else if (address == 40960 || address == 45056)
+            this.pagMegaRom[3] = value & 0xff;
+          else if (address == 24575 || address == 28671)
+            this.pagMegaRom[1] = value & 0xff;
+          else if (address == 32767 || address == 36863)
+            this.pagMegaRom[2] = value & 0xff;
+          else if (address == 40959 || address == 45055)
+            this.pagMegaRom[3] = value & 0xff;
           break;
         case 1:
-          if (i == 16384 || i == 20480) {
-            this.pagMegaRom[0] = i_27_ & 0xff;
+          if (address == 16384 || address == 20480) {
+            this.pagMegaRom[0] = value & 0xff;
             this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i == 32768 || i == 36864) {
-            this.pagMegaRom[2] = i_27_ & 0xff;
+          } else if (address == 32768 || address == 36864) {
+            this.pagMegaRom[2] = value & 0xff;
             this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
-          } else if (i == 16383 || i == 20479) {
-            this.pagMegaRom[0] = i_27_ >> 8 & 0xff;
+          } else if (address == 16383 || address == 20479) {
+            this.pagMegaRom[0] = value >> 8 & 0xff;
             this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i == 24575 || i == 28671) {
-            this.pagMegaRom[0] = i_27_ & 0xff;
+          } else if (address == 24575 || address == 28671) {
+            this.pagMegaRom[0] = value & 0xff;
             this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-            this.pagMegaRom[2] = i_27_ >> 8 & 0xff;
+            this.pagMegaRom[2] = value >> 8 & 0xff;
             this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
           }
           break;
         case 2:
-          if (i >= 24576 && i < 26623)
-            this.pagMegaRom[0] = i_27_ & 0xff;
-          else if (i >= 26624 && i < 28671)
-            this.pagMegaRom[1] = i_27_ & 0xff;
-          else if (i >= 28672 && i < 30719)
-            this.pagMegaRom[2] = i_27_ & 0xff;
-          else if (i >= 30720 && i < 32767)
-            this.pagMegaRom[3] = i_27_ & 0xff;
-          else if (i == 24575)
-            this.pagMegaRom[0] = i_27_ >> 8 & 0xff;
-          else if (i == 26623) {
-            this.pagMegaRom[0] = i_27_ & 0xff;
-            this.pagMegaRom[1] = i_27_ >> 8 & 0xff;
-          } else if (i == 28671) {
-            this.pagMegaRom[1] = i_27_ & 0xff;
-            this.pagMegaRom[2] = i_27_ >> 8 & 0xff;
-          } else if (i == 30719) {
-            this.pagMegaRom[2] = i_27_ & 0xff;
-            this.pagMegaRom[3] = i_27_ >> 8 & 0xff;
-          } else if (i == 32767)
-            this.pagMegaRom[3] = i_27_ & 0xff;
+          if (address >= 24576 && address < 26623)
+            this.pagMegaRom[0] = value & 0xff;
+          else if (address >= 26624 && address < 28671)
+            this.pagMegaRom[1] = value & 0xff;
+          else if (address >= 28672 && address < 30719)
+            this.pagMegaRom[2] = value & 0xff;
+          else if (address >= 30720 && address < 32767)
+            this.pagMegaRom[3] = value & 0xff;
+          else if (address == 24575)
+            this.pagMegaRom[0] = value >> 8 & 0xff;
+          else if (address == 26623) {
+            this.pagMegaRom[0] = value & 0xff;
+            this.pagMegaRom[1] = value >> 8 & 0xff;
+          } else if (address == 28671) {
+            this.pagMegaRom[1] = value & 0xff;
+            this.pagMegaRom[2] = value >> 8 & 0xff;
+          } else if (address == 30719) {
+            this.pagMegaRom[2] = value & 0xff;
+            this.pagMegaRom[3] = value >> 8 & 0xff;
+          } else if (address == 32767)
+            this.pagMegaRom[3] = value & 0xff;
           break;
         case 3:
-          if (i >= 24576 && i <= 26623) {
-            this.pagMegaRom[0] = i_27_ & 0xff;
+          if (address >= 24576 && address <= 26623) {
+            this.pagMegaRom[0] = value & 0xff;
             this.pagMegaRom[1] = this.pagMegaRom[0] + 1;
-          } else if (i >= 28672 && i <= 30719) {
-            this.pagMegaRom[2] = i_27_ & 0xff;
+          } else if (address >= 28672 && address <= 30719) {
+            this.pagMegaRom[2] = value & 0xff;
             this.pagMegaRom[3] = this.pagMegaRom[2] + 1;
           }
           break;
